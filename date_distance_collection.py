@@ -1,21 +1,40 @@
+import json, operator
 from datetime import date, timedelta
 from dateutil import rrule
+from functools import reduce
 
 
 class DateDistanceCollection:
     """Manages a range of dates with a distance assigned to each."""
+    
+    COORDINATES_PATH = "coordinates.json"
 
     def __init__(self, start_year, end_year, home_location):
         """Initialize a DateDistanceCollection."""
+        
+        with open(self.COORDINATES_PATH) as f:
+            self.location_coordinates = json.load(f)
+         
         self.home = home_location
-        # TODO: look up home coordinates here so we don't have to look
-        # them up every time.
+        self.home_coordinates = self.__coordinates(self.home)
 
         # Create dictionary of dates with distance set to 0 by default:
         start_date = date(start_year, 1, 1)
         end_date = date(end_year, 12, 31)
         self.distances = {d:0 for d in self.__inclusive_date_range(
             start_date, end_date)}
+
+    def __coordinates(self, location):
+        """Returns the coordinates for a location."""
+        location_list = location.split("/")
+        try:
+            return(reduce(operator.getitem, location_list,
+                self.location_coordinates))
+        except KeyError as err:
+            print(f"\nCould not find coordinates for:")
+            print(location)
+            print(f"\nPlease add it to {self.COORDINATES_PATH}.\n")
+            raise SystemExit()
         
     def __home_distance(self, location):
         """Returns the distance from home to the provided location."""
