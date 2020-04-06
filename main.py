@@ -6,17 +6,13 @@ from date_distance_collection import DateDistanceCollection
 HOTEL_FILE_PATH = Path("C:/Users/paulb/OneDrive/Documents/Travel/") / "Hotels.xlsx"
 HOME_LOCATION = "US/OH/Beavercreek"
 
-distances = DateDistanceCollection(2020, 2020, HOME_LOCATION)
+distances = DateDistanceCollection(2009, 2020, HOME_LOCATION)
 
-distances.set_distance(date(2020,12,2), 7, "AU/WA/Perth")
-distances.set_distance(date(2020,12,25), 5, "US/IL/Chicago")
+hotel_data_sheet = pd.read_excel(HOTEL_FILE_PATH, sheet_name='Hotel Data')
+hotel_data = hotel_data_sheet[['Checkout Date', 'Nights', 'City']]
 
+for row in hotel_data.values.tolist():
+    distances.set_distance(*row)
 
 for k, v in distances.distances.items():
     print(k, v)
-
-# hotel_data_sheet = pd.read_excel(HOTEL_FILE_PATH, sheet_name='Hotel Data')
-# hotel_data = hotel_data_sheet[['City', 'Checkout Date', 'Nights']]
-
-# for row in hotel_data.values.tolist():
-#     print(row)

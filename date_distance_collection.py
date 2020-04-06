@@ -14,7 +14,7 @@ class DateDistanceCollection:
     def __init__(self, start_year, end_year, home_location):
         """Initialize a DateDistanceCollection."""
         
-        with open(self.COORDINATES_PATH) as f:
+        with open(self.COORDINATES_PATH, 'r', encoding="utf-8") as f:
             self.location_coordinates = json.load(f)
         
         self.home_coordinates = self.__coordinates(home_location)
