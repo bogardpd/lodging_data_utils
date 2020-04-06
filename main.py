@@ -4,7 +4,7 @@ from pathlib import Path
 from date_distance_collection import DateDistanceCollection
 
 HOTEL_FILE_PATH = Path("C:/Users/paulb/OneDrive/Documents/Travel/") / "Hotels.xlsx"
-HOME_LOCATION = "Beavercreek, OH"
+HOME_LOCATION = "US/OH/Beavercreek"
 
 distances = DateDistanceCollection(2020, 2020, HOME_LOCATION)
 
