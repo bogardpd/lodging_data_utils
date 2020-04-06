@@ -8,11 +8,12 @@ HOME_LOCATION = "US/OH/Beavercreek"
 
 distances = DateDistanceCollection(2020, 2020, HOME_LOCATION)
 
+distances.set_distance(date(2020,12,2), 7, "AU/WA/Perth")
 distances.set_distance(date(2020,12,25), 5, "US/IL/Chicago")
 
 
-# for k, v in distances.distances.items():
-#     print(k, v)
+for k, v in distances.distances.items():
+    print(k, v)
 
 # hotel_data_sheet = pd.read_excel(HOTEL_FILE_PATH, sheet_name='Hotel Data')
 # hotel_data = hotel_data_sheet[['City', 'Checkout Date', 'Nights']]
