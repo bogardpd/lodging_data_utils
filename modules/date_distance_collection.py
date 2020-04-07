@@ -3,6 +3,8 @@ from datetime import date, timedelta
 from dateutil import rrule
 from functools import reduce
 
+# TODO: make this class inherit from DateCollection, and consider moving
+# it to the date_collection module.
 
 class DateDistanceCollection:
     """Manages a range of dates with a distance assigned to each."""
