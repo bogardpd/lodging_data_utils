@@ -7,7 +7,7 @@ from functools import reduce
 class DateDistanceCollection:
     """Manages a range of dates with a distance assigned to each."""
     
-    COORDINATES_PATH = "coordinates.json"
+    COORDINATES_PATH = "data/coordinates.json"
     EARTH_MEAN_RADIUS = 3958.7613 # miles
     DEG_TO_RAD = math.pi / 180
 
