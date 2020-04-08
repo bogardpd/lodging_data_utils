@@ -4,6 +4,11 @@ from dateutil import rrule
 from functools import reduce
 
 
+def first_morning(checkout_date, nights):
+    """Returns the date one day after checkin."""
+    return(checkout_date - timedelta(days=(nights-1)))
+
+
 class DateCollection:
     """Manages a range of dates with a location assigned to each."""
     
@@ -41,15 +46,10 @@ class DateCollection:
         return([d.date() for d in list(rrule.rrule(rrule.DAILY,
             dtstart=start_date, until=end_date))])
 
-    @classmethod
-    def first_morning(cls, checkout_date, nights):
-        """Returns the date one day after checkin."""
-        return(checkout_date - timedelta(days=(nights-1)))
-
     def set_location(self, checkout_date, nights, location):
         """ Sets the distances for the dates in a given hotel stay."""
         dates = self.__inclusive_date_range(
-            DateCollection.first_morning(checkout_date, nights),
+            first_morning(checkout_date, nights),
             checkout_date)
         
         for day in dates:
