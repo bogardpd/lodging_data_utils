@@ -1,6 +1,6 @@
 import pandas as pd
 from pathlib import Path
-from modules.date_collection import first_morning
+from modules.common import first_morning
 
 class HotelDataFrame:
     """Manages a pandas dataframe of hotel stay data."""
@@ -13,7 +13,7 @@ class HotelDataFrame:
         hotel_data_sheet = pd.read_excel(
             self.HOTEL_FILE_PATH, sheet_name='Hotel Data')
         self.data = hotel_data_sheet[
-            ['Checkout Date', 'Nights', 'City']]
+            ['Checkout Date', 'Nights', 'City']].sort_values('Checkout Date')
 
     def min_date(self):
         """Returns the earliest away date.
