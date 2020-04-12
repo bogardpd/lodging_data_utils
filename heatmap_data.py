@@ -7,11 +7,11 @@ OUTPUT_FILE_PATH = "output/heatmap_data.csv"
 hotel_df = HotelDataFrame()
 min_date = hotel_df.min_date()
 
-locations = DateCollection(min_date, date.today())
+locations = DateCollection(hotel_df, min_date, date.today())
 # locations = DateCollection(min_date, date.today(), "US/OH/Beavercreek")
 
-for row in hotel_df.data.values.tolist():
-    locations.set_location(*row)
+# for row in hotel_df.data.values.tolist():
+#     locations.set_location(*row)
 
 with open(OUTPUT_FILE_PATH, 'w') as f:
     f.write("Date,Latitude,Longitude\n")
