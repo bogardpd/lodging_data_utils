@@ -18,11 +18,11 @@ def group_stays(hotel_data_frame):
         checkout = stay[0].date()
         nights = stay[1]
         city = stay[2]
+        purpose = stay[3]
         checkin = checkin_date(checkout, nights)
 
         # TODO: Ensure checkin is before checkout
         # TODO: Ensure stays don't overlap
-        # TODO: Add business/personal to stays (split same city if necessary)
         
         if (len(grouped) == 0) or checkin != previous_checkout:
             # Create new group:
@@ -33,6 +33,7 @@ def group_stays(hotel_data_frame):
                 'nights': (checkout - checkin).days,
                 'cities': [{
                     'city': city,
+                    'purpose': purpose,
                     'start': checkin,
                     'end': checkout,
                     'nights': (checkout - checkin).days
@@ -44,10 +45,14 @@ def group_stays(hotel_data_frame):
             grouped[-1]['end'] = checkout
             grouped[-1]['nights'] = (checkout - grouped[-1]['start']).days
             
-            if len(grouped[-1]['cities']) == 0 or grouped[-1]['cities'][-1]['city'] != city:
+            if (len(grouped[-1]['cities']) == 0
+                    or grouped[-1]['cities'][-1]['city'] != city
+                    or grouped[-1]['cities'][-1]['purpose'] != purpose):
+
                 # Create a new city:
                 grouped[-1]['cities'].append({
                     'city': city,
+                    'purpose': purpose,
                     'start': checkin,
                     'end': checkout,
                     'nights': (checkout - checkin).days
