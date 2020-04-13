@@ -8,12 +8,14 @@ class HotelDataFrame:
     HOTEL_FILE_PATH = (Path("C:/Users/paulb/OneDrive/Documents/Travel/")
     / "Hotels.xlsx")
 
-    def __init__(self):
+    def __init__(self, additional_columns=[]):
         """Initialize a HotelDataFrame."""
+        columns = (['Checkout Date', 'Nights', 'City']
+            + additional_columns)
         hotel_data_sheet = pd.read_excel(
             self.HOTEL_FILE_PATH, sheet_name='Hotel Data')
-        self.data = hotel_data_sheet[
-            ['Checkout Date', 'Nights', 'City']].sort_values('Checkout Date')
+        self.data = hotel_data_sheet[columns].sort_values(
+            'Checkout Date')
 
     def min_date(self):
         """Returns the earliest away date.

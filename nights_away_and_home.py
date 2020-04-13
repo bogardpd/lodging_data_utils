@@ -8,6 +8,8 @@ OUTPUT_FILE_PATH = 'output/nights_away_and_home.yaml'
 START_DATE = date(2009,2,10)
 END_DATE = date.today()
 
+# TODO: Add to README
+
 def group_stays(hotel_data_frame):
     """Groups consecutive away-from-home stays."""
     grouped = []
@@ -20,6 +22,7 @@ def group_stays(hotel_data_frame):
 
         # TODO: Ensure checkin is before checkout
         # TODO: Ensure stays don't overlap
+        # TODO: Add business/personal to stays (split same city if necessary)
         
         if (len(grouped) == 0) or checkin != previous_checkout:
             # Create new group:
@@ -83,7 +86,7 @@ def create_rows(grouped_stays):
 
 # MAIN SCRIPT:
 
-hotel_df = HotelDataFrame()
+hotel_df = HotelDataFrame(['Purpose'])
 grouped = group_stays(hotel_df)
 # TODO: Filter by start and end date
 away_home_rows = create_rows(grouped)
