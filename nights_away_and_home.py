@@ -3,8 +3,10 @@ from datetime import date
 
 from modules.common import checkin_date
 from modules.hotel_data_frame import HotelDataFrame
+from modules.svg_chart import SVGChart
 
 OUTPUT_FILE_PATH = 'output/nights_away_and_home.yaml'
+OUTPUT_SVG_PATH = 'output/nights_away_and_home.svg'
 START_DATE = date(2009,2,10)
 END_DATE = date.today()
 
@@ -100,3 +102,7 @@ away_home_rows = create_rows(grouped)
 with open(OUTPUT_FILE_PATH, 'w', encoding="utf-8") as f:
     yaml.Dumper.ignore_aliases = lambda *args : True # Avoid references
     yaml.dump(away_home_rows, f, allow_unicode=True, sort_keys=False)
+
+# Create SVG:
+svg = SVGChart(away_home_rows)
+svg.export(OUTPUT_SVG_PATH)
