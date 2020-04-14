@@ -26,7 +26,10 @@ class SVGChart:
         },
         'page': {
             'margin': 40, # px
-        }     
+        },
+        'year': {
+            'fill': ["#eaebec", "#f4f5f6"]
+        }
     }
     TEMPLATE_PATH = "templates/nights_away_and_home.svg"
 
@@ -66,6 +69,9 @@ class SVGChart:
         
         values['coords']['axis_anchor'] = [
             PARAMS['page']['margin'] + values['dims']['away_width'],
+            PARAMS['page']['margin']]
+        values['coords']['chart_top_left'] = [
+            PARAMS['page']['margin'],
             PARAMS['page']['margin']]
         values['coords']['night_anchor'] = [
             values['coords']['axis_anchor'][0],
@@ -129,9 +135,26 @@ class SVGChart:
                     r=str(radius),
                     fill=fill)
 
+    def _draw_year_background(self):
+        """Draws background shading for each year."""
+
+        COORDS = self._vals['coords']
+        DIMS = self._vals['dims']
+        PARAMS = self.PARAMS
+
+        g_years = xml.SubElement(self._root, "g", id="year_background")
+        
+        xml.SubElement(g_years, "rect",
+            x = str(COORDS['chart_top_left'][0]),
+            y = str(COORDS['chart_top_left'][1]),
+            width = str(DIMS['away_width'] + DIMS['home_width']),
+            height = str(DIMS['chart_height']),
+            fill = PARAMS['year']['fill'][0])
+
     def export(self, output_path):
         """Generates an SVG chart based on the away/home row values."""
         
+        self._draw_year_background()
         self._draw_nights()
         self._draw_axis()
                         
