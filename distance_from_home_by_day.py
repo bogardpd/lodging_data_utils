@@ -1,4 +1,4 @@
-from modules.date_collection import DateCollection
+from modules.collections import DateCollection
 from modules.hotel_data_frame import HotelDataFrame
 from datetime import date
 

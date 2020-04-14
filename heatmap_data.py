@@ -1,5 +1,5 @@
 from datetime import date
-from modules.date_collection import DateCollection
+from modules.collections import DateCollection
 from modules.hotel_data_frame import HotelDataFrame
 
 OUTPUT_FILE_PATH = "output/heatmap_data.csv"

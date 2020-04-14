@@ -1,10 +1,9 @@
-""" Creates an SVG chart from trip and home stay data. """
-
 from lxml import etree as xml
 
 
 class SVGChart:
-    
+    """ Creates an SVG chart from trip and home stay data. """
+
     PARAMS = {
         'night': {
             'cell_size': 8, # px
