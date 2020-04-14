@@ -1,6 +1,5 @@
 from lxml import etree as xml
 
-
 class SVGChart:
     """ Creates an SVG chart from away and home period data. """
 
@@ -31,8 +30,14 @@ class SVGChart:
     }
     TEMPLATE_PATH = "templates/nights_away_and_home.svg"
 
-    def __init__(self, grouped_stay_collection):
-        self.stays = grouped_stay_collection
+    def __init__(self, grouped_stay_rows, start_date=None, end_date=None):
+        self.stays = grouped_stay_rows
+        if start_date:
+            self.stays = list(filter(
+                lambda r: r['away']['start'] >= start_date, self.stays))
+        if end_date:
+            self.stays = list(filter(
+                lambda r: r['away']['end'] <= end_date, self.stays))
         self._vals = self._calculate_chart_values()
 
         self._root = xml.Element("svg", xmlns=self.NSMAP[None],
