@@ -2,33 +2,37 @@ from lxml import etree as xml
 
 
 class SVGChart:
-    """ Creates an SVG chart from trip and home stay data. """
+    """ Creates an SVG chart from away and home period data. """
 
     NSMAP = {None: "http://www.w3.org/2000/svg"}
     PARAMS = {
+        'axis': {
+            'stroke': "#60646c",
+            'stroke-width': 2 # px
+        },
         'night': {
             'cell_size': 8, # px
             'radius': 3, # px
             'away':{
                 'business': {
-                    'fill': '#0077bb'
+                    'fill': "#0077bb"
                 },
                 'personal': {
-                    'fill': '#33bbee'
+                    'fill': "#33bbee"
                 }
             },    
             'home': {
-                'fill': '#ee7733'
+                'fill': "#ee7733"
             }
         },
         'page': {
             'margin': 40, # px
         }     
     }
-    TEMPLATE_PATH = 'templates/nights_away_and_home.svg'
+    TEMPLATE_PATH = "templates/nights_away_and_home.svg"
 
-    def __init__(self, stays_collection):
-        self.stays = stays_collection
+    def __init__(self, grouped_stay_collection):
+        self.stays = grouped_stay_collection
         self._vals = self._calculate_chart_values()
 
         self._root = xml.Element("svg", xmlns=self.NSMAP[None],
@@ -68,7 +72,18 @@ class SVGChart:
     def _draw_axis(self):
         """Draws the chart away/home axis."""
 
+        COORDS = self._vals['coords']
+        DIMS = self._vals['dims']
+        PARAMS = self.PARAMS
+
         g_axis = xml.SubElement(self._root, "g", id="axis")
+        xml.SubElement(g_axis, "line",
+            x1=str(COORDS['axis_anchor'][0]),
+            y1=str(COORDS['axis_anchor'][1]),
+            x2=str(COORDS['axis_anchor'][0]),
+            y2=str(COORDS['axis_anchor'][1] + DIMS['chart_height']),
+            stroke=PARAMS['axis']['stroke']).set(
+                'stroke-width', str(PARAMS['axis']['stroke-width']))
 
     def _draw_nights(self):
         """Draws a dot for each night."""
@@ -98,7 +113,7 @@ class SVGChart:
                     cy=str(y),
                     r=str(radius),
                     fill=fill)
-                    
+
             for i_x in range(row['home']['nights']):
                 x = COORDS['night_anchor'][0] + ((i_x + 1) * cell_size)
                 y = COORDS['night_anchor'][1] + (i_y * cell_size)
@@ -110,32 +125,11 @@ class SVGChart:
                     fill=fill)
 
     def export(self, output_path):
-        """
-        Generates an SVG chart based on the trip/home row values.
-        """
+        """Generates an SVG chart based on the away/home row values."""
         
         self._draw_nights()
         self._draw_axis()
-        
-        # self._root = xml.Element("svg", xmlns=NSMAP[None],
-            # width=str(DIMS['page_width']), height=str(DIMS['page_height']))
-
-
-
-        # away_max = max(x['away']['nights'] for x in self.stays)
-        # home_max = max(x['home']['nights'] for x in self.stays)
-        
-        # away_width = away_max * PARAMS['night']['cell_size']
-        # home_width = home_max * PARAMS['night']['cell_size']
-        
-        # page_width = ((PARAMS['page']['margin'] * 2)
-        #     + (PARAMS['night']['cell_size'] * 3) + away_width + home_width)
-        # page_height = ((PARAMS['page']['margin'] * 2)
-        #     + (len(self.stays) * PARAMS['night']['cell_size']))
-        
-
-        
-                
+                        
         tree = xml.ElementTree(self._root)
         tree.write(output_path, encoding='utf-8', xml_declaration=True, pretty_print=True)
         print(f"Wrote SVG to {output_path}")
