@@ -123,10 +123,6 @@ class GroupedStayCollection:
             purpose = stay[3]
             checkin = checkin_date(checkout, nights)
 
-            # TODO: Ensure checkin is before checkout
-            # TODO: Ensure stays don't overlap
-            # TODO: What if date.today is in the middle of a hotel stay?
-            
             if (len(grouped) == 0) or checkin != previous_checkout:
                 # Create new group:
                 
