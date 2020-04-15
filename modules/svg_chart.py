@@ -1,4 +1,6 @@
 from lxml import etree as xml
+from modules.common import inclusive_date_range
+
 
 class SVGChart:
     """ Creates an SVG chart from away and home period data. """
@@ -99,41 +101,33 @@ class SVGChart:
     def _draw_nights(self):
         """Draws a dot for each night."""
 
-        COORDS = self._vals['coords']
-        DIMS = self._vals['dims']
         PARAMS = self.PARAMS
         
         g_nights = xml.SubElement(self._root, "g", id="nights")
 
-        for i_y, row in enumerate(self.stays):
-            cell_size = PARAMS['night']['cell_size']           
-            radius = PARAMS['night']['radius']
+        for i_row, row in enumerate(self.stays):
             
             away_purposes = []
             for loc in row['away']['cities']:
                 away_purposes.extend(
                     loc['purpose'].lower() for i in range(loc['nights']))
 
-            for i_x, purpose in enumerate(away_purposes):
-                x = (COORDS['night_anchor'][0]
-                    + ((i_x - row['away']['nights']) * cell_size))
-                y = COORDS['night_anchor'][1] + (i_y * cell_size)
-                fill = PARAMS['night']['away'][purpose]['fill']
+            for i_night, purpose in enumerate(away_purposes):
+                center = self._night_center(i_row, i_night,
+                    row['away']['nights'])
                 xml.SubElement(g_nights, "circle",
-                    cx=str(x),
-                    cy=str(y),
-                    r=str(radius),
-                    fill=fill)
+                    cx=str(center[0]),
+                    cy=str(center[1]),
+                    r=str(PARAMS['night']['radius']),
+                    fill=PARAMS['night']['away'][purpose]['fill'])
 
-            for i_x in range(row['home']['nights']):
-                x = COORDS['night_anchor'][0] + ((i_x + 1) * cell_size)
-                y = COORDS['night_anchor'][1] + (i_y * cell_size)
-                fill = PARAMS['night']['home']['fill']
+            for i_night in range(row['home']['nights']):
+                center = self._night_center(i_row, i_night)
                 xml.SubElement(g_nights, "circle",
-                    cx=str(x),
-                    cy=str(y),
-                    r=str(radius),
-                    fill=fill)
+                    cx=str(center[0]),
+                    cy=str(center[1]),
+                    r=str(PARAMS['night']['radius']),
+                    fill=PARAMS['night']['home']['fill'])
 
     def _draw_year_background(self):
         """Draws background shading for each year."""
@@ -150,6 +144,42 @@ class SVGChart:
             width = str(DIMS['away_width'] + DIMS['home_width']),
             height = str(DIMS['chart_height']),
             fill = PARAMS['year']['fill'][0])
+
+        # Determine x,y coordinates of each Jan 1 circle:
+        year_starts = {}
+        for row_index, row in enumerate(self.stays):
+            for stay_loc in ['away', 'home']:
+                if row[stay_loc]['start'].year < row[stay_loc]['end'].year:
+                    # This stay contains a night ending on 1 January
+                    mornings = inclusive_date_range(
+                        row[stay_loc]['start'], row[stay_loc]['end'])[1:]
+                    night_index = next(i for i, v in enumerate(mornings) if (
+                        v.month == 1 and v.day == 1))
+                    away_nights = (row[stay_loc]['nights'] if stay_loc == 'away'
+                        else None)
+
+                    year_starts[mornings[night_index].year] = (
+                        self._night_center(
+                            row_index, night_index, away_nights))
+                
+        for year, center in year_starts.items():
+            xml.SubElement(g_years, "circle",
+            cx = str(center[0]),
+            cy = str(center[1]),
+            r = "4",
+            fill="black")        
+
+    def _night_center(self, row_index, night_index, away_nights=None):
+        """Determines the coordinates of the center of a night dot."""
+        cell_size = self.PARAMS['night']['cell_size']
+        night_anchor = self._vals['coords']['night_anchor']
+        if away_nights:
+            x = (night_anchor[0]
+                + ((night_index - away_nights) * cell_size))
+        else:
+            x = night_anchor[0] + ((night_index + 1) * cell_size)
+        y = night_anchor[1] + (row_index * cell_size)
+        return([x, y])
 
     def export(self, output_path):
         """Generates an SVG chart based on the away/home row values."""
