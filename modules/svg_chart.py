@@ -1,4 +1,5 @@
 from lxml import etree as xml
+from datetime import datetime
 from modules.common import stay_mornings
 
 
@@ -36,13 +37,11 @@ class SVGChart:
     TEMPLATE_PATH = "templates/nights_away_and_home.svg"
 
     def __init__(self, grouped_stay_rows, start_date=None, end_date=None):
-        self.stays = grouped_stay_rows
-        if start_date:
-            self.stays = list(filter(
-                lambda r: r['away']['start'] >= start_date, self.stays))
-        if end_date:
-            self.stays = list(filter(
-                lambda r: r['away']['end'] <= end_date, self.stays))
+        self.stays = self._filter_dates(grouped_stay_rows,
+            start_date, end_date)
+        
+        self.away_max = max(x['away']['nights'] for x in self.stays)
+        self.home_max = max(x['home']['nights'] for x in self.stays)
         self._vals = self._calculate_chart_values()
 
         self._root = xml.Element("svg", xmlns=self.NSMAP[None],
@@ -54,13 +53,11 @@ class SVGChart:
         PARAMS = self.PARAMS
         values = {'coords': {}, 'dims': {}}
 
-        away_max = max(x['away']['nights'] for x in self.stays)
-        home_max = max(x['home']['nights'] for x in self.stays)
         double_margin = 2 * PARAMS['page']['margin']
 
-        values['dims']['away_width'] = ((1.5 + away_max)
+        values['dims']['away_width'] = ((1.5 + self.away_max)
             * PARAMS['night']['cell_size'])
-        values['dims']['home_width'] = ((1.5 + home_max)
+        values['dims']['home_width'] = ((1.5 + self.home_max)
             * PARAMS['night']['cell_size'])
         values['dims']['chart_height'] = (
             (len(self.stays) + 2) * PARAMS['night']['cell_size'])
@@ -132,6 +129,13 @@ class SVGChart:
                     cy=str(center[1]),
                     r=str(PARAMS['night']['radius']),
                     fill=PARAMS['night']['home']['fill'])
+    
+    def _draw_week_lines(self):
+        """Draws vertical gridlines every seven days."""
+
+        g_weeks = xml.SubElement(self._root, "g", id="weeks")
+
+        # calculate how many lines to draw
 
     def _draw_year_background(self, group, start_coord, end_coord, fill_index):
         """Draws background shading for a specific year."""
@@ -204,13 +208,28 @@ class SVGChart:
                             row_index, night_index, away_nights))
         
         years = sorted(year_starts.keys())
-        self._draw_year_background(g_years, None, year_starts.get(years[0]), 0)
-        for i, year in enumerate(years):
+        if len(years) == 0:
+            self._draw_year_background(g_years, None, None, 0)
+        else:
             self._draw_year_background(
-                g_years,
-                year_starts.get(year),
-                year_starts.get(year + 1),
-                (i + 1) % 2)
+                g_years, None, year_starts.get(years[0]), 0)
+            for i, year in enumerate(years):
+                self._draw_year_background(
+                    g_years,
+                    year_starts.get(year),
+                    year_starts.get(year + 1),
+                    (i + 1) % 2)
+
+    def _filter_dates(self, grouped_stay_rows, start_date=None, end_date=None):
+        """Filters group stay rows by date."""
+        start_date = start_date or datetime.min.date() 
+        end_date = end_date or datetime.max.date() 
+        
+        rows = list(filter(
+            lambda r: r['away']['start'] >= start_date and r['away']['end'] <= end_date, grouped_stay_rows))
+        
+        return(rows)
+
 
     def _night_center(self, row_index, night_index, away_nights=None):
         """Determines the coordinates of the center of a night dot."""
@@ -228,8 +247,9 @@ class SVGChart:
         """Generates an SVG chart based on the away/home row values."""
         
         self._draw_year_backgrounds()
-        self._draw_nights()
         self._draw_axis()
+        self._draw_week_lines()
+        self._draw_nights()
                         
         tree = xml.ElementTree(self._root)
         tree.write(output_path, encoding='utf-8',
