@@ -75,6 +75,10 @@ class SVGChart:
         values['coords']['chart_top_left'] = [
             PARAMS['page']['margin'],
             PARAMS['page']['margin']]
+        values['coords']['chart_bottom_right'] = [
+            (PARAMS['page']['margin']
+                + values['dims']['away_width'] + values['dims']['home_width']),
+            PARAMS['page']['margin'] + values['dims']['chart_height']]
         values['coords']['night_anchor'] = [
             values['coords']['axis_anchor'][0],
             (values['coords']['axis_anchor'][1]
@@ -129,8 +133,52 @@ class SVGChart:
                     r=str(PARAMS['night']['radius']),
                     fill=PARAMS['night']['home']['fill'])
 
-    def _draw_year_background(self):
-        """Draws background shading for each year."""
+    def _draw_year_background(self, group, start_coord, end_coord, fill_index):
+        """Draws background shading for a specific year."""
+        left = self._vals['coords']['chart_top_left'][0]
+        top = self._vals['coords']['chart_top_left'][1]
+        right = self._vals['coords']['chart_bottom_right'][0]
+        bottom = self._vals['coords']['chart_bottom_right'][1]
+        half_cell = self.PARAMS['night']['cell_size'] / 2
+
+        poly_coords = []
+        # Create top points, left to right:
+        if start_coord == None:
+            # First year
+            poly_coords.append([left, top])
+            poly_coords.append([right, top])
+        else:
+            start_top = start_coord[1] - half_cell
+            start_bottom = start_coord[1] + half_cell
+            poly_coords.append([left, start_bottom])
+            poly_coords.append([start_coord[0], start_bottom])
+            poly_coords.append([start_coord[0], start_top])
+            poly_coords.append([right, start_top])
+
+        # Create bottom points, right to left:
+        if end_coord == None:
+            # Final year
+            poly_coords.append([right, bottom])
+            poly_coords.append([left, bottom])
+        else:
+            end_top = end_coord[1] - half_cell
+            end_bottom = end_coord[1] + half_cell
+            poly_coords.append([right, end_top])
+            poly_coords.append([end_coord[0], end_top])
+            poly_coords.append([end_coord[0], end_bottom])
+            poly_coords.append([left, end_bottom])
+
+        poly_points_str = " ".join(
+            list(",".join(
+                list(str(v) for v in p)
+            ) for p in poly_coords)
+        )
+        xml.SubElement(group, "polygon",
+            points=poly_points_str,
+            fill=self.PARAMS['year']['fill'][fill_index])
+
+    def _draw_year_backgrounds(self):
+        """Draws background shading for all years."""
 
         COORDS = self._vals['coords']
         DIMS = self._vals['dims']
@@ -138,14 +186,7 @@ class SVGChart:
 
         g_years = xml.SubElement(self._root, "g", id="year_background")
         
-        xml.SubElement(g_years, "rect",
-            x = str(COORDS['chart_top_left'][0]),
-            y = str(COORDS['chart_top_left'][1]),
-            width = str(DIMS['away_width'] + DIMS['home_width']),
-            height = str(DIMS['chart_height']),
-            fill = PARAMS['year']['fill'][0])
-
-        # Determine x,y coordinates of each Jan 1 circle:
+        # Determine [x, y] coordinates of each Jan 1 circle:
         year_starts = {}
         for row_index, row in enumerate(self.stays):
             for stay_loc in ['away', 'home']:
@@ -161,13 +202,15 @@ class SVGChart:
                     year_starts[mornings[night_index].year] = (
                         self._night_center(
                             row_index, night_index, away_nights))
-                
-        for year, center in year_starts.items():
-            xml.SubElement(g_years, "circle",
-            cx = str(center[0]),
-            cy = str(center[1]),
-            r = "4",
-            fill="black")        
+        
+        years = sorted(year_starts.keys())
+        self._draw_year_background(g_years, None, year_starts.get(years[0]), 0)
+        for i, year in enumerate(years):
+            self._draw_year_background(
+                g_years,
+                year_starts.get(year),
+                year_starts.get(year + 1),
+                (i + 1) % 2)
 
     def _night_center(self, row_index, night_index, away_nights=None):
         """Determines the coordinates of the center of a night dot."""
@@ -184,7 +227,7 @@ class SVGChart:
     def export(self, output_path):
         """Generates an SVG chart based on the away/home row values."""
         
-        self._draw_year_background()
+        self._draw_year_backgrounds()
         self._draw_nights()
         self._draw_axis()
                         
