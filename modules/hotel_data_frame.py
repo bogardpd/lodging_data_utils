@@ -28,5 +28,4 @@ class HotelDataFrame:
             earliest_hotel_id,'Checkout Date'].date()
         earliest_nights = int(self.data.loc[earliest_hotel_id,'Nights'])
         
-        return(first_morning(
-            earliest_checkout, earliest_nights))
+        return(first_morning(earliest_checkout, earliest_nights))

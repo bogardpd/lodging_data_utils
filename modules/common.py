@@ -15,3 +15,10 @@ def inclusive_date_range(start_date, end_date):
     """Returns a list of date objects in the given range."""
     return([d.date() for d in list(rrule.rrule(rrule.DAILY,
         dtstart=start_date, until=end_date))])
+
+def stay_mornings(start_date, end_date):
+    """Returns a list of morning dates in a given stay range.
+    
+    The start date is excluded from this list.
+    """
+    return(inclusive_date_range(start_date, end_date)[1:])

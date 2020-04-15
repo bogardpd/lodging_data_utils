@@ -1,5 +1,5 @@
 from lxml import etree as xml
-from modules.common import inclusive_date_range
+from modules.common import stay_mornings
 
 
 class SVGChart:
@@ -192,8 +192,8 @@ class SVGChart:
             for stay_loc in ['away', 'home']:
                 if row[stay_loc]['start'].year < row[stay_loc]['end'].year:
                     # This stay contains a night ending on 1 January
-                    mornings = inclusive_date_range(
-                        row[stay_loc]['start'], row[stay_loc]['end'])[1:]
+                    mornings = stay_mornings(
+                        row[stay_loc]['start'], row[stay_loc]['end'])
                     night_index = next(i for i, v in enumerate(mornings) if (
                         v.month == 1 and v.day == 1))
                     away_nights = (row[stay_loc]['nights'] if stay_loc == 'away'
@@ -232,5 +232,6 @@ class SVGChart:
         self._draw_axis()
                         
         tree = xml.ElementTree(self._root)
-        tree.write(output_path, encoding='utf-8', xml_declaration=True, pretty_print=True)
+        tree.write(output_path, encoding='utf-8',
+            xml_declaration=True, pretty_print=True)
         print(f"Wrote SVG to {output_path}")

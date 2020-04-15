@@ -3,6 +3,8 @@
 import json, math, operator
 from modules.common import checkin_date
 from modules.common import first_morning
+from modules.common import inclusive_date_range
+from modules.common import stay_mornings
 from datetime import date
 from dateutil import rrule
 from functools import reduce
@@ -26,7 +28,7 @@ class DateCollection:
             'city': default_location,
             'coordinates': self._coordinates(default_location)}
         # Create dictionary of dates with locations set to None by default:
-        self.locations = {d:self._default_value for d in self._inclusive_date_range(
+        self.locations = {d:self._default_value for d in inclusive_date_range(
             start_date, end_date)}
 
         # Set locations from hotel data:
@@ -69,16 +71,10 @@ class DateCollection:
             * math.atan2(math.sqrt(a), math.sqrt(1-a)))
         return distance
 
-    def _inclusive_date_range(self, start_date, end_date):
-        """Returns a list of date objects in the given range."""
-        return([d.date() for d in list(rrule.rrule(rrule.DAILY,
-            dtstart=start_date, until=end_date))])
-
     def _set_location(self, checkout_date, nights, location):
         """ Sets the locations for the dates in a given hotel stay."""
-        dates = self._inclusive_date_range(
-            first_morning(checkout_date, nights),
-            checkout_date)
+        dates = stay_mornings(
+            checkin_date(checkout_date, nights), checkout_date)
         
         for day in dates:
             if day in self.locations.keys():
