@@ -1,0 +1,39 @@
+/* Common to all charts */
+
+line.axis {
+  stroke: #60646c;
+  stroke-width: 2px;
+}
+line.gridline {
+  stroke: #c1c3c8;
+  stroke-width: 0.5px;
+}
+
+text {
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+/* Specific to nights away and home chart */
+
+circle.night-away-business {
+  fill: #0077bb;
+}
+circle.night-away-personal {
+  fill: #33bbee;
+}
+circle.night-home {
+  fill: #ee7733;
+}
+
+polygon.year-0 {
+  fill: #eaebec;
+}
+polygon.year-1 {
+  fill: #f4f5f6;
+}
+
+text.year-label {
+  fill: #8f939b;
+  font-size: 10pt;
+  font-weight: 600;
+}

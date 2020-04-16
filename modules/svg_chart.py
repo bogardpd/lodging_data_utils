@@ -6,49 +6,21 @@ from modules.common import stay_mornings
 class SVGChart:
     """ Creates an SVG chart from away and home period data. """
 
-    NSMAP = {None: "http://www.w3.org/2000/svg"}
-    PARAMS = {
-        'font_family': "Source Sans Pro, sans-serif",
-        'grid': {
-            'axis': {
-                'stroke': "#60646c",
-                'stroke_width': 2 # px
-            },
-            'week': {
-                'stroke': "#c1c3c8",
-                'stroke_width': 0.5 # px
-            },
-        },
+    _NSMAP = {None: "http://www.w3.org/2000/svg"}
+    _PARAMS = {
         'night': {
             'cell_size': 8, # px
             'radius': 3, # px
-            'away':{
-                'business': {
-                    'fill': "#0077bb"
-                },
-                'personal': {
-                    'fill': "#33bbee"
-                }
-            },    
-            'home': {
-                'fill': "#ee7733"
-            }
         },
         'page': {
             'margin': 40, # px
         },
         'year': {
-            'fill': ["#eaebec", "#f4f5f6"],
             'margin': 50, # px
-            'text': {
-                'fill': "#8f939b",
-                'font_size': "10pt",
-                'font_weight': "600",
-                'offset': [5, 15] # [x, y] px
-            }
+            'text_offset': [5, 15] # [x, y] px
         }
     }
-    TEMPLATE_PATH = "templates/nights_away_and_home.svg"
+    _STYLES_PATH = "styles/svg_chart.svg.css"
 
     def __init__(self, grouped_stay_rows, start_date=None, end_date=None):
         self.stays = self._filter_dates(grouped_stay_rows,
@@ -58,13 +30,13 @@ class SVGChart:
         self.home_max = max(x['home']['nights'] for x in self.stays)
         self._vals = self._calculate_chart_values()
 
-        self._root = xml.Element("svg", xmlns=self.NSMAP[None],
+        self._root = xml.Element("svg", xmlns=self._NSMAP[None],
             width=str(self._vals['dims']['page_width']),
             height=str(self._vals['dims']['page_height']))
 
     def _calculate_chart_values(self):
         """Returns chart element dimensions and [x, y] coordinates."""
-        PARAMS = self.PARAMS
+        PARAMS = self._PARAMS
         values = {'coords': {}, 'dims': {}}
 
         double_margin = 2 * PARAMS['page']['margin']
@@ -104,7 +76,7 @@ class SVGChart:
         Draws an axis, and draws gridlines every seven days.
         """
 
-        PARAMS = self.PARAMS
+        PARAMS = self._PARAMS
 
         g_weeks = xml.SubElement(self._root, "g", id="weeks")
 
@@ -114,18 +86,16 @@ class SVGChart:
         bottom = self._vals['coords']['chart_bottom_right'][1]
 
         for week in week_x:
-            style = 'axis' if week == 0 else 'week'
+            style_class = 'axis' if week == 0 else 'gridline'
             x = (self._vals['coords']['night_anchor'][0]
                 + (PARAMS['night']['cell_size'] * 7 * week))
-            xml.SubElement(g_weeks, "line",
-                x1 = str(x), y1 = str(top), x2 = str(x), y2 = str(bottom),
-                stroke = PARAMS['grid'][style]['stroke']).set(
-                    'stroke-width', str(PARAMS['grid'][style]['stroke_width']))
+            xml.SubElement(g_weeks, "line", x1 = str(x), y1 = str(top),
+                x2 = str(x), y2 = str(bottom)).set('class', style_class)
 
     def _draw_nights(self):
         """Draws a dot for each night."""
 
-        PARAMS = self.PARAMS
+        PARAMS = self._PARAMS
         
         g_nights = xml.SubElement(self._root, "g", id="nights")
 
@@ -142,21 +112,21 @@ class SVGChart:
                 xml.SubElement(g_nights, "circle",
                     cx=str(center[0]),
                     cy=str(center[1]),
-                    r=str(PARAMS['night']['radius']),
-                    fill=PARAMS['night']['away'][purpose]['fill'])
+                    r=str(PARAMS['night']['radius'])).set(
+                        'class', f"night-away-{purpose}")
 
             for i_night in range(row['home']['nights']):
                 center = self._night_center(i_row, i_night)
                 xml.SubElement(g_nights, "circle",
                     cx=str(center[0]),
                     cy=str(center[1]),
-                    r=str(PARAMS['night']['radius']),
-                    fill=PARAMS['night']['home']['fill'])
+                    r=str(PARAMS['night']['radius'])).set(
+                        'class', "night-home")
     
     def _draw_year_background(self, group, year,
                               start_coord, end_coord, fill_index):
         """Draws background shading for a specific year."""
-        PARAMS = self.PARAMS
+        PARAMS = self._PARAMS
         left = self._vals['coords']['chart_top_left'][0]
         top = self._vals['coords']['chart_top_left'][1]
         right = self._vals['coords']['chart_bottom_right'][0]
@@ -195,17 +165,13 @@ class SVGChart:
                 list(str(v) for v in p)
             ) for p in poly_coords)
         )
-        xml.SubElement(group, "polygon",
-            points=poly_points_str,
-            fill=PARAMS['year']['fill'][fill_index])
+        xml.SubElement(group, "polygon", points=poly_points_str).set(
+            'class', f"year-{fill_index}")
         if year:
             year_text = xml.SubElement(group, "text",
-                x=str(poly_coords[0][0] + PARAMS['year']['text']['offset'][0]),
-                y=str(poly_coords[0][1] + PARAMS['year']['text']['offset'][1]),
-                fill=PARAMS['year']['text']['fill'])
-            year_text.set('font-family', PARAMS['font_family'])
-            year_text.set('font-size', PARAMS['year']['text']['font_size'])
-            year_text.set('font-weight', PARAMS['year']['text']['font_weight'])
+                x=str(poly_coords[0][0] + PARAMS['year']['text_offset'][0]),
+                y=str(poly_coords[0][1] + PARAMS['year']['text_offset'][1]))
+            year_text.set('class', "year-label")
             year_text.text = str(year)
 
     def _draw_year_backgrounds(self):
@@ -213,7 +179,7 @@ class SVGChart:
 
         COORDS = self._vals['coords']
         DIMS = self._vals['dims']
-        PARAMS = self.PARAMS
+        PARAMS = self._PARAMS
 
         g_years = xml.SubElement(self._root, "g", id="year_background")
         
@@ -258,9 +224,15 @@ class SVGChart:
         
         return(rows)
 
+    def _import_styles(self):
+        """Imports styles from an external file."""        
+        style_tag = xml.SubElement(self._root, "style")
+        with open(self._STYLES_PATH) as f:
+            style_tag.text = f"\n{f.read()}\n"
+
     def _night_center(self, row_index, night_index, away_nights=None):
         """Determines the coordinates of the center of a night dot."""
-        cell_size = self.PARAMS['night']['cell_size']
+        cell_size = self._PARAMS['night']['cell_size']
         night_anchor = self._vals['coords']['night_anchor']
         if away_nights:
             x = (night_anchor[0]
@@ -273,6 +245,7 @@ class SVGChart:
     def export(self, output_path):
         """Generates an SVG chart based on the away/home row values."""
         
+        self._import_styles()
         self._draw_year_backgrounds()
         self._draw_gridlines()
         self._draw_nights()
