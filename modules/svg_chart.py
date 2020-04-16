@@ -8,14 +8,15 @@ class SVGChart:
 
     NSMAP = {None: "http://www.w3.org/2000/svg"}
     PARAMS = {
+        'font_family': "Source Sans Pro, sans-serif",
         'grid': {
             'axis': {
                 'stroke': "#60646c",
-                'stroke-width': 2 # px
+                'stroke_width': 2 # px
             },
             'week': {
                 'stroke': "#c1c3c8",
-                'stroke-width': 0.5 # px
+                'stroke_width': 0.5 # px
             },
         },
         'night': {
@@ -37,7 +38,14 @@ class SVGChart:
             'margin': 40, # px
         },
         'year': {
-            'fill': ["#eaebec", "#f4f5f6"]
+            'fill': ["#eaebec", "#f4f5f6"],
+            'margin': 50, # px
+            'text': {
+                'fill': "#8f939b",
+                'font_size': "10pt",
+                'font_weight': "600",
+                'offset': [5, 15] # [x, y] px
+            }
         }
     }
     TEMPLATE_PATH = "templates/nights_away_and_home.svg"
@@ -62,7 +70,8 @@ class SVGChart:
         double_margin = 2 * PARAMS['page']['margin']
 
         values['dims']['away_width'] = ((1.5 + self.away_max)
-            * PARAMS['night']['cell_size'])
+            * PARAMS['night']['cell_size']
+            + PARAMS['year']['margin'])
         values['dims']['home_width'] = ((1.5 + self.home_max)
             * PARAMS['night']['cell_size'])
         values['dims']['chart_height'] = (
@@ -111,7 +120,7 @@ class SVGChart:
             xml.SubElement(g_weeks, "line",
                 x1 = str(x), y1 = str(top), x2 = str(x), y2 = str(bottom),
                 stroke = PARAMS['grid'][style]['stroke']).set(
-                    'stroke-width', str(PARAMS['grid'][style]['stroke-width']))
+                    'stroke-width', str(PARAMS['grid'][style]['stroke_width']))
 
     def _draw_nights(self):
         """Draws a dot for each night."""
@@ -144,13 +153,15 @@ class SVGChart:
                     r=str(PARAMS['night']['radius']),
                     fill=PARAMS['night']['home']['fill'])
     
-    def _draw_year_background(self, group, start_coord, end_coord, fill_index):
+    def _draw_year_background(self, group, year,
+                              start_coord, end_coord, fill_index):
         """Draws background shading for a specific year."""
+        PARAMS = self.PARAMS
         left = self._vals['coords']['chart_top_left'][0]
         top = self._vals['coords']['chart_top_left'][1]
         right = self._vals['coords']['chart_bottom_right'][0]
         bottom = self._vals['coords']['chart_bottom_right'][1]
-        half_cell = self.PARAMS['night']['cell_size'] / 2
+        half_cell = PARAMS['night']['cell_size'] / 2
 
         poly_coords = []
         # Create top points, left to right:
@@ -186,7 +197,16 @@ class SVGChart:
         )
         xml.SubElement(group, "polygon",
             points=poly_points_str,
-            fill=self.PARAMS['year']['fill'][fill_index])
+            fill=PARAMS['year']['fill'][fill_index])
+        if year:
+            year_text = xml.SubElement(group, "text",
+                x=str(poly_coords[0][0] + PARAMS['year']['text']['offset'][0]),
+                y=str(poly_coords[0][1] + PARAMS['year']['text']['offset'][1]),
+                fill=PARAMS['year']['text']['fill'])
+            year_text.set('font-family', PARAMS['font_family'])
+            year_text.set('font-size', PARAMS['year']['text']['font_size'])
+            year_text.set('font-weight', PARAMS['year']['text']['font_weight'])
+            year_text.text = str(year)
 
     def _draw_year_backgrounds(self):
         """Draws background shading for all years."""
@@ -216,13 +236,14 @@ class SVGChart:
         
         years = sorted(year_starts.keys())
         if len(years) == 0:
-            self._draw_year_background(g_years, None, None, 0)
+            self._draw_year_background(g_years, None, None, None, 0)
         else:
             self._draw_year_background(
-                g_years, None, year_starts.get(years[0]), 0)
+                g_years, years[0] - 1, None, year_starts.get(years[0]), 0)
             for i, year in enumerate(years):
                 self._draw_year_background(
                     g_years,
+                    year,
                     year_starts.get(year),
                     year_starts.get(year + 1),
                     (i + 1) % 2)
