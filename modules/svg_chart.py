@@ -8,9 +8,15 @@ class SVGChart:
 
     NSMAP = {None: "http://www.w3.org/2000/svg"}
     PARAMS = {
-        'axis': {
-            'stroke': "#60646c",
-            'stroke-width': 2 # px
+        'grid': {
+            'axis': {
+                'stroke': "#60646c",
+                'stroke-width': 2 # px
+            },
+            'week': {
+                'stroke': "#c1c3c8",
+                'stroke-width': 0.5 # px
+            },
         },
         'night': {
             'cell_size': 8, # px
@@ -83,21 +89,29 @@ class SVGChart:
 
         return(values)
 
-    def _draw_axis(self):
-        """Draws the chart away/home axis."""
+    def _draw_gridlines(self):
+        """Draws vertical gridlines.
+        
+        Draws an axis, and draws gridlines every seven days.
+        """
 
-        COORDS = self._vals['coords']
-        DIMS = self._vals['dims']
         PARAMS = self.PARAMS
 
-        g_axis = xml.SubElement(self._root, "g", id="axis")
-        xml.SubElement(g_axis, "line",
-            x1=str(COORDS['axis_anchor'][0]),
-            y1=str(COORDS['axis_anchor'][1]),
-            x2=str(COORDS['axis_anchor'][0]),
-            y2=str(COORDS['axis_anchor'][1] + DIMS['chart_height']),
-            stroke=PARAMS['axis']['stroke']).set(
-                'stroke-width', str(PARAMS['axis']['stroke-width']))
+        g_weeks = xml.SubElement(self._root, "g", id="weeks")
+
+        week_x = list(range(int(-self.away_max/7), int(self.home_max/7) + 1))
+        
+        top = self._vals['coords']['chart_top_left'][1]
+        bottom = self._vals['coords']['chart_bottom_right'][1]
+
+        for week in week_x:
+            style = 'axis' if week == 0 else 'week'
+            x = (self._vals['coords']['night_anchor'][0]
+                + (PARAMS['night']['cell_size'] * 7 * week))
+            xml.SubElement(g_weeks, "line",
+                x1 = str(x), y1 = str(top), x2 = str(x), y2 = str(bottom),
+                stroke = PARAMS['grid'][style]['stroke']).set(
+                    'stroke-width', str(PARAMS['grid'][style]['stroke-width']))
 
     def _draw_nights(self):
         """Draws a dot for each night."""
@@ -130,13 +144,6 @@ class SVGChart:
                     r=str(PARAMS['night']['radius']),
                     fill=PARAMS['night']['home']['fill'])
     
-    def _draw_week_lines(self):
-        """Draws vertical gridlines every seven days."""
-
-        g_weeks = xml.SubElement(self._root, "g", id="weeks")
-
-        # calculate how many lines to draw
-
     def _draw_year_background(self, group, start_coord, end_coord, fill_index):
         """Draws background shading for a specific year."""
         left = self._vals['coords']['chart_top_left'][0]
@@ -230,7 +237,6 @@ class SVGChart:
         
         return(rows)
 
-
     def _night_center(self, row_index, night_index, away_nights=None):
         """Determines the coordinates of the center of a night dot."""
         cell_size = self.PARAMS['night']['cell_size']
@@ -247,8 +253,7 @@ class SVGChart:
         """Generates an SVG chart based on the away/home row values."""
         
         self._draw_year_backgrounds()
-        self._draw_axis()
-        self._draw_week_lines()
+        self._draw_gridlines()
         self._draw_nights()
                         
         tree = xml.ElementTree(self._root)
