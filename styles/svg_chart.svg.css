@@ -9,31 +9,51 @@ line.gridline {
   stroke-width: 0.5px;
 }
 
+rect.header {
+  fill: #eaebec;
+}
+
 text {
   font-family: "Source Sans Pro", sans-serif;
 }
 
+text.header {
+  font-size: 12pt;
+  font-weight: 600;
+  fill: #303236;
+}
+
 /* Specific to nights away and home chart */
 
-circle.night-away-business {
+.night-away-business {
   fill: #0077bb;
 }
-circle.night-away-personal {
+.night-away-personal {
   fill: #33bbee;
 }
-circle.night-home {
+.night-home {
   fill: #ee7733;
 }
 
-polygon.year-0 {
+.year-0 {
   fill: #eaebec;
 }
-polygon.year-1 {
+.year-1 {
   fill: #f4f5f6;
 }
 
+text.header-away {
+  text-anchor: end;
+}
+text.header-home {
+  text-anchor: start;
+}
 text.year-label {
   fill: #8f939b;
   font-size: 10pt;
-  font-weight: 600;
+  font-weight: 400;
+}
+
+tspan.header-sub {
+  font-weight: 700;
 }
