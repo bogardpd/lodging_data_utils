@@ -43,10 +43,12 @@ text.header {
 }
 
 rect.highlight-away {
-  fill: #33bbee37;
+  fill: #33bbee;
+  fill-opacity: 0.22;
 }
 rect.highlight-home {
-  fill: #ee773337;
+  fill: #ee7733;
+  fill-opacity: 0.22;
 }
 
 text.header-away {
@@ -55,6 +57,21 @@ text.header-away {
 text.header-home {
   text-anchor: start;
 }
+text.note {
+  fill: #303236;
+  font-size: 12pt;
+}
+text.note-start {
+  text-anchor: start;
+}
+text.note-end {
+  text-anchor: end;
+}
+text.note-sub {
+  font-size: 10pt;
+  font-weight: 300;
+}
+
 text.year-label {
   fill: #8f939b;
   font-size: 10pt;
