@@ -4,9 +4,9 @@ from modules.common import first_morning
 
 class HotelDataFrame:
     """Manages a pandas dataframe of hotel stay data."""
-
-    HOTEL_FILE_PATH = (Path("C:/Users/paulb/OneDrive/Documents/Travel/")
-    / "Hotels.xlsx")
+    
+    HOTEL_FILE_PATH = (Path.home()
+        / Path("OneDrive/Documents/Travel/Hotels.xlsx"))
 
     def __init__(self, additional_columns=[]):
         """Initialize a HotelDataFrame."""

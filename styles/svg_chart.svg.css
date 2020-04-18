@@ -42,6 +42,13 @@ text.header {
   fill: #f4f5f6;
 }
 
+rect.highlight-away {
+  fill: #33bbee37;
+}
+rect.highlight-home {
+  fill: #ee773337;
+}
+
 text.header-away {
   text-anchor: end;
 }

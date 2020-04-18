@@ -3,6 +3,7 @@ from datetime import datetime
 from datetime import date
 from datetime import timedelta
 from modules.common import stay_mornings
+from modules.common import first_morning
 
 
 class SVGChart:
@@ -13,6 +14,9 @@ class SVGChart:
         'header': {
             'height': 40, # px
             'text_offset': [6, 25] # [x, y] px
+        },
+        'highlight': {
+            'radius': 6, # px
         },
         'night': {
             'cell_size': 8, # px
@@ -32,8 +36,8 @@ class SVGChart:
         self.stays = self._filter_dates(grouped_stay_rows,
             start_date, end_date)
         
-        self.away_max = max(x['away']['nights'] for x in self.stays)
-        self.home_max = max(x['home']['nights'] for x in self.stays)
+        self.away_max = max(a['away']['nights'] for a in self.stays)
+        self.home_max = max(h['home']['nights'] for h in self.stays)
         self._vals = self._calculate_chart_values()
 
         self._root = xml.Element("svg", xmlns=self._NSMAP[None],
@@ -98,12 +102,13 @@ class SVGChart:
             'background',
             'gridlines',
             'header',
+            'highlights',
             'nights']
 
         for group in groups:
             self._g[group] = xml.SubElement(self._root, "g", id=group)
 
-    def _date_position(self, find_morning):
+    def _date_coords(self, find_morning):
         """Finds the coordinates of a specific night in the night grid.
 
         Looks for the date the night ends on.
@@ -125,6 +130,26 @@ class SVGChart:
             night_index = (find_morning - row['home']['start']).days
 
         return(self._night_center(row_index, night_index))
+
+    def _draw_annotations(self):
+        """Draws chart annotations."""
+        
+        # Highlight first (work) trip:
+        first_away = self.stays[0]['away']
+        self._draw_highlight(first_away, 'away')
+
+        # Highlight longest away period:
+        away_max = max(self.stays, key=lambda a:a['away']['nights'])['away']
+        self._draw_highlight(away_max, 'away')
+
+        # Highlight longest non-current home period:
+        prior_home_max = max(self.stays[:-1],
+            key=lambda h:h['home']['nights'])['home']
+        self._draw_highlight(prior_home_max, 'home')
+
+        # Highlight current (final) home period:
+        current_home = self.stays[-1]['home']
+        self._draw_highlight(current_home, 'home')
 
     def _draw_backgrounds(self):
         """Draws background shading."""
@@ -185,8 +210,14 @@ class SVGChart:
             style_class = 'axis' if week == 0 else 'gridline'
             x = (self._vals['coords']['night_anchor'][0]
                 + (PARAMS['night']['cell_size'] * 7 * week))
-            xml.SubElement(self._g['gridlines'], "line", x1 = str(x), y1 = str(top),
-                x2 = str(x), y2 = str(bottom)).set('class', style_class)
+            line_attr = {
+                'x1': str(x),
+                'y1': str(top),
+                'x2': str(x),
+                'y2': str(bottom),
+                'class': style_class
+            }
+            xml.SubElement(self._g['gridlines'], "line", **line_attr)
 
     def _draw_header(self):
         """Draws a header."""
@@ -195,19 +226,23 @@ class SVGChart:
         offset = self._PARAMS['header']['text_offset']
         bounds = self._vals['coords']['header']
 
-        xml.SubElement(self._g['header'], "rect",
-            x = str(bounds['l']),
-            y = str(bounds['t']),
-            width=str(self._vals['dims']['chart_width']),
-            height=str(self._PARAMS['header']['height'])).set(
-                'class', "header")
+        rect_attr = {
+            'x': str(bounds['l']),
+            'y': str(bounds['t']),
+            'width': str(self._vals['dims']['chart_width']),
+            'height': str(self._PARAMS['header']['height']),
+            'class': "header"
+        }
+        xml.SubElement(self._g['header'], "rect", **rect_attr)
 
-        xml.SubElement(self._g['header'], "line",
-            x1 = str(bounds['l']),
-            y1 = str(bounds['b']),
-            x2 = str(bounds['r']),
-            y2 = str(bounds['b'])).set(
-                'class', "axis")
+        line_attr = {
+            'x1': str(bounds['l']),
+            'y1': str(bounds['b']),
+            'x2': str(bounds['r']),
+            'y2': str(bounds['b']),
+            'class': "axis"
+        }
+        xml.SubElement(self._g['header'], "line", **line_attr)
 
         header_away = xml.SubElement(self._g['header'], "text",
             x=str(axis_anchor[0] - offset[0]),
@@ -232,6 +267,26 @@ class SVGChart:
         header_home_home.set('class', "header-sub night-home")
         header_home_home.text = "home"
 
+    def _draw_highlight(self, stay_period, style_class):
+        """Draws a highlight behind a stay period."""
+        end = stay_period['end']
+        start = first_morning(end, stay_period['nights'])
+        
+        coords = []
+        coords.append(self._date_coords(start))
+        coords.append(self._date_coords(end))
+        
+        radius = self._PARAMS['highlight']['radius']
+        rect_attr = {
+            'x': str(coords[0][0] - radius),
+            'y': str(coords[0][1] - radius),
+            'rx': str(radius),
+            'width': str(radius * 2 + coords[1][0] - coords[0][0]),
+            'height': str(radius * 2),
+            'class': f"highlight-{style_class}"
+        }
+        xml.SubElement(self._g['highlights'], "rect", **rect_attr)
+
     def _draw_nights(self):
         """Draws a dot for each night."""
 
@@ -247,19 +302,23 @@ class SVGChart:
             for i_night, purpose in enumerate(away_purposes):
                 center = self._night_center(
                     i_row, (i_night - row['away']['nights']))
-                xml.SubElement(self._g['nights'], "circle",
-                    cx=str(center[0]),
-                    cy=str(center[1]),
-                    r=str(PARAMS['night']['radius'])).set(
-                        'class', f"night-away-{purpose}")
+                circle_attr = {
+                    'cx': str(center[0]),
+                    'cy': str(center[1]),
+                    'r': str(PARAMS['night']['radius']),
+                    'class': f"night-away-{purpose}"
+                }
+                xml.SubElement(self._g['nights'], "circle", **circle_attr)
 
             for i_night in range(row['home']['nights']):
                 center = self._night_center(i_row, i_night + 1)
-                xml.SubElement(self._g['nights'], "circle",
-                    cx=str(center[0]),
-                    cy=str(center[1]),
-                    r=str(PARAMS['night']['radius'])).set(
-                        'class', "night-home")
+                circle_attr = {
+                    'cx': str(center[0]),
+                    'cy': str(center[1]),
+                    'r': str(PARAMS['night']['radius']),
+                    'class': "night-home"
+                }
+                xml.SubElement(self._g['nights'], "circle", **circle_attr)
     
     def _draw_year_background(self, group, year,
                               start_coord, end_coord, fill_index):
@@ -302,13 +361,18 @@ class SVGChart:
                 list(str(v) for v in p)
             ) for p in poly_coords)
         )
-        xml.SubElement(group, "polygon", points=poly_points_str).set(
-            'class', f"year-{fill_index}")
+        polygon_attr = {
+            'points': poly_points_str,
+            'class': f"year-{fill_index}"
+        }
+        xml.SubElement(group, "polygon", **polygon_attr)
         if year:
-            year_text = xml.SubElement(group, "text",
-                x=str(poly_coords[0][0] + PARAMS['year']['text_offset'][0]),
-                y=str(poly_coords[0][1] + PARAMS['year']['text_offset'][1]))
-            year_text.set('class', "year-label")
+            year_attr = {
+                'x': str(poly_coords[0][0] + PARAMS['year']['text_offset'][0]),
+                'y': str(poly_coords[0][1] + PARAMS['year']['text_offset'][1]),
+                'class': "year-label"
+            }
+            year_text = xml.SubElement(group, "text", **year_attr)
             year_text.text = str(year)
 
     def _filter_dates(self, grouped_stay_rows, start_date=None, end_date=None):
@@ -348,10 +412,11 @@ class SVGChart:
         self._import_styles()
         self._create_groups()
 
+        self._draw_header()
         self._draw_backgrounds()
         self._draw_gridlines()
         self._draw_nights()
-        self._draw_header()
+        self._draw_annotations()
 
         tree = xml.ElementTree(self._root)
         tree.write(output_path, encoding='utf-8',
