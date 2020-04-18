@@ -86,6 +86,23 @@ class SVGChart:
 
         return(values)
 
+    def _create_groups(self):
+        """Creates SVG groups.
+
+        Ensures chart elements are layered appropriately.
+        """
+        self._g = {}
+        
+        ### Create groups, lowest layer to highest layer:
+        groups = [
+            'background',
+            'gridlines',
+            'header',
+            'nights']
+
+        for group in groups:
+            self._g[group] = xml.SubElement(self._root, "g", id=group)
+
     def _date_position(self, find_morning):
         """Finds the coordinates of a specific night in the night grid.
 
@@ -116,8 +133,6 @@ class SVGChart:
         DIMS = self._vals['dims']
         PARAMS = self._PARAMS
 
-        g_years = xml.SubElement(self._root, "g", id="year_background")
-        
         # Determine [x, y] coordinates of each Jan 1 circle:
         year_starts = {}
         for row_index, row in enumerate(self.stays):
@@ -140,13 +155,14 @@ class SVGChart:
         
         years = sorted(year_starts.keys())
         if len(years) == 0:
-            self._draw_year_background(g_years, None, None, None, 1)
+            self._draw_year_background(self._g['background'],
+            None, None, None, 1)
         else:
-            self._draw_year_background(
-                g_years, years[0] - 1, None, year_starts.get(years[0]), 1)
+            self._draw_year_background(self._g['background'],
+                years[0] - 1, None, year_starts.get(years[0]), 1)
             for i, year in enumerate(years):
                 self._draw_year_background(
-                    g_years,
+                    self._g['background'],
                     year,
                     year_starts.get(year),
                     year_starts.get(year + 1),
@@ -160,8 +176,6 @@ class SVGChart:
 
         PARAMS = self._PARAMS
 
-        g_weeks = xml.SubElement(self._root, "g", id="weeks")
-
         week_x = list(range(int(-self.away_max/7), int(self.home_max/7) + 1))
         
         top = self._vals['coords']['chart']['t']
@@ -171,7 +185,7 @@ class SVGChart:
             style_class = 'axis' if week == 0 else 'gridline'
             x = (self._vals['coords']['night_anchor'][0]
                 + (PARAMS['night']['cell_size'] * 7 * week))
-            xml.SubElement(g_weeks, "line", x1 = str(x), y1 = str(top),
+            xml.SubElement(self._g['gridlines'], "line", x1 = str(x), y1 = str(top),
                 x2 = str(x), y2 = str(bottom)).set('class', style_class)
 
     def _draw_header(self):
@@ -181,23 +195,21 @@ class SVGChart:
         offset = self._PARAMS['header']['text_offset']
         bounds = self._vals['coords']['header']
 
-        g_header = xml.SubElement(self._root, "g", id="header")
-
-        xml.SubElement(g_header, "rect",
+        xml.SubElement(self._g['header'], "rect",
             x = str(bounds['l']),
             y = str(bounds['t']),
             width=str(self._vals['dims']['chart_width']),
             height=str(self._PARAMS['header']['height'])).set(
                 'class', "header")
 
-        xml.SubElement(g_header, "line",
+        xml.SubElement(self._g['header'], "line",
             x1 = str(bounds['l']),
             y1 = str(bounds['b']),
             x2 = str(bounds['r']),
             y2 = str(bounds['b'])).set(
                 'class', "axis")
 
-        header_away = xml.SubElement(g_header, "text",
+        header_away = xml.SubElement(self._g['header'], "text",
             x=str(axis_anchor[0] - offset[0]),
             y=str(axis_anchor[1] + offset[1]))
         header_away.set('class', "header header-away")
@@ -211,7 +223,7 @@ class SVGChart:
         header_away_personal.text = "personal"
         header_away_personal.tail = " trips"
 
-        header_home = xml.SubElement(g_header, "text",
+        header_home = xml.SubElement(self._g['header'], "text",
             x=str(axis_anchor[0] + offset[0]),
             y=str(axis_anchor[1] + offset[1]))
         header_home.set('class', "header header-home")
@@ -225,8 +237,6 @@ class SVGChart:
 
         PARAMS = self._PARAMS
         
-        g_nights = xml.SubElement(self._root, "g", id="nights")
-
         for i_row, row in enumerate(self.stays):
             
             away_purposes = []
@@ -237,7 +247,7 @@ class SVGChart:
             for i_night, purpose in enumerate(away_purposes):
                 center = self._night_center(
                     i_row, (i_night - row['away']['nights']))
-                xml.SubElement(g_nights, "circle",
+                xml.SubElement(self._g['nights'], "circle",
                     cx=str(center[0]),
                     cy=str(center[1]),
                     r=str(PARAMS['night']['radius'])).set(
@@ -245,7 +255,7 @@ class SVGChart:
 
             for i_night in range(row['home']['nights']):
                 center = self._night_center(i_row, i_night + 1)
-                xml.SubElement(g_nights, "circle",
+                xml.SubElement(self._g['nights'], "circle",
                     cx=str(center[0]),
                     cy=str(center[1]),
                     r=str(PARAMS['night']['radius'])).set(
@@ -315,7 +325,12 @@ class SVGChart:
         """Imports styles from an external file."""        
         style_tag = xml.SubElement(self._root, "style")
         with open(self._STYLES_PATH) as f:
-            style_tag.text = f"\n{f.read()}\n"
+            lines = f.readlines()
+            style_text = "\n"
+            for line in lines:
+                style_text += f"    {line}"
+            style_text += "\n  "
+            style_tag.text = style_text
 
     def _night_center(self, row_index, night_index):
         """Determines the coordinates of the center of a night dot."""
@@ -331,10 +346,12 @@ class SVGChart:
         """Generates an SVG chart based on the away/home row values."""
         
         self._import_styles()
+        self._create_groups()
+
         self._draw_backgrounds()
         self._draw_gridlines()
-        self._draw_header()
         self._draw_nights()
+        self._draw_header()
 
         tree = xml.ElementTree(self._root)
         tree.write(output_path, encoding='utf-8',
