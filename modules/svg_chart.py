@@ -1,5 +1,7 @@
 from lxml import etree as xml
 from datetime import datetime
+from datetime import date
+from datetime import timedelta
 from modules.common import stay_mornings
 
 
@@ -84,6 +86,29 @@ class SVGChart:
 
         return(values)
 
+    def _date_position(self, find_morning):
+        """Finds the coordinates of a specific night in the night grid.
+
+        Looks for the date the night ends on.
+
+        """
+                       
+        # Find row:
+        row = next((i for i in self.stays if find_morning > i['away']['start'] and find_morning <= i['home']['end']), None)
+        if row == None:
+            return(None)
+        row_index = self.stays.index(row)
+        
+        # Find night position relative to axis:
+        if find_morning <= row['away']['end']:
+            # Morning is in away period
+            night_index = (find_morning - row['away']['end']).days - 1
+        else:
+            # Morning is in home period
+            night_index = (find_morning - row['home']['start']).days
+
+        return(self._night_center(row_index, night_index))
+
     def _draw_backgrounds(self):
         """Draws background shading."""
 
@@ -101,14 +126,17 @@ class SVGChart:
                     # This stay contains a night ending on 1 January
                     mornings = stay_mornings(
                         row[stay_loc]['start'], row[stay_loc]['end'])
-                    night_index = next(i for i, v in enumerate(mornings) if (
-                        v.month == 1 and v.day == 1))
-                    away_nights = (row[stay_loc]['nights'] if stay_loc == 'away'
-                        else None)
-
-                    year_starts[mornings[night_index].year] = (
-                        self._night_center(
-                            row_index, night_index, away_nights))
+                    night_indexes = [i for i, m in enumerate(mornings) if (
+                        m.month == 1 and m.day == 1)]
+                    
+                    for morning in night_indexes:
+                        if stay_loc == 'away':
+                            night_index = morning - row['away']['nights']
+                        else:
+                            night_index = morning + 1
+                        
+                        year_starts[mornings[morning].year] = (
+                            self._night_center(row_index, night_index))
         
         years = sorted(year_starts.keys())
         if len(years) == 0:
@@ -207,8 +235,8 @@ class SVGChart:
                     loc['purpose'].lower() for i in range(loc['nights']))
 
             for i_night, purpose in enumerate(away_purposes):
-                center = self._night_center(i_row, i_night,
-                    row['away']['nights'])
+                center = self._night_center(
+                    i_row, (i_night - row['away']['nights']))
                 xml.SubElement(g_nights, "circle",
                     cx=str(center[0]),
                     cy=str(center[1]),
@@ -216,7 +244,7 @@ class SVGChart:
                         'class', f"night-away-{purpose}")
 
             for i_night in range(row['home']['nights']):
-                center = self._night_center(i_row, i_night)
+                center = self._night_center(i_row, i_night + 1)
                 xml.SubElement(g_nights, "circle",
                     cx=str(center[0]),
                     cy=str(center[1]),
@@ -289,16 +317,14 @@ class SVGChart:
         with open(self._STYLES_PATH) as f:
             style_tag.text = f"\n{f.read()}\n"
 
-    def _night_center(self, row_index, night_index, away_nights=None):
+    def _night_center(self, row_index, night_index):
         """Determines the coordinates of the center of a night dot."""
         cell_size = self._PARAMS['night']['cell_size']
         night_anchor = self._vals['coords']['night_anchor']
-        if away_nights:
-            x = (night_anchor[0]
-                + ((night_index - away_nights) * cell_size))
-        else:
-            x = night_anchor[0] + ((night_index + 1) * cell_size)
+        
+        x = night_anchor[0] + (night_index * cell_size)
         y = night_anchor[1] + (row_index * cell_size)
+
         return([x, y])
 
     def export(self, output_path):
@@ -309,7 +335,7 @@ class SVGChart:
         self._draw_gridlines()
         self._draw_header()
         self._draw_nights()
-                        
+
         tree = xml.ElementTree(self._root)
         tree.write(output_path, encoding='utf-8',
             xml_declaration=True, pretty_print=True)
