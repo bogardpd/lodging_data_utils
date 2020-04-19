@@ -32,6 +32,11 @@ class SVGChart:
         'page': {
             'margin': 40 # px
         },
+        'title': {
+            'height': 85, # px
+            'text_offset': 32, # px
+            'subtext_offset': 66 # px
+        },
         'year': {
             'margin': 50, # px
             'text_offset': [5, 15] # [x, y] px
@@ -70,22 +75,23 @@ class SVGChart:
         values['dims']['page_width'] = (double_margin
             + values['dims']['chart_width'])
         values['dims']['page_height'] = (double_margin
+            + PARAMS['title']['height']
             + PARAMS['header']['height']
             + values['dims']['chart_height'])
         
-        values['coords']['axis_anchor'] = [
-            PARAMS['page']['margin'] + values['dims']['away_width'],
-            PARAMS['page']['margin']]
-        values['coords']['night_anchor'] = [
-            values['coords']['axis_anchor'][0],
-            (values['coords']['axis_anchor'][1]
-                + PARAMS['header']['height']
-                + (1.5 * PARAMS['night']['cell_size']))]
+        values['coords']['page_center'] = [
+            values['dims']['page_width'] / 2,
+            values['dims']['page_height'] / 2
+        ]
+        values['coords']['title'] = {
+            't': PARAMS['page']['margin'],
+            'b': PARAMS['page']['margin'] + PARAMS['title']['height'],
+        }
         values['coords']['header'] = {
             'l': PARAMS['page']['margin'],
             'r': PARAMS['page']['margin'] + values['dims']['chart_width'],
-            't': PARAMS['page']['margin'],
-            'b': PARAMS['page']['margin'] + PARAMS['header']['height']
+            't': values['coords']['title']['b'],
+            'b': values['coords']['title']['b'] + PARAMS['header']['height']
         }
         values['coords']['chart'] = {
             'l': PARAMS['page']['margin'],
@@ -94,6 +100,13 @@ class SVGChart:
             'b': (values['coords']['header']['b']
                 + values['dims']['chart_height'])
         }
+        values['coords']['axis_anchor'] = [
+            PARAMS['page']['margin'] + values['dims']['away_width'],
+            values['coords']['header']['b']]
+        values['coords']['night_anchor'] = [
+            values['coords']['axis_anchor'][0],
+            (values['coords']['axis_anchor'][1]
+                + (1.5 * PARAMS['night']['cell_size']))]
 
         return(values)
 
@@ -108,6 +121,7 @@ class SVGChart:
         groups = [
             'background',
             'gridlines',
+            'title',
             'header',
             'highlights',
             'nights',
@@ -247,7 +261,7 @@ class SVGChart:
     def _draw_header(self):
         """Draws a header."""
 
-        axis_anchor = self._vals['coords']['axis_anchor']
+        axis_x = self._vals['coords']['axis_anchor'][0]
         offset = self._PARAMS['header']['text_offset']
         bounds = self._vals['coords']['header']
 
@@ -270,8 +284,8 @@ class SVGChart:
         xml.SubElement(self._g['header'], "line", **line_attr)
 
         header_away = xml.SubElement(self._g['header'], "text",
-            x=str(axis_anchor[0] - offset[0]),
-            y=str(axis_anchor[1] + offset[1]))
+            x=str(axis_x - offset[0]),
+            y=str(bounds['t'] + offset[1]))
         header_away.set('class', "header header-away")
         header_away.text = "Nights on "
         header_away_business = xml.SubElement(header_away, "tspan")
@@ -284,8 +298,8 @@ class SVGChart:
         header_away_personal.tail = " trips"
 
         header_home = xml.SubElement(self._g['header'], "text",
-            x=str(axis_anchor[0] + offset[0]),
-            y=str(axis_anchor[1] + offset[1]))
+            x=str(axis_x + offset[0]),
+            y=str(bounds['t'] + offset[1]))
         header_home.set('class', "header header-home")
         header_home.text = "Nights at "
         header_home_home = xml.SubElement(header_home, "tspan")
@@ -367,6 +381,29 @@ class SVGChart:
         }
         subnote = xml.SubElement(self._g['notes'], "text", **subtext_attr)
         subnote.text = subnote_text.upper()
+
+    def _draw_title(self, title_text, subtitle_text):
+        """Draws a title and subtitle."""
+
+        x = self._vals['coords']['page_center'][0]
+        title_params = self._PARAMS['title']
+        title_coords = self._vals['coords']['title']
+        title_attr = {
+            'x': str(x),
+            'y': str(title_coords['t'] + title_params['text_offset']),
+            'class': "chart-title"
+        }
+        title = xml.SubElement(self._g['title'], "text", **title_attr)
+        title.text = title_text
+
+        subtitle_attr = {
+            'x': str(x),
+            'y': str(title_coords['t'] + title_params['subtext_offset']),
+            'class': "chart-subtitle"
+        }
+        subtitle = xml.SubElement(self._g['title'], "text", **subtitle_attr)
+        subtitle.text = subtitle_text.upper()
+
 
     def _draw_year_background(self, group, year,
                               start_coord, end_coord, fill_index):
@@ -462,6 +499,8 @@ class SVGChart:
         self._import_styles()
         self._create_groups()
 
+        self._draw_title("Nights Spent Traveling or Home",
+            "from first work trip to COVID-19 stay-at-home")
         self._draw_header()
         self._draw_backgrounds()
         self._draw_gridlines()

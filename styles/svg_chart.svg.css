@@ -17,11 +17,25 @@ text {
   font-family: "Source Sans Pro", sans-serif;
 }
 
+text.chart-title {
+  text-anchor: middle;
+  font-size: 30pt;
+  font-weight: 600;
+  fill: #303236;
+}
+text.chart-subtitle {
+  text-anchor: middle;
+  font-size: 16pt;
+  font-weight: 300;
+  fill: #303236;
+}
+
 text.header {
   font-size: 12pt;
   font-weight: 600;
   fill: #303236;
 }
+
 
 /* Specific to nights away and home chart */
 
