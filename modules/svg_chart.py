@@ -51,10 +51,11 @@ class SVGChart:
         self.away_max = max(a['away'].nights for a in self.stays)
         self.home_max = max(h['home'].nights for h in self.stays)
         self._vals = self._calculate_chart_values()
+        self.width = self._vals['dims']['page_width']
+        self.height = self._vals['dims']['page_height']
 
         self._root = xml.Element("svg", xmlns=self._NSMAP[None],
-            width=str(self._vals['dims']['page_width']),
-            height=str(self._vals['dims']['page_height']))
+            width=str(self.width), height=str(self.height))
 
     def _calculate_chart_values(self):
         """Returns chart element dimensions and [x, y] coordinates."""
@@ -119,7 +120,8 @@ class SVGChart:
         
         ### Create groups, lowest layer to highest layer:
         groups = [
-            'background',
+            'page-background',
+            'chart-background',
             'gridlines',
             'title',
             'header',
@@ -190,8 +192,8 @@ class SVGChart:
             f"{current_home.nights} nights home during pandemic",
             current_home.date_range_string())
 
-    def _draw_backgrounds(self):
-        """Draws background shading."""
+    def _draw_chart_background(self):
+        """Draws chart background shading."""
 
         COORDS = self._vals['coords']
         DIMS = self._vals['dims']
@@ -218,19 +220,15 @@ class SVGChart:
                             self._night_center(row_index, night_index))
         
         years = sorted(year_starts.keys())
+        group = self._g['chart-background']
         if len(years) == 0:
-            self._draw_year_background(self._g['background'],
-            None, None, None, 1)
+            self._draw_year_background(group, None, None, None, 1)
         else:
-            self._draw_year_background(self._g['background'],
-                years[0] - 1, None, year_starts.get(years[0]), 1)
+            self._draw_year_background(group, years[0] - 1, None,
+                year_starts.get(years[0]), 1)
             for i, year in enumerate(years):
-                self._draw_year_background(
-                    self._g['background'],
-                    year,
-                    year_starts.get(year),
-                    year_starts.get(year + 1),
-                    i % 2)
+                self._draw_year_background(group, year,
+                    year_starts.get(year), year_starts.get(year + 1), i % 2)
 
     def _draw_gridlines(self):
         """Draws vertical gridlines.
@@ -382,6 +380,17 @@ class SVGChart:
         subnote = xml.SubElement(self._g['notes'], "text", **subtext_attr)
         subnote.text = subnote_text.upper()
 
+    def _draw_page_background(self):
+        """Draws the page background color."""
+        bg_attr = {
+            'x': "0",
+            'y': "0",
+            'width': str(self.width),
+            'height': str(self.height),
+            'class': "page-background"
+        }
+        xml.SubElement(self._g['page-background'], "rect", **bg_attr)
+
     def _draw_title(self, title_text, subtitle_text):
         """Draws a title and subtitle."""
 
@@ -499,10 +508,11 @@ class SVGChart:
         self._import_styles()
         self._create_groups()
 
+        self._draw_page_background()
         self._draw_title("Nights Spent Traveling or Home",
             "from first work trip to COVID-19 stay-at-home")
         self._draw_header()
-        self._draw_backgrounds()
+        self._draw_chart_background()
         self._draw_gridlines()
         self._draw_nights()
         self._draw_annotations()

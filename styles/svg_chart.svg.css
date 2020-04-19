@@ -12,6 +12,9 @@ line.gridline {
 rect.header {
   fill: #eaebec;
 }
+rect.page-background {
+  fill: #fbfbfc;
+}
 
 text {
   font-family: "Source Sans Pro", sans-serif;
