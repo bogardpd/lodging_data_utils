@@ -14,6 +14,9 @@ class SVGChart:
         'chart': {
             'padding_bottom': 40 # px
         },
+        'footer': {
+            'padding_bottom': 20 # px
+        },
         'header': {
             'height': 40, # px
             'text_offset': [6, 25] # [x, y] px
@@ -125,6 +128,7 @@ class SVGChart:
             'gridlines',
             'title',
             'header',
+            'footer',
             'highlights',
             'nights',
             'notes']
@@ -229,6 +233,28 @@ class SVGChart:
             for i, year in enumerate(years):
                 self._draw_year_background(group, year,
                     year_starts.get(year), year_starts.get(year + 1), i % 2)
+
+    def _draw_footer(self):
+        """Draws the page footer."""
+
+        y = self.height - self._PARAMS['footer']['padding_bottom']
+        
+        credit_attr = {
+            'x': str(self._vals['coords']['chart']['l']),
+            'y': str(y),
+            'class': "footer credit"
+        }
+        credit = xml.SubElement(self._g['footer'], "text", **credit_attr)
+        credit.text = "Created by Paul Bogard | pbogard.com"
+
+        generated_attr = {
+            'x': str(self._vals['coords']['chart']['r']),
+            'y': str(y),
+            'class': "footer date-generated"
+        }
+        generated = xml.SubElement(self._g['footer'], "text", **generated_attr)
+        generated.text = "Generated on {t.day} {t:%b} {t.year}".format(
+            t=date.today())
 
     def _draw_gridlines(self):
         """Draws vertical gridlines.
@@ -509,13 +535,14 @@ class SVGChart:
         self._create_groups()
 
         self._draw_page_background()
-        self._draw_title("Nights Spent Traveling or Home",
+        self._draw_title("Consecutive Nights Traveling or Home",
             "from first work trip to COVID-19 stay-at-home")
         self._draw_header()
         self._draw_chart_background()
         self._draw_gridlines()
         self._draw_nights()
         self._draw_annotations()
+        self._draw_footer()
 
         tree = xml.ElementTree(self._root)
         tree.write(output_path, encoding='utf-8',

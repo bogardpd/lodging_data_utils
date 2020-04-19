@@ -22,17 +22,20 @@ text {
 
 text.chart-title {
   text-anchor: middle;
-  font-size: 30pt;
+  font-size: 28pt;
   font-weight: 600;
   fill: #303236;
 }
 text.chart-subtitle {
   text-anchor: middle;
-  font-size: 16pt;
+  font-size: 14pt;
   font-weight: 300;
   fill: #303236;
 }
-
+text.footer {
+  font-size: 9pt;
+  fill: #8f939b;
+}
 text.header {
   font-size: 12pt;
   font-weight: 600;
@@ -72,6 +75,12 @@ rect.highlight-home {
   fill-opacity: 0.22;
 }
 
+text.credit {
+  text-anchor: start;
+}
+text.date-generated {
+  text-anchor: end;
+}
 text.header-away {
   text-anchor: end;
 }
