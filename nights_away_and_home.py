@@ -14,10 +14,10 @@ END_DATE = date.today()
 hotel_df = HotelDataFrame(['Purpose'])
 away_home_rows = GroupedStayCollection(hotel_df).rows()
 
-# Write to file:
-with open(OUTPUT_FILE_PATH, 'w', encoding="utf-8") as f:
-    yaml.Dumper.ignore_aliases = lambda *args : True # Avoid references
-    yaml.dump(away_home_rows, f, allow_unicode=True, sort_keys=False)
+# # Write to file:
+# with open(OUTPUT_FILE_PATH, 'w', encoding="utf-8") as f:
+#     yaml.Dumper.ignore_aliases = lambda *args : True # Avoid references
+#     yaml.dump(away_home_rows, f, allow_unicode=True, sort_keys=False)
 
 # Create SVG:
 svg = SVGChart(away_home_rows, START_DATE, END_DATE)

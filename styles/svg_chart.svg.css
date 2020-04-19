@@ -42,7 +42,11 @@ text.header {
   fill: #f4f5f6;
 }
 
-rect.highlight-away {
+rect.highlight-away-business {
+  fill: #0077bb;
+  fill-opacity: 0.22;
+}
+rect.highlight-away-personal {
   fill: #33bbee;
   fill-opacity: 0.22;
 }

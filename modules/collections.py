@@ -120,45 +120,15 @@ class GroupedStayCollection:
             checkin = checkin_date(checkout, nights)
 
             if (len(grouped) == 0) or checkin != previous_checkout:
-                # Create new group:
-                
-                grouped.append({
-                    'start': checkin,
-                    'end': checkout,
-                    'nights': (checkout - checkin).days,
-                    'cities': [{
-                        'city': city,
-                        'purpose': purpose,
-                        'start': checkin,
-                        'end': checkout,
-                        'nights': (checkout - checkin).days
-                        }]
-                    })
-                    
+                # Create new StayPeriod:
+                grouped.append(
+                    StayPeriod(True, checkout, nights, city, purpose))
             else:
                 # Merge into previous group:
-                grouped[-1]['end'] = checkout
-                grouped[-1]['nights'] = (checkout - grouped[-1]['start']).days
-                
-                if (len(grouped[-1]['cities']) == 0
-                        or grouped[-1]['cities'][-1]['city'] != city
-                        or grouped[-1]['cities'][-1]['purpose'] != purpose):
-
-                    # Create a new city:
-                    grouped[-1]['cities'].append({
-                        'city': city,
-                        'purpose': purpose,
-                        'start': checkin,
-                        'end': checkout,
-                        'nights': (checkout - checkin).days
-                    })
-                else:
-                    # Merge into previous city:
-                    grouped[-1]['cities'][-1]['end'] = checkout
-                    grouped[-1]['cities'][-1]['nights'] = (
-                        checkout - grouped[-1]['cities'][-1]['start']).days
+                grouped[-1].merge_stay(checkout, nights, city, purpose)
 
             previous_checkout = checkout
+        
         return grouped
     
     def rows(self):
@@ -168,17 +138,111 @@ class GroupedStayCollection:
         """
         away_home_rows = []
         for i, group in enumerate(self.groups):
-            home_start = group['end']
+            home_start = group.end            
             if i == len(self.groups) - 1:
                 home_end = self.END_DATE 
             else:
-                home_end = self.groups[i + 1]['start']
-            away_nights = (group['end'] - group['start']).days
-            away = group
-            home = {
-                'start': home_start,
-                'end': home_end,
-                'nights': (home_end - home_start).days
-            }
+                home_end = self.groups[i + 1].start
+            home_nights = (home_end - home_start).days
+            
+            away = group            
+            home = StayPeriod(False, home_end, home_nights)
+
             away_home_rows.append({'away': away, 'home': home})
         return(away_home_rows)
+    
+
+class StayPeriod:
+    """Contains details for a single home or away stay period.
+    
+    An away stay period may have multiple back to back hotel stays.
+    """
+
+    def __init__(self, is_away, checkout_date, nights, city=None,
+                    purpose=None):
+        """Initializes a Stay."""
+        self.is_away = is_away
+        self.end = checkout_date
+        self.nights = nights
+
+        self.start = checkin_date(self.end, nights)
+
+        if is_away:
+            self.cities = [{
+                'city': city,
+                'purpose': purpose,
+                'start': self.start,
+                'end': self.end,
+                'nights': self.nights
+            }]            
+        else:
+            self.cities = []
+
+    def away_purposes(self):
+        """Returns a list of the purpose of each night of a StayPeriod.
+
+        Used to color code away night dots by trip purpose.
+        """
+        if self.is_away == False:
+            return(None)
+        away_purposes = []
+        for loc in self.cities:
+            away_purposes.extend(
+                loc['purpose'].lower() for i in range(loc['nights']))
+        return(away_purposes)
+
+    def date_range_string(self):
+        """Returns a formatted string for the stay start and end dates.
+        """
+        start = self.start
+        end = self.end
+        if start.year == end.year:
+            if start.month == end.month:
+                start_str = str(start.day)
+            else:
+                start_str = f"{start.day} {start:%b}"
+        else:
+            start_str = f"{start.day} {start:%b} {start.year}"
+        end_str = f"{end.day} {end:%b} {end.year}"
+        return(f"{start_str}–{end_str}")
+
+    def first_morning(self):
+        """Returns the first morning of the stay period.
+
+        This is the date after the checkin date.
+        """
+        return(first_morning(self.end, self.nights))
+
+    def merge_stay(self, stay_checkout_date, nights, city, purpose):
+        """Merges another location into this away stay."""
+
+        stay_checkin_date = checkin_date(stay_checkout_date, nights)
+        if stay_checkin_date != self.end:
+            raise ValueError("Can't merge two stays that are not adjacent!")
+
+        self.end = stay_checkout_date
+        self.nights = (stay_checkout_date - self.start).days
+
+        if (len(self.cities) == 0
+                or self.cities[-1]['city'] != city
+                or self.cities[-1]['purpose'] != purpose):
+            # Create a new city:
+            self.cities.append({
+                'city': city,
+                'purpose': purpose,
+                'start': stay_checkin_date,
+                'end': stay_checkout_date,
+                'nights': (stay_checkout_date - stay_checkin_date).days
+            })
+        else:
+            # Merge into previous city:
+            self.cities[-1]['end'] = stay_checkout_date
+            self.cities[-1]['nights'] = (
+                stay_checkout_date - self.cities[-1]['start']).days
+
+    def mornings(self):
+        """Return a list containing all morning dates during the stay.
+
+        The checkin date is not included.
+        """
+        return(stay_mornings(self.start, self.end))

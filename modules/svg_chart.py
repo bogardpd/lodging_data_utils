@@ -43,8 +43,8 @@ class SVGChart:
         self.stays = self._filter_dates(grouped_stay_rows,
             start_date, end_date)
         
-        self.away_max = max(a['away']['nights'] for a in self.stays)
-        self.home_max = max(h['home']['nights'] for h in self.stays)
+        self.away_max = max(a['away'].nights for a in self.stays)
+        self.home_max = max(h['home'].nights for h in self.stays)
         self._vals = self._calculate_chart_values()
 
         self._root = xml.Element("svg", xmlns=self._NSMAP[None],
@@ -124,75 +124,57 @@ class SVGChart:
         """
                        
         # Find row:
-        row = next((i for i in self.stays if find_morning > i['away']['start'] and find_morning <= i['home']['end']), None)
+        row = next((i for i in self.stays if (find_morning > i['away'].start
+            and find_morning <= i['home'].end)), None)
         if row == None:
             return(None)
         row_index = self.stays.index(row)
         
         # Find night position relative to axis:
-        if find_morning <= row['away']['end']:
+        if find_morning <= row['away'].end:
             # Morning is in away period
-            night_index = (find_morning - row['away']['end']).days - 1
+            night_index = (find_morning - row['away'].end).days - 1
         else:
             # Morning is in home period
-            night_index = (find_morning - row['home']['start']).days
+            night_index = (find_morning - row['home'].start).days
 
         return(self._night_center(row_index, night_index))
-
-    def _date_range_string(self, stay):
-        """Returns a formatted date range string."""
-        start = stay['start']
-        end = stay['end']
-        if start.year == end.year:
-            if start.month == end.month:
-                start_str = str(start.day)
-            else:
-                start_str = f"{start.day} {start:%b}"
-        else:
-            start_str = f"{start.day} {start:%b} {start.year}"
-        end_str = f"{end.day} {end:%b} {end.year}"
-        return(f"{start_str}–{end_str}")
 
     def _draw_annotations(self):
         """Draws chart annotations."""
         
         # Highlight first (work) trip:
         first_away = self.stays[0]['away']
-
-        self._draw_highlight(first_away, 'away')
-        self._draw_note(
-            first_morning(first_away['end'], first_away['nights']),
-            'start',
+        self._draw_highlight(first_away, 'away-business')
+        self._draw_note(first_away.first_morning(), 'start',
             "First work trip▸",
-            self._date_range_string(first_away),
+            first_away.date_range_string(),
             [
                 -14.5 * self._PARAMS['night']['cell_size'],
                 -2 * self._PARAMS['night']['cell_size']
             ])
 
         # Highlight longest away period:
-        away_max = max(self.stays, key=lambda a:a['away']['nights'])['away']
-        self._draw_highlight(away_max, 'away')
-        self._draw_note(
-            first_morning(away_max['end'], away_max['nights']),
-            'start',
-            f"{away_max['nights']} nights away",
-            self._date_range_string(away_max))
+        away_max = max(self.stays, key=lambda a:a['away'].nights)['away']
+        self._draw_highlight(away_max, 'away-personal')
+        self._draw_note(away_max.first_morning(), 'start',
+            f"{away_max.nights} nights away",
+            away_max.date_range_string())
 
         # Highlight longest non-current home period:
         prior_home_max = max(self.stays[:-1],
-            key=lambda h:h['home']['nights'])['home']
+            key=lambda h:h['home'].nights)['home']
         self._draw_highlight(prior_home_max, 'home')
-        self._draw_note(prior_home_max['end'], 'end',
-            f"{prior_home_max['nights']} nights home",
-            self._date_range_string(prior_home_max))
+        self._draw_note(prior_home_max.end, 'end',
+            f"{prior_home_max.nights} nights home",
+            prior_home_max.date_range_string())
 
         # Highlight current (final) home period:
         current_home = self.stays[-1]['home']
         self._draw_highlight(current_home, 'home')
-        self._draw_note(current_home['end'], 'end',
-            f"{current_home['nights']} nights home during pandemic",
-            self._date_range_string(current_home))
+        self._draw_note(current_home.end, 'end',
+            f"{current_home.nights} nights home during pandemic",
+            current_home.date_range_string())
 
     def _draw_backgrounds(self):
         """Draws background shading."""
@@ -205,16 +187,16 @@ class SVGChart:
         year_starts = {}
         for row_index, row in enumerate(self.stays):
             for stay_loc in ['away', 'home']:
-                if row[stay_loc]['start'].year < row[stay_loc]['end'].year:
+                if row[stay_loc].start.year < row[stay_loc].end.year:
                     # This stay contains a night ending on 1 January
                     mornings = stay_mornings(
-                        row[stay_loc]['start'], row[stay_loc]['end'])
+                        row[stay_loc].start, row[stay_loc].end)
                     night_indexes = [i for i, m in enumerate(mornings) if (
                         m.month == 1 and m.day == 1)]
                     
                     for morning in night_indexes:
                         if stay_loc == 'away':
-                            night_index = morning - row['away']['nights']
+                            night_index = morning - row['away'].nights
                         else:
                             night_index = morning + 1
                         
@@ -312,8 +294,8 @@ class SVGChart:
 
     def _draw_highlight(self, stay_period, style_class):
         """Draws a highlight behind a stay period."""
-        end = stay_period['end']
-        start = first_morning(end, stay_period['nights'])
+        end = stay_period.end
+        start = stay_period.first_morning()
         
         coords = []
         coords.append(self._date_coords(start))
@@ -337,14 +319,9 @@ class SVGChart:
         
         for i_row, row in enumerate(self.stays):
             
-            away_purposes = []
-            for loc in row['away']['cities']:
-                away_purposes.extend(
-                    loc['purpose'].lower() for i in range(loc['nights']))
-
-            for i_night, purpose in enumerate(away_purposes):
+            for i_night, purpose in enumerate(row['away'].away_purposes()):
                 center = self._night_center(
-                    i_row, (i_night - row['away']['nights']))
+                    i_row, (i_night - row['away'].nights))
                 circle_attr = {
                     'cx': str(center[0]),
                     'cy': str(center[1]),
@@ -353,7 +330,7 @@ class SVGChart:
                 }
                 xml.SubElement(self._g['nights'], "circle", **circle_attr)
 
-            for i_night in range(row['home']['nights']):
+            for i_night in range(row['home'].nights):
                 center = self._night_center(i_row, i_night + 1)
                 circle_attr = {
                     'cx': str(center[0]),
@@ -452,7 +429,9 @@ class SVGChart:
         end_date = end_date or datetime.max.date() 
         
         rows = list(filter(
-            lambda r: r['away']['start'] >= start_date and r['away']['end'] <= end_date, grouped_stay_rows))
+            lambda r: (r['away'].start >= start_date
+                and r['away'].end <= end_date),
+            grouped_stay_rows))
         
         return(rows)
 
