@@ -178,6 +178,14 @@ class StayPeriod:
         else:
             self.cities = []
 
+    def __str__(self):
+        """Returns a StayPeriod as a string."""
+        period_type = "Away" if self.is_away else "Home"
+        date_format = "%a %d %b %Y"
+    
+        return (f"{period_type} {self.start.strftime(date_format)} - "
+            f"{self.end.strftime(date_format)} ({self.nights} nights)")
+
     def away_purposes(self):
         """Returns a list of the purpose of each night of a StayPeriod.
 

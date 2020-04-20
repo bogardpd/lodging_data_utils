@@ -12,10 +12,10 @@ class SVGChart:
     _NSMAP = {None: "http://www.w3.org/2000/svg"}
     _PARAMS = {
         'chart': {
-            'padding_bottom': 40 # px
+            'padding_bottom': 45 # px
         },
         'footer': {
-            'padding_bottom': 20 # px
+            'padding_bottom': 16 # px
         },
         'header': {
             'height': 40, # px
@@ -245,7 +245,11 @@ class SVGChart:
             'class': "footer credit"
         }
         credit = xml.SubElement(self._g['footer'], "text", **credit_attr)
-        credit.text = "Created by Paul Bogard | pbogard.com"
+        credit.text = " · ".join([
+            "Created by Paul Bogard",
+            "pbogard.com",
+            "github.com/bogardpd/hotel-data-utils"
+        ])
 
         generated_attr = {
             'x': str(self._vals['coords']['chart']['r']),
