@@ -163,11 +163,15 @@ class SVGChart:
     def _draw_annotations(self):
         """Draws chart annotations."""
         
+        # Add each dot is one night label:
+        first_home = self.stays[0]['home']
+        self._draw_note(first_home.end, 'end', "Each dot is one night 🠙", None, [2, -2])
+
         # Highlight first (work) trip:
         first_away = self.stays[0]['away']
         self._draw_highlight(first_away, 'away-business')
         self._draw_note(first_away.first_morning(), 'start',
-            "First work trip▸",
+            "First work trip 🠚",
             first_away.date_range_string(),
             [
                 -14.5 * self._PARAMS['night']['cell_size'],
@@ -382,7 +386,7 @@ class SVGChart:
                 }
                 xml.SubElement(self._g['nights'], "circle", **circle_attr)
     
-    def _draw_note(self, night, align, note_text, subnote_text,
+    def _draw_note(self, night, align, note_text, subnote_text=None,
                    custom_offset=[0,0]):
         """Draws a text note."""
         coords = self._date_coords(night)
@@ -402,13 +406,14 @@ class SVGChart:
         note = xml.SubElement(self._g['notes'], "text", **text_attr)
         note.text = note_text
 
-        subtext_attr = {
-            'x': str(x),
-            'y': str(y + self._PARAMS['note']['subtext_offset']),
-            'class': f"note note-sub note-{align}"
-        }
-        subnote = xml.SubElement(self._g['notes'], "text", **subtext_attr)
-        subnote.text = subnote_text.upper()
+        if subnote_text:
+            subtext_attr = {
+                'x': str(x),
+                'y': str(y + self._PARAMS['note']['subtext_offset']),
+                'class': f"note note-sub note-{align}"
+            }
+            subnote = xml.SubElement(self._g['notes'], "text", **subtext_attr)
+            subnote.text = subnote_text.upper()
 
     def _draw_page_background(self):
         """Draws the page background color."""
