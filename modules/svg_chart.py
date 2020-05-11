@@ -190,7 +190,7 @@ class SVGChart:
             key=lambda h:h['home'].nights)['home']
         self._draw_highlight(prior_home_max, 'home')
         self._draw_note(prior_home_max.end, 'end',
-            f"{prior_home_max.nights} nights home",
+            f"Prior record: {prior_home_max.nights} nights home",
             prior_home_max.date_range_string())
 
         # Highlight current (final) home period:
