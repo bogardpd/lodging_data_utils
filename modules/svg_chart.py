@@ -185,20 +185,22 @@ class SVGChart:
             f"{away_max.nights} nights away",
             away_max.date_range_string())
 
-        # Highlight longest non-current home period:
-        prior_home_max = max(self.stays[:-1],
+        # Highlight current (final) home period:
+        longest_home_index = self.stays.index(max(self.stays,
+            key=lambda h:h['home'].nights))
+        longest_home = self.stays[longest_home_index]['home']
+        self._draw_highlight(longest_home, 'home')
+        self._draw_note(longest_home.end, 'end',
+            f"{longest_home.nights} nights home during pandemic",
+            longest_home.date_range_string())
+
+        # Highlight longest home period prior to absolute longest:
+        prior_home_max = max(self.stays[:longest_home_index],
             key=lambda h:h['home'].nights)['home']
         self._draw_highlight(prior_home_max, 'home')
         self._draw_note(prior_home_max.end, 'end',
             f"Prior record: {prior_home_max.nights} nights home",
             prior_home_max.date_range_string())
-
-        # Highlight current (final) home period:
-        current_home = self.stays[-1]['home']
-        self._draw_highlight(current_home, 'home')
-        self._draw_note(current_home.end, 'end',
-            f"{current_home.nights} nights home during pandemic",
-            current_home.date_range_string())
 
     def _draw_chart_background(self):
         """Draws chart background shading."""
