@@ -1,32 +1,28 @@
 """Contains classes for creating various collections of hotel data."""
 
-import json, math, operator
+import math
 from modules.common import checkin_date
 from modules.common import first_morning
 from modules.common import inclusive_date_range
 from modules.common import stay_mornings
+from modules.coordinates import coordinates
 from datetime import date
 from dateutil import rrule
-from functools import reduce
 
 
 class DateCollection:
     """Manages a range of dates with a location assigned to each."""
     
-    COORDINATES_PATH = "data/coordinates.json"
     DEG_TO_RAD = math.pi / 180
     EARTH_MEAN_RADIUS = 3958.7613 # miles
         
     def __init__(self, hotel_df, start_date, end_date, default_location=None):
         """Initialize a DateCollection."""
         
-        with open(self.COORDINATES_PATH, 'r', encoding="utf-8") as f:
-            self.location_coordinates = json.load(f)
-        
         self._hotel_df = hotel_df
         self._default_value = None if default_location == None else {
             'city': default_location,
-            'coordinates': self._coordinates(default_location)}
+            'coordinates': coordinates(default_location)}
         # Create dictionary of dates with locations set to None by default:
         self.locations = {d:self._default_value for d in inclusive_date_range(
             start_date, end_date)}
@@ -34,18 +30,6 @@ class DateCollection:
         # Set locations from hotel data:
         for row in self._hotel_df.data.values.tolist():
             self._set_location(*row)
-
-    def _coordinates(self, location):
-        """Returns the coordinates for a location."""
-        location_list = location.split("/")
-        try:
-            return(reduce(operator.getitem, location_list,
-                self.location_coordinates))
-        except KeyError as err:
-            print(f"\nCould not find coordinates for:")
-            print(location)
-            print(f"\nPlease add it to {self.COORDINATES_PATH}.\n")
-            raise SystemExit()
     
     def _home_distance(self, location):
         """Returns the distance from home to the provided location.
@@ -53,7 +37,7 @@ class DateCollection:
         The Haversine formula is used to calculate the distance.
         """
         home_coordinates = self._default_value['coordinates']
-        location_coordinates = self._coordinates(location)
+        location_coordinates = coordinates(location)
         phi_1 = home_coordinates[0] * self.DEG_TO_RAD
         phi_2 = location_coordinates[0] * self.DEG_TO_RAD
         delta_phi = (
@@ -80,7 +64,7 @@ class DateCollection:
             if day in self.locations.keys():
                 self.locations[day] = {
                     'city': location,
-                    'coordinates': self._coordinates(location)}
+                    'coordinates': coordinates(location)}
 
     def distances(self):
         """Returns a dictionary of dates and distance from home.

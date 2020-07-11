@@ -10,11 +10,11 @@ This package contains utilities for working with an [Excel spreadsheet of hotel 
 
 This script generates an SVG XY scatter chart showing every calendar day (from 1 Jan to 31 Dec) on the X axis, and distance from home on the Y axis, with points colored by year. An average distance from home for each day is also shown.
 
-### Heatmap Data
+### Location Frequency Map Data
 
-[heatmap_data.py](heatmap_data.py)
+[location_frequency_map_data.py](location_frequency_map_data.py)
 
-This script generates a CSV file with each row containing a `Date`, `Latitude`, and `Longitude`. This can be used to generate a heatmap in GIS software by plotting a point for each date.
+This script generates a CSV file with each row containing a `City`, `Latitude`, `Longitude`, and `Frequency` (count of nights). This can be used to generate a heatmap in GIS software by plotting a point for each date.
 
 ### Nights Away and Home
 
