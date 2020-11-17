@@ -253,7 +253,7 @@ class SVGChart:
         credit = xml.SubElement(self._g['footer'], "text", **credit_attr)
         credit.text = " · ".join([
             "Created by Paul Bogard",
-            "pbogard.com",
+            "paulbogard.net",
             "github.com/bogardpd/hotel-data-utils"
         ])
 
