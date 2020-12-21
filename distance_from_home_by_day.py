@@ -20,7 +20,6 @@ def apply_common_styles(ax, ax_data, year, include_xaxis=False):
         tick.tick1line.set_markersize(0)
         tick.tick2line.set_markersize(0)
         tick.label1.set_horizontalalignment('center')
-        # tick.label1.set_fontname(FONT)
     if include_xaxis:
         ax.xaxis.set_major_formatter(ticker.NullFormatter())
         ax.xaxis.set_minor_formatter(mdates.DateFormatter("%b"))
@@ -74,23 +73,18 @@ for month, days in days_of_year.items():
         average_distance_data['distances'].append(np.mean(distances))
 
 # Set plot preferences.
-# FONT = "Source Sans Pro"
 year_title_options = {
-    # 'x': 0.002,
     'y': 0.8,
-    # 'loc': 'left',
-    # 'horizontalalignment': 'left',
     'verticalalignment': 'top',
     'alpha': 0.6,
     'fontsize': 10,
-    # 'fontname': FONT,
 }
 
 # Draw plots.
 
-fig = plt.figure()
+fig = plt.figure(dpi=96,figsize=(9,6))
 gs = GridSpec(12, 2, width_ratios=[1,3])
-# fig, year_axs = plt.subplots(END_YEAR-START_YEAR+1)
+
 year_axs = {}
 for index, year in enumerate(range(START_YEAR, END_YEAR+1)):
     data = by_year_data[year]
@@ -102,11 +96,13 @@ for index, year in enumerate(range(START_YEAR, END_YEAR+1)):
         spine.set_visible(False)
     year_axs[index].get_yaxis().set_visible(False)
     
-    # year_axs[index].yaxis.tick_left()
     year_axs[index].set_xlim([date(year,1,1),date(year,12,31)])
     year_axs[index].set_ylim([-1000,12000])
     year_axs[index].set_yticks([0,6000,12000])
     year_axs[index].set_title(data['title'], **year_title_options)
+    if is_bottom:
+        month_letters = ["J","F","M","A","M","J","J","A","S","O","N","D"]
+        year_axs[index].set_xticklabels(month_letters, minor=True)
     
 
 data = average_distance_data
@@ -114,13 +110,16 @@ avg_ax = fig.add_subplot(gs[:, 1])
 avg_ax.plot(data['dates'], data['distances'])
 apply_common_styles(avg_ax, data, avg_year, include_xaxis=True)
 avg_ax.set_title(data['title'])
-avg_ax.set_ylim([0,3000])
+
+y_max_miles = 3000
+y_max_km = y_max_miles * 1.609
+
+avg_ax.set_ylim([0,y_max_miles])
 avg_ax.set_ylabel("Distance (mi)")
 
-# for ax in year_axs:
-    # plt.setp(ax.get_xticklines(), visible=False)
-    # plt.setp(ax.get_xticklabels(), visible=False)
-    # plt.setp(ax.get_yticklines(), visible=False)
-    # plt.setp(ax.get_yticklabels(), visible=False)
-    # plt.setp(ax.spines.values(), visible=False)
+avg_ax_km = avg_ax.twinx()
+avg_ax_km.set_ylim([0,y_max_km])
+avg_ax_km.set_ylabel("Distance(km)")
+
+fig.tight_layout()
 plt.show()
