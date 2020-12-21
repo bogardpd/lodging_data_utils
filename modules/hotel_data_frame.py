@@ -14,7 +14,7 @@ class HotelDataFrame:
         columns = (['Checkout Date', 'Nights', 'City']
             + additional_columns)
         hotel_data_sheet = pd.read_excel(
-            self.HOTEL_FILE_PATH, sheet_name='Hotel Data')
+            self.HOTEL_FILE_PATH, sheet_name='Hotel Data', engine='openpyxl')
         self.data = hotel_data_sheet[columns].sort_values(
             'Checkout Date')
 
