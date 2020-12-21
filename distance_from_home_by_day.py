@@ -115,11 +115,11 @@ y_max_miles = 3000
 y_max_km = y_max_miles * 1.609
 
 avg_ax.set_ylim([0,y_max_miles])
-avg_ax.set_ylabel("Distance (mi)")
+avg_ax.set_ylabel("Distance (miles)")
 
 avg_ax_km = avg_ax.twinx()
 avg_ax_km.set_ylim([0,y_max_km])
-avg_ax_km.set_ylabel("Distance(km)")
+avg_ax_km.set_ylabel("Distance (km)")
 
 fig.tight_layout()
 plt.show()
