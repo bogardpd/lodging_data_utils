@@ -1,7 +1,8 @@
 import json, operator
 from functools import reduce
 
-with open("data/coordinates.json", 'r', encoding="utf-8") as f:
+COORDINATES_PATH = "data/coordinates.json"
+with open(COORDINATES_PATH, 'r', encoding="utf-8") as f:
     LOCATION_COORDINATES = json.load(f)
 
 def coordinates(city):
