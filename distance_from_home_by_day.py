@@ -199,7 +199,7 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser("Distance from Home by Day")
+    parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest='type')
 
     parser_single = subparsers.add_parser(
