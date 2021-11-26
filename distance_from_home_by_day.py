@@ -10,6 +10,7 @@ from matplotlib.gridspec import GridSpec
 import numpy as np
 
 HOME_LOCATION = "US/OH/Beavercreek"
+KM_PER_MILE = 1.609
 
 def main(type, years):
     if type == 'single':
@@ -67,7 +68,7 @@ class SingleYearDistanceChart(DistanceByDayChart):
         self.apply_styles(ax, data, self.year, include_xaxis=True)
         ax.set_title(f"Distance from Home ({self.year})")
         y_max_miles = max(data['distances']) * 1.1
-        y_max_km = y_max_miles * 1.609
+        y_max_km = y_max_miles * KM_PER_MILE
 
         ax.set_ylim([0,y_max_miles])
         ax.set_ylabel("Distance (miles)")
@@ -185,7 +186,7 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
         avg_ax.set_title(data['title'])
 
         y_max_miles = 3000
-        y_max_km = y_max_miles * 1.609
+        y_max_km = y_max_miles * KM_PER_MILE
 
         avg_ax.set_ylim([0,y_max_miles])
         avg_ax.set_ylabel("Distance (miles)")

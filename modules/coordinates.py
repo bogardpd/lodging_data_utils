@@ -5,6 +5,10 @@ COORDINATES_PATH = "data/coordinates.json"
 with open(COORDINATES_PATH, 'r', encoding="utf-8") as f:
     LOCATION_COORDINATES = json.load(f)
 
+def all_coordinates():
+    """Returns a hash of all coordinates data."""
+    return LOCATION_COORDINATES
+
 def coordinates(city):
     """Returns the coordinates for a city as [lat, lon].
     

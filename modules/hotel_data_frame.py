@@ -18,6 +18,10 @@ class HotelDataFrame:
         self.data = hotel_data_sheet[columns].sort_values(
             'Checkout Date')
 
+    def df(self):
+        """Returns a Pandas DataFrame for hotel data."""
+        return self.data
+
     def min_date(self):
         """Returns the earliest away date.
 
