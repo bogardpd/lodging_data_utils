@@ -2,27 +2,39 @@ cbsa_code,cbsa_title,short_name,latitude,longitude
 10740,"Albuquerque, NM",Albuquerque,35.110833,-106.61
 11060,"Altus, OK",Altus,34.643889,-99.326667
 12060,"Atlanta-Sandy Springs-Alpharetta, GA",Atlanta,33.748889,-84.39
+12540,"Bakersfield, CA",Bakersfield,35.366667,-119.016667
 13820,"Birmingham-Hoover, AL",Birmingham,33.653333,-86.808889
 15380,"Buffalo-Cheektowaga, NY",Buffalo,42.904722,-78.849444
 16700,"Charleston-North Charleston, SC",Charleston,32.783333,-79.933333
 16980,"Chicago-Naperville-Elgin, IL-IN-WI",Chicago,41.881944,-87.627778
+17820,"Colorado Springs, CO",Colorado Springs,38.833889,-104.825278
 18140,"Columbus, OH",Columbus,39.983333,-82.983333
+18880,"Crestview-Fort Walton Beach-Destin, FL",Fort Walton Beach,30.420278,-86.616667
 19430,"Dayton-Kettering, OH",Dayton,39.759444,-84.191667
+19740,"Denver-Aurora-Lakewood, CO",Denver,39.76185,-104.881105
 22380,"Flagstaff, AZ",Flagstaff,35.199167,-111.631111
 25940,"Hilton Head Island-Bluffton, SC",Hilton Head Island,32.178889,-80.743056
 26580,"Huntington-Ashland, WV-KY-OH",Huntington,38.420833,-82.423611
 27260,"Jacksonville, FL",Jacksonville,30.336944,-81.661389
+28580,"Key West, FL",Key West,24.559722,-81.783611
 30460,"Lexington-Fayette, KY",Lexington,38.029722,-84.494722
 30780,"Little Rock-North Little Rock-Conway, AR",Little Rock,34.736111,-92.331111
+31080,"Los Angeles-Long Beach-Anaheim, CA",Los Angeles,34.05,-118.25
 31140,"Louisville/Jefferson County, KY-IN",Louisville,38.225333,-85.741667
+33100,"Miami-Fort Lauderdale-Pompano Beach, FL",Miami,25.775163,-80.208615
 34820,"Myrtle Beach-Conway-North Myrtle Beach, SC-NC",Myrtle Beach,33.744075,-78.869475
 36420,"Oklahoma City, OK",Oklahoma City,35.482222,-97.535
 36740,"Orlando-Kissimmee-Sanford, FL",Orlando,28.54,-81.38
+37860,"Pensacola-Ferry Pass-Brent, FL",Pensacola,30.433333,-87.2
 38060,"Phoenix-Mesa-Chandler, AZ",Phoenix,33.45,-112.066667
 38240,"Pinehurst-Southern Pines, NC",Pinehurst,35.195389,-79.468722
 38860,"Portland-South Portland, ME",Portland,43.666667,-70.266667
 39580,"Raleigh-Cary, NC",Raleigh,35.766667,-78.633333
+40140,"Riverside-San Bernardino-Ontario, CA",Riverside,33.948056,-117.396111
+41740,"San Diego-Chula Vista-Carlsbad, CA",San Diego,32.715,-117.1625
+41940,"San Jose-Sunnyvale-Santa Clara, CA",San Jose,37.333333,-121.9
 42660,"Seattle-Tacoma-Bellevue, WA",Seattle,47.609722,-122.333056
+45300,"Tampa-St. Petersburg-Clearwater, FL",Tampa,27.968056,-82.476389
 45460,"Terre Haute, IN",Terre Haute,39.469722,-87.389722
 46060,"Tucson, AZ",Tucson,32.221667,-110.926389
 46140,"Tulsa, OK",Tulsa,36.131389,-95.937222
