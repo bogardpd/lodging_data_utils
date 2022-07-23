@@ -1,8 +1,6 @@
-import yaml
 from datetime import date
 
 from modules.collections import GroupedStayCollection
-from modules.common import checkin_date
 from modules.hotel_data_frame import HotelDataFrame
 from modules.svg_chart import SVGChart
 
@@ -12,7 +10,7 @@ OUTPUT_SVG_PATH = "output/Nights Away and Home.svg"
 START_DATE = date(2009,2,9)
 END_DATE = date.today()
 
-hotel_df = HotelDataFrame(['Purpose'])
+hotel_df = HotelDataFrame(['purpose'])
 away_home_rows = GroupedStayCollection(hotel_df).rows()
 away_home_rows = list(filter(lambda r: r['away'].start >= START_DATE,
     away_home_rows))

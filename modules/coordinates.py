@@ -1,9 +1,8 @@
-import json, operator
-from functools import reduce
+import pandas as pd
 
-COORDINATES_PATH = "data/coordinates.json"
-with open(COORDINATES_PATH, 'r', encoding="utf-8") as f:
-    LOCATION_COORDINATES = json.load(f)
+CITIES_PATH = "data/cities.csv"
+METROS_PATH = "data/metro_cbsa.csv"
+LOCATION_COORDINATES = pd.read_csv(CITIES_PATH, index_col='city')
 
 def all_coordinates():
     """Returns a hash of all coordinates data."""
@@ -14,12 +13,11 @@ def coordinates(city):
     
     City should be provided in 'US/CA/Los Angeles' format.
     """
-    location_list = city.split("/")
     try:
-        return(reduce(operator.getitem, location_list,
-            LOCATION_COORDINATES))
+        row = LOCATION_COORDINATES.loc[city]
+        return([row.latitude,row.longitude])
     except KeyError as err:
         print(f"\nCould not find coordinates for:")
         print(city)
-        print(f"\nPlease add it to {COORDINATES_PATH}.\n")
+        print(f"\nPlease add it to {CITIES_PATH}.\n")
         raise SystemExit()

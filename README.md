@@ -32,6 +32,6 @@ The hotel data should be in an Excel spreadsheet, with a sheet title of `Hotel D
 * The number of `Nights` spent at the hotel during this stay
 * The `City` where the hotel is located
 
-`City` should be a string containing the country code, subdivision codes (if needed), and city name separated by forward slashes. These should match the structure of the data in `data/coordinates.json`. For example, Los Angeles would be stored as `US/CA/Los Angeles`.
+`City` should be a string containing the country code, subdivision codes (if needed), and city name separated by forward slashes. These should match the structure of the data in `data/cities.csv`. For example, Los Angeles would be stored as `US/CA/Los Angeles`.
 
 Some scripts may require additional columns.

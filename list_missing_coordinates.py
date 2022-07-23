@@ -5,10 +5,10 @@ import numpy as np
 
 def main():
     hotel_df = HotelDataFrame().df()
-    hotel_cities = set(hotel_df['City'])
+    hotel_cities = set(hotel_df['city'])
 
     coordinates = all_coordinates()
-    coordinates_cities = set(coord_locations(coordinates))
+    coordinates_cities = set(coordinates.index.values.tolist())
 
     cities_without_coordinates = sorted(hotel_cities - coordinates_cities)
     if len(cities_without_coordinates) == 0:
@@ -16,18 +16,7 @@ def main():
     else:
         print("Cities missing coordinates:")
         for city in cities_without_coordinates:
-            print("\t", city)
-
-
-def coord_locations(coordinates, parents=[], output=[]):
-    for loc, sublocs in coordinates.items():
-        loc_with_ancestors = [*parents, loc]
-        if type(sublocs) is dict:
-            coord_locations(sublocs, loc_with_ancestors, output)
-        else:
-            output.append("/".join(loc_with_ancestors))
-    return output        
-        
+            print("\t", city)        
 
 if __name__ == "__main__":
     main()

@@ -1,5 +1,7 @@
 import pandas as pd
 from pathlib import Path
+from datetime import timedelta
+
 from modules.common import first_morning
 from modules.coordinates import coordinates
 
@@ -11,12 +13,25 @@ class HotelDataFrame:
 
     def __init__(self, additional_columns=[]):
         """Initialize a HotelDataFrame."""
-        columns = (['Checkout Date', 'Nights', 'City']
-            + additional_columns)
-        hotel_data_sheet = pd.read_excel(
-            self.HOTEL_FILE_PATH, sheet_name='Hotel Data', engine='openpyxl')
-        self.data = hotel_data_sheet[columns].sort_values(
-            'Checkout Date')
+        
+        # Read Excel spreadsheet.
+        hotel_sheet = pd.read_excel(
+            self.HOTEL_FILE_PATH,
+            sheet_name='Hotel Data',
+            parse_dates=['Checkout Date'],
+        )
+        
+        # Normalize column names.
+        hotel_sheet.columns = hotel_sheet.columns.str.replace(
+            r'\s+', '_', regex=True
+        ).str.lower()
+
+        # Force checkout_date to be a date column.
+        hotel_sheet.checkout_date = hotel_sheet.checkout_date.dt.date
+        
+        # Store sorted dataframe.
+        columns = (['checkout_date', 'nights', 'city'] + additional_columns)
+        self.data = hotel_sheet[columns].sort_values('checkout_date')
 
     def df(self):
         """Returns a Pandas DataFrame for hotel data."""
@@ -28,12 +43,30 @@ class HotelDataFrame:
         This is one day after the checkin date for the first trip.
         """
 
-        earliest_hotel_id = self.data['Checkout Date'].idxmin()
+        earliest_hotel_id = self.data['checkout_date'].idxmin()
         earliest_checkout = self.data.loc[
-            earliest_hotel_id,'Checkout Date'].date()
+            earliest_hotel_id,'checkout_date'].date()
         earliest_nights = int(self.data.loc[earliest_hotel_id,'Nights'])
         
         return(first_morning(earliest_checkout, earliest_nights))
+
+    def by_morning(self):
+        """Returns a dataframe with a row for each morning away from
+        home."""
+        input_df = self.data
+        stays = [
+            pd.DataFrame.from_dict({
+                'morning': [
+                    row.checkout_date - timedelta(days=i)
+                    for i in reversed(range(row.nights))
+                ],
+                'city': [row.city] * row.nights,
+            })
+            for row in input_df.itertuples()
+        ]
+        output = pd.concat(stays, ignore_index=True)
+        output = output.set_index('morning')
+        return output
 
     def location_frequencies(self,
                              reject_flight_midpoints=True,
