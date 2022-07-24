@@ -30,7 +30,7 @@ def frequency_table(
         grouped.to_csv(output_file, index=False)
         print(f"Saved CSV to `{output_file}`.")
     print("Filter string:")
-    print(grouped['metro_id'].sort_values().tolist())
+    print(grouped['metro_id'].sort_values().dropna().tolist())
 
 def group_by_city(mornings):
     mornings['name'] = mornings.apply(lambda x:
