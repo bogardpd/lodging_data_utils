@@ -65,7 +65,7 @@ metro_id,metro_title,short_name,latitude,longitude
 36420,"Oklahoma City, OK",Oklahoma City,35.482222,-97.535
 36740,"Orlando-Kissimmee-Sanford, FL",Orlando,28.54,-81.38
 37860,"Pensacola-Ferry Pass-Brent, FL",Pensacola,30.433333,-87.2
-37980,"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",Philadelphia,39.952778,-75.163611
+37980,"Philadelphia-Camden-Wilmington, PA-NJ-DE/MD",Philadelphia,39.952778,-75.163611
 38060,"Phoenix-Mesa-Chandler, AZ",Phoenix,33.45,-112.066667
 38240,"Pinehurst-Southern Pines, NC",Pinehurst,35.195389,-79.468722
 38300,"Pittsburgh, PA",Pittsburgh,40.439722,-79.976389
@@ -95,14 +95,20 @@ metro_id,metro_title,short_name,latitude,longitude
 47260,"Virginia Beach-Norfolk-Newport News, VA-NC",Virginia Beach,36.85,-75.977778
 47900,"Washington-Arlington-Alexandria, DC-VA-MD-WV",Washington,38.904722,-77.016389
 48620,"Wichita, KS",Wichita,37.688889,-97.336111
-AU-MELBOURNE,"Melbourne",Melbourne,-37.813611,144.963056
-AU-PERTH,"Perth",Perth,-31.952222,115.858889
-AU-SYDNEY,"Sydney",Sydney,-33.865,151.209444
-CA-TORONTO,"Toronto",Toronto,43.741667,-79.373333
-CA-VANCOUVER,"Vancouver",Vancouver,49.261111,-123.113889
-DE-BITBURG,"Bitburg",Bitburg,49.966667,6.533333
-DE-MUNICH,"Munich",Munich,48.133333,11.566667
-DE-FRANKFURT,"Frankfurt",Frankfurt,50.116667,8.683333
-DE-NUREMBERG,"Nuremberg",Nuremberg,49.453889,11.0775
-FI-HELSINKI,"Helsinki",Helsinki,60.170833,24.9375
-FR-PARIS,"Paris",Paris,48.8567,2.3508
+AU/MELBOURNE,"Melbourne",Melbourne,-37.813611,144.963056
+AU/PERTH,"Perth",Perth,-31.952222,115.858889
+AU/SYDNEY,"Sydney",Sydney,-33.865,151.209444
+CA/TORONTO,"Toronto",Toronto,43.741667,-79.373333
+CA/VANCOUVER,"Vancouver",Vancouver,49.261111,-123.113889
+DE/BITBURG,"Bitburg",Bitburg,49.966667,6.533333
+DE/MUNICH,"Munich",Munich,48.133333,11.566667
+DE/FRANKFURT,"Frankfurt",Frankfurt,50.116667,8.683333
+DE/NUREMBERG,"Nuremberg",Nuremberg,49.453889,11.0775
+FI/HELSINKI,"Helsinki",Helsinki,60.170833,24.9375
+FR/PARIS,"Paris",Paris,48.8567,2.3508
+GB/LONDON,"London",London,51.507222,-0.1275
+IS/REYKJAVIK,"Reykjavík",Reykjavík,64.133333,-21.933333
+JP/TOKYO,"Tokyo",Tokyo,35.689722,139.692222
+NZ/AUCKLAND,"Auckland",Auckland,-36.840556,174.74
+NZ/DUNEDIN,"Dunedin",Dunedin,-45.866667,170.5
+SE/STOCKHOLM,"Stockholm",Stockholm,59.329444,18.068611
