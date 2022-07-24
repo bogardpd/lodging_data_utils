@@ -19,12 +19,23 @@ def frequency_table(
         dtype={'metro_id': 'string'}
     )
     mornings = mornings.join(cities_df, on='city')
-    
+
     if by == 'metro':
-        grouped = group_by_metro(mornings)
+        city_mornings = mornings[mornings['metro_id'].isnull()]
+        metro_mornings = mornings[mornings['metro_id'].notnull()]
+
+        cities_grouped = group_cities(city_mornings)
+        metros_grouped = group_metros(metro_mornings)
+
+        grouped = pd.concat([cities_grouped, metros_grouped])
     else:
-        grouped = group_by_city(mornings)
-        
+        grouped = group_cities(mornings)
+    
+    grouped = grouped.sort_values(
+        by=['nights','location'],
+        ascending=[False, True],
+    )
+    
     print(grouped)
     if output_file is not None:
         grouped.to_csv(output_file, index=False)
@@ -33,63 +44,41 @@ def frequency_table(
         print("Filter string:")
         print(grouped['metro_id'].sort_values().dropna().tolist())
 
-def group_by_city(mornings):
+def group_cities(mornings):
+    mornings = mornings.assign(type='city')
     mornings['name'] = mornings.apply(lambda x:
         str(x['city']).split("/")[-1],
         axis=1
     )
-    mornings['type'] = "City"
-    grouped = mornings.groupby('city').agg({
-        'name': 'first',
-        'type': 'first',
-        'latitude': 'first',
-        'longitude': 'first',
-        'city': 'count',
-    })
-    grouped = grouped.rename(columns={'city': 'nights'})
-    grouped = grouped.sort_values('nights', ascending=False)
+    grouped = mornings.groupby('city').agg(
+        location=('name', 'first'),
+        type=('type', 'first'),
+        latitude=('latitude', 'first'),
+        longitude=('longitude', 'first'),
+        nights=('city', 'count'),
+    )
+    grouped.index.names = ['loc_id']
     return grouped
 
-def group_by_metro(mornings):
+def group_metros(mornings):
+    mornings = mornings.assign(type='metro')
     metros_df = pd.read_csv(METROS_PATH, index_col='metro_id')
     mornings = mornings.join(metros_df,
         on='metro_id',
         rsuffix='_metro'
     )
-    mornings = mornings.rename(columns={
-        'latitude': 'latitude_city',
-        'longitude': 'longitude_city',
-    })
-    metro_val_cols = ['type','location','name','latitude','longitude']
-    mornings[metro_val_cols] = mornings.apply(lambda x:
-        metro_values(x), axis=1, result_type='expand'
+    grouped = mornings.groupby('metro_id').agg(
+        location=('short_name', 'first'),
+        type=('type', 'first'),
+        metro_id=('metro_id', 'first'),
+        latitude=('latitude_metro', 'first'),
+        longitude=('longitude_metro', 'first'),
+        nights=('city', 'count'),
     )
-    grouped = mornings.groupby('location').agg({
-        'name': 'first',
-        'type': 'first',
-        'metro_id': 'first',
-        'latitude': 'first',
-        'longitude': 'first',
-        'location': 'count',
-    })
-    grouped = grouped.rename(columns={'location': 'nights'})
-    grouped = grouped.sort_values('nights', ascending=False)
+    grouped['metro_id'] = grouped['metro_id'].astype('string')
+    grouped.index.names = ['loc_id']
     return grouped
-
-def metro_values(row):
-    if pd.isnull(row['metro_id']):
-        loc_type = 'city'
-        location = f"city:{row['city']}"
-        name = row['city'].split("/")[-1]
-        lat = row['latitude_city']
-        lon = row['longitude_city']
-    else:
-        loc_type = 'metro'
-        location = f"metro:{row['metro_id']}"
-        name = row['short_name']
-        lat = row['latitude_metro']
-        lon = row['longitude_metro']
-    return [loc_type, location, name, lat, lon]
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
