@@ -23,7 +23,7 @@ def frequency_table(
     if by == 'metro':
         city_mornings = mornings[mornings['metro_id'].isnull()]
         metro_mornings = mornings[mornings['metro_id'].notnull()]
-
+        
         cities_grouped = group_cities(city_mornings)
         metros_grouped = group_metros(metro_mornings)
 
@@ -45,6 +45,8 @@ def frequency_table(
         print(grouped['metro_id'].sort_values().dropna().tolist())
 
 def group_cities(mornings):
+    if mornings.empty:
+        return pd.DataFrame()
     mornings = mornings.assign(type='city')
     mornings['name'] = mornings.apply(lambda x:
         str(x['city']).split("/")[-1],
@@ -61,6 +63,8 @@ def group_cities(mornings):
     return grouped
 
 def group_metros(mornings):
+    if mornings.empty:
+        return pd.DataFrame()
     mornings = mornings.assign(type='metro')
     metros_df = pd.read_csv(METROS_PATH, index_col='metro_id')
     mornings = mornings.join(metros_df,
