@@ -40,9 +40,6 @@ def frequency_table(
     if output_file is not None:
         grouped.to_csv(output_file, index=False)
         print(f"Saved CSV to `{output_file}`.")
-    if by == 'metro':
-        print("Filter string:")
-        print(grouped['metro_id'].sort_values().dropna().tolist())
 
 def group_cities(mornings):
     if mornings.empty:
