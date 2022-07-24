@@ -10,14 +10,15 @@ from pathlib import Path
 from modules.coordinates import CITIES_PATH, METROS_PATH
 from modules.hotel_data_frame import HotelDataFrame
 
-def frequency_table(by='city', start_date=None, thru_date=None, output_file=None):
+def frequency_table(
+    by='city', start_date=None, thru_date=None, output_file=None
+):
     mornings = HotelDataFrame().by_morning().loc[start_date:thru_date]
     cities_df = pd.read_csv(CITIES_PATH,
         index_col='city',
-        dtype={'metro_cbsa_code': 'Int32'}
+        dtype={'metro_id': 'string'}
     )
     mornings = mornings.join(cities_df, on='city')
-    mornings.metro_cbsa_code = mornings.metro_cbsa_code.fillna(-1)
     
     if by == 'metro':
         grouped = group_by_metro(mornings)
@@ -47,9 +48,9 @@ def group_by_city(mornings):
     return grouped
 
 def group_by_metro(mornings):
-    metros_df = pd.read_csv(METROS_PATH, index_col='cbsa_code')
+    metros_df = pd.read_csv(METROS_PATH, index_col='metro_id')
     mornings = mornings.join(metros_df,
-        on='metro_cbsa_code',
+        on='metro_id',
         rsuffix='_metro'
     )
     mornings = mornings.rename(columns={
@@ -63,7 +64,7 @@ def group_by_metro(mornings):
     grouped = mornings.groupby('location').agg({
         'name': 'first',
         'type': 'first',
-        'metro_cbsa_code': 'first',
+        'metro_id': 'first',
         'latitude': 'first',
         'longitude': 'first',
         'location': 'count',
@@ -73,18 +74,18 @@ def group_by_metro(mornings):
     return grouped
 
 def metro_values(row):
-    if row['metro_cbsa_code'] > 0:
-        loc_type = 'metro'
-        location = f"metro:{row['metro_cbsa_code']}"
-        name = row['short_name']
-        lat = row['latitude_metro']
-        lon = row['longitude_metro']
-    else:
+    if pd.isnull(row['metro_id']):
         loc_type = 'city'
         location = f"city:{row['city']}"
         name = row['city'].split("/")[-1]
         lat = row['latitude_city']
         lon = row['longitude_city']
+    else:
+        loc_type = 'metro'
+        location = f"metro:{row['metro_id']}"
+        name = row['short_name']
+        lat = row['latitude_metro']
+        lon = row['longitude_metro']
     return [loc_type, location, name, lat, lon]
 
 if __name__ == "__main__":

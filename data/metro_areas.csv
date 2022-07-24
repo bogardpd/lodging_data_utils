@@ -1,4 +1,4 @@
-cbsa_code,cbsa_title,short_name,latitude,longitude
+metro_id,metro_title,short_name,latitude,longitude
 10740,"Albuquerque, NM",Albuquerque,35.110833,-106.61
 11060,"Altus, OK",Altus,34.643889,-99.326667
 12060,"Atlanta-Sandy Springs-Alpharetta, GA",Atlanta,33.748889,-84.39
@@ -54,3 +54,9 @@ cbsa_code,cbsa_title,short_name,latitude,longitude
 46140,"Tulsa, OK",Tulsa,36.131389,-95.937222
 46520,"Urban Honolulu, HI",Honolulu,21.3,-157.816667
 46660,"Valdosta, GA",Valdosta,30.846667,-83.283056
+CA-TORONTO,"Toronto",Toronto,43.741667,-79.373333
+DE-MUNICH,"Munich",Munich,48.133333,11.566667
+DE-FRANKFURT,"Frankfurt",Frankfurt,50.116667,8.683333
+FI-HELSINKI,"Helsinki",Helsinki,60.170833,24.9375
+FR-PARIS,"Paris",Paris,48.8567,2.3508
+AU-SYDNEY,"Sydney",Sydney,-33.865,151.209444
