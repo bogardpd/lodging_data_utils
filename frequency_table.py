@@ -37,6 +37,8 @@ def frequency_table(
     )
     
     print(grouped)
+    print("Total night(s):", grouped['nights'].sum())
+
     if output_file is not None:
         grouped.to_csv(output_file, index=False)
         print(f"Saved CSV to `{output_file}`.")
