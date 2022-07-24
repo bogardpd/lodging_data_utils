@@ -1,62 +1,108 @@
 metro_id,metro_title,short_name,latitude,longitude
+10180,"Abilene, TX",Abilene,32.448544,-99.733134
+10420,"Akron, OH",Akron,41.073056,-81.517778
 10740,"Albuquerque, NM",Albuquerque,35.110833,-106.61
 11060,"Altus, OK",Altus,34.643889,-99.326667
+11100,"Amarillo, TX",Amarillo,35.199167,-101.845278
 12060,"Atlanta-Sandy Springs-Alpharetta, GA",Atlanta,33.748889,-84.39
+12420,"Austin-Round Rock-Georgetown, TX",Austin,30.266667,-97.733333
 12540,"Bakersfield, CA",Bakersfield,35.366667,-119.016667
+13380,"Bellingham, WA",Bellingham,48.750278,-122.475
+13780,"Binghamton, NY",Binghamton,42.102222,-75.911667
 13820,"Birmingham-Hoover, AL",Birmingham,33.653333,-86.808889
+14460,"Boston-Cambridge-Newton, MA-NH",Boston,42.358056,-71.063611
 14860,"Bridgeport-Stamford-Norwalk, CT",Bridgeport,41.186389,-73.195556
 15380,"Buffalo-Cheektowaga, NY",Buffalo,42.904722,-78.849444
+15940,"Canton-Massillon, OH",Canton,40.805,-81.375833
 16580,"Champaign-Urbana, IL",Champaign,40.115,-88.272778
 16700,"Charleston-North Charleston, SC",Charleston,32.783333,-79.933333
+16740,"Charlotte-Concord-Gastonia, NC-SC",Charlotte,35.227222,-80.843056
 16980,"Chicago-Naperville-Elgin, IL-IN-WI",Chicago,41.881944,-87.627778
 17140,"Cincinnati, OH-KY-IN",Cincinnati,39.1,-84.516667
+17460,"Cleveland-Elyria, OH",Cleveland,41.482222,-81.669722
 17820,"Colorado Springs, CO",Colorado Springs,38.833889,-104.825278
 18140,"Columbus, OH",Columbus,39.983333,-82.983333
 18880,"Crestview-Fort Walton Beach-Destin, FL",Fort Walton Beach,30.420278,-86.616667
+19100,"Dallas-Fort Worth-Arlington, TX",Dallas,32.779167,-96.808889
 19430,"Dayton-Kettering, OH",Dayton,39.759444,-84.191667
+19580,"Defiance, OH",Defiance,41.281944,-84.362778
 19740,"Denver-Aurora-Lakewood, CO",Denver,39.76185,-104.881105
 19780,"Des Moines-West Des Moines, IA",Des Moines,41.590833,-93.620833
+19820,"Detroit-Warren-Dearborn, MI",Detroit,42.331389,-83.045833
+21060,"Elizabethtown-Fort Knox, KY",Elizabethtown,37.7,-85.866667
 21140,"Elkhart-Goshen, IN",Elkhart,41.683056,-85.968889
 22380,"Flagstaff, AZ",Flagstaff,35.199167,-111.631111
 23060,"Fort Wayne, IN",Fort Wayne,41.08045,-85.13915
+24020,"Glens Falls, NY",Glens Falls,43.424444,-73.715278
+24140,"Goldsboro, NC",Goldsboro,35.381944,-77.978056
 25900,"Hilo, HI",Hilo,19.705556,-155.085833
 25940,"Hilton Head Island-Bluffton, SC",Hilton Head Island,32.178889,-80.743056
 25980,"Hinesville, GA",Hinesville,31.846667,-81.596389
 26580,"Huntington-Ashland, WV-KY-OH",Huntington,38.420833,-82.423611
 26900,"Indianapolis-Carmel-Anderson, IN",Indianapolis,39.768611,-86.158056
 27260,"Jacksonville, FL",Jacksonville,30.336944,-81.661389
+27340,"Jacksonville, NC",Jacksonville,34.759722,-77.409722
 28580,"Key West, FL",Key West,24.559722,-81.783611
+28660,"Killeen-Temple, TX",Killeen,31.105556,-97.726667
+28940,"Knoxville, TN",Knoxville,35.9617,-83.9232
 29200,"Lafayette-West Lafayette, IN",Lafayette,40.417222,-86.878611
+29780,"Las Vegas, NM",Las Vegas,36.175,-115.136389
+30020,"Lawton, OK",Lawton,34.604167,-98.395556
 30460,"Lexington-Fayette, KY",Lexington,38.029722,-84.494722
 30780,"Little Rock-North Little Rock-Conway, AR",Little Rock,34.736111,-92.331111
 31080,"Los Angeles-Long Beach-Anaheim, CA",Los Angeles,34.05,-118.25
 31140,"Louisville/Jefferson County, KY-IN",Louisville,38.225333,-85.741667
+31180,"Lubbock, TX",Lubbock,33.577778,-101.89
+31740,"Manhattan, KS",Manhattan,39.183608,-96.571669
+31930,"Marietta, OH",Marietta,39.416667,-81.45
 33100,"Miami-Fort Lauderdale-Pompano Beach, FL",Miami,25.775163,-80.208615
 33140,"Michigan City-La Porte, IN",Michigan City,41.709444,-86.886944
+34060,"Morgantown, WV",Morgantown,39.633611,-79.950556
 34820,"Myrtle Beach-Conway-North Myrtle Beach, SC-NC",Myrtle Beach,33.744075,-78.869475
+34980,"Nashville-Davidson--Murfreesboro--Franklin, TN",Nashville,36.166667,-86.783333
+35620,"New York-Newark-Jersey City, NY-NJ-PA",New York,40.712778,-74.006111
+36260,"Ogden-Clearfield, UT",Ogden,41.227778,-111.961111
 36420,"Oklahoma City, OK",Oklahoma City,35.482222,-97.535
 36740,"Orlando-Kissimmee-Sanford, FL",Orlando,28.54,-81.38
 37860,"Pensacola-Ferry Pass-Brent, FL",Pensacola,30.433333,-87.2
+37980,"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",Philadelphia,39.952778,-75.163611
 38060,"Phoenix-Mesa-Chandler, AZ",Phoenix,33.45,-112.066667
 38240,"Pinehurst-Southern Pines, NC",Pinehurst,35.195389,-79.468722
+38300,"Pittsburgh, PA",Pittsburgh,40.439722,-79.976389
 38860,"Portland-South Portland, ME",Portland,43.666667,-70.266667
+38900,"Portland-Vancouver-Hillsboro, OR-WA",Portland,45.52,-122.681944
+39300,"Providence-Warwick, RI-MA",Providence,41.823611,-71.422222
 39580,"Raleigh-Cary, NC",Raleigh,35.766667,-78.633333
+39660,"Rapid City, SD",Rapid City,44.076,-103.228
 40140,"Riverside-San Bernardino-Ontario, CA",Riverside,33.948056,-117.396111
+41620,"Salt Lake City, UT",Salt Lake City,40.760833,-111.891111
+41700,"San Antonio-New Braunfels, TX",San Antonio,29.416667,-98.5
 41740,"San Diego-Chula Vista-Carlsbad, CA",San Diego,32.715,-117.1625
 41940,"San Jose-Sunnyvale-Santa Clara, CA",San Jose,37.333333,-121.9
+41980,"San Juan-Bayamón-Caguas, PR",San Juan,18.406389,-66.063889
 42340,"Savannah, GA",Savannah,32.016667,-81.116667
+42940,"Sevierville, TN",Sevierville,35.8775,-83.57
 43780,"South Bend-Mishawaka, IN-MI",South Bend,41.676389,-86.250278
 42660,"Seattle-Tacoma-Bellevue, WA",Seattle,47.609722,-122.333056
 41180,"St. Louis, MO-IL",St. Louis,38.627222,-90.197778
+44940,"Sumter, SC",Sumter,33.926944,-80.363611
 45300,"Tampa-St. Petersburg-Clearwater, FL",Tampa,27.968056,-82.476389
 45460,"Terre Haute, IN",Terre Haute,39.469722,-87.389722
 46060,"Tucson, AZ",Tucson,32.221667,-110.926389
 46140,"Tulsa, OK",Tulsa,36.131389,-95.937222
 46520,"Urban Honolulu, HI",Honolulu,21.3,-157.816667
 46660,"Valdosta, GA",Valdosta,30.846667,-83.283056
+47260,"Virginia Beach-Norfolk-Newport News, VA-NC",Virginia Beach,36.85,-75.977778
+47900,"Washington-Arlington-Alexandria, DC-VA-MD-WV",Washington,38.904722,-77.016389
+48620,"Wichita, KS",Wichita,37.688889,-97.336111
+AU-MELBOURNE,"Melbourne",Melbourne,-37.813611,144.963056
+AU-PERTH,"Perth",Perth,-31.952222,115.858889
+AU-SYDNEY,"Sydney",Sydney,-33.865,151.209444
 CA-TORONTO,"Toronto",Toronto,43.741667,-79.373333
+CA-VANCOUVER,"Vancouver",Vancouver,49.261111,-123.113889
+DE-BITBURG,"Bitburg",Bitburg,49.966667,6.533333
 DE-MUNICH,"Munich",Munich,48.133333,11.566667
 DE-FRANKFURT,"Frankfurt",Frankfurt,50.116667,8.683333
+DE-NUREMBERG,"Nuremberg",Nuremberg,49.453889,11.0775
 FI-HELSINKI,"Helsinki",Helsinki,60.170833,24.9375
 FR-PARIS,"Paris",Paris,48.8567,2.3508
-AU-SYDNEY,"Sydney",Sydney,-33.865,151.209444
