@@ -7,16 +7,17 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
 from matplotlib.gridspec import GridSpec
+from pathlib import Path
 import numpy as np
 
 HOME_LOCATION = "US/OH/Beavercreek"
 KM_PER_MILE = 1.609
 
-def main(type, years):
+def main(type, years, output=None):
     if type == 'single':
-        SingleYearDistanceChart(years[0]).plot()
+        SingleYearDistanceChart(years[0], output).plot()
     elif type == 'multi':
-        YearsAndAverageDistanceChart(*years).plot()
+        YearsAndAverageDistanceChart(*years, output).plot()
     
 
 class DistanceByDayChart():
@@ -46,9 +47,10 @@ class DistanceByDayChart():
 class SingleYearDistanceChart(DistanceByDayChart):
     """A chart showing distance by day for a single year."""
 
-    def __init__(self, year):
+    def __init__(self, year, output=None):
         super().__init__()
         self.year = int(year)
+        self.output = output
         self.locations = DateCollection(
             HotelDataFrame(),
             date(self.year,1,1),
@@ -95,15 +97,20 @@ class SingleYearDistanceChart(DistanceByDayChart):
             )
 
         plt.tight_layout()
-        plt.show()
+        if self.output is None:
+            plt.show()
+        else:
+            plt.savefig(self.output)
+            print(f"Saved distance by day chart to {self.output}.")
 
 class YearsAndAverageDistanceChart(DistanceByDayChart):
     """A chart for each year and a chart averaging all years."""
 
-    def __init__(self, start_year, end_year):
+    def __init__(self, start_year, end_year, output=None):
         super().__init__()
         self.start_year = start_year
         self.end_year = end_year
+        self.output = output
         locations = DateCollection(
             HotelDataFrame(),
             date(self.start_year,1,1),
@@ -196,7 +203,11 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
         avg_ax_km.set_ylabel("Distance (km)")
 
         fig.tight_layout()
-        plt.show()
+        if self.output is None:
+            plt.show()
+        else:
+            plt.savefig(self.output)
+            print(f"Saved distance by day chart to {self.output}.")
 
 
 if __name__ == "__main__":
@@ -231,9 +242,16 @@ if __name__ == "__main__":
         help="End year (inclusive)",
     )
 
+    parser.add_argument(
+        'output',
+        type=Path,
+        help="Output file(s) to save the graph to",
+        default=None,
+    )
+
     args = parser.parse_args()
     if args.type == 'single':
-        main('single', [args.year])
+        main('single', [args.year], args.output)
     else:
-        main('multi', [args.start_year, args.end_year])
+        main('multi', [args.start_year, args.end_year], args.output)
     
