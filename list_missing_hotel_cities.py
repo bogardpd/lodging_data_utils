@@ -21,13 +21,12 @@ def main(args):
         print(colorama.Fore.GREEN + "All hotel cities have coordinates defined.")
     else:
         print("Cities missing coordinates:")
+        for city in cities_without_coordinates:
+                print(colorama.Fore.RED + f"  {city}")
         if args.raiseException:
             raise MissingHotelCitiesError(
                 f"Missing cities: {', '.join(cities_without_coordinates)}"
-            )
-        else:  
-            for city in cities_without_coordinates:
-                print(colorama.Fore.RED + f"  {city}")
+            )            
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
