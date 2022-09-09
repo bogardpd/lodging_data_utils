@@ -11,7 +11,7 @@ from modules.coordinates import CITIES_PATH, METROS_PATH
 from modules.hotel_data_frame import HotelDataFrame
 
 def frequency_table(
-    by='city', start_date=None, thru_date=None, output_file=None
+    by='city', start_date=None, thru_date=None, output_file=None, top=None
 ):
     mornings = HotelDataFrame().by_morning().loc[start_date:thru_date]
     cities_df = pd.read_csv(CITIES_PATH,
@@ -36,6 +36,8 @@ def frequency_table(
         ascending=[False, True],
     )
     
+    if top is not None:
+        grouped = grouped.head(top)
     print(grouped)
     print("Total night(s):", grouped['nights'].sum())
 
@@ -105,5 +107,9 @@ if __name__ == "__main__":
         help="CSV file to write the results to",
         type=Path
     )
+    parser.add_argument('--top',
+        help="how many results to show",
+        type=int
+    )
     args = parser.parse_args()
-    frequency_table(args.by, args.start, args.thru, args.output)
+    frequency_table(args.by, args.start, args.thru, args.output, args.top)
