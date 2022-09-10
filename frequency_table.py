@@ -48,10 +48,11 @@ def frequency_table(
         columns = columns[-1:] + columns[:-1]
         grouped = grouped[columns]
     
+    total_nights = grouped['nights'].sum()
     if top is not None:
         grouped = grouped.head(top)
     print(grouped)
-    print("Total night(s):", grouped['nights'].sum())
+    print("Total night(s):", total_nights)
 
     if output_file is not None:
         grouped.to_csv(output_file, index=False)
