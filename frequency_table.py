@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-from modules.coordinates import CITIES_PATH, METROS_PATH
+from modules.coordinates import CITIES_PATH, METROS_PATH, US_STATES_PATH
 from modules.hotel_data_frame import HotelDataFrame
 
 def frequency_table(
@@ -33,6 +33,12 @@ def frequency_table(
         metros_grouped = group_metros(metro_mornings)
 
         grouped = pd.concat([cities_grouped, metros_grouped])
+    elif by == 'state':
+        mornings = mornings[mornings['city'].str.match("US")]
+        mornings['state'] = mornings['city'].apply(lambda x:
+            str(x).split('/')[1]
+        )
+        grouped = group_states(mornings)
     else:
         grouped = group_cities(mornings)
     
@@ -96,6 +102,25 @@ def group_metros(mornings):
     grouped['metro_id'] = grouped['metro_id'].astype('string')
     grouped.index.names = ['loc_id']
     return grouped
+
+def group_states(mornings):
+    if mornings.empty:
+        return pd.DataFrame()
+    mornings = mornings.assign(type='state')
+    states_df = pd.read_csv(US_STATES_PATH, index_col='abbrev')
+    mornings = mornings.join(states_df,
+        on='state',
+        rsuffix='_state'
+    )
+    grouped = mornings.groupby('state').agg(
+        location=('name', 'first'),
+        type=('type', 'first'),
+        latitude=('latitude', 'first'),
+        longitude=('longitude', 'first'),
+        nights=('city', 'count'),
+    )
+    grouped.index.names = ['state']
+    return grouped
     
 
 if __name__ == "__main__":
@@ -103,8 +128,8 @@ if __name__ == "__main__":
         description="Create a CSV of hotel locations and nights."
     )
     parser.add_argument('--by',
-        help="group by `city` or `metro`",
-        choices=['city','metro'],
+        help="group by `city`, `metro` or `state`",
+        choices=['city','metro','state'],
         default='city',
     )
     parser.add_argument('--start',

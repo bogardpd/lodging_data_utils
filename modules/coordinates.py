@@ -2,6 +2,7 @@ import pandas as pd
 
 CITIES_PATH = "data/cities.csv"
 METROS_PATH = "data/metro_areas.csv"
+US_STATES_PATH = "data/us_states.csv"
 LOCATION_COORDINATES = pd.read_csv(CITIES_PATH, index_col='city')
 
 def all_coordinates():
