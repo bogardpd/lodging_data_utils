@@ -11,7 +11,12 @@ from modules.coordinates import CITIES_PATH, METROS_PATH
 from modules.hotel_data_frame import HotelDataFrame
 
 def frequency_table(
-    by='city', start_date=None, thru_date=None, output_file=None, top=None
+    by='city',
+    start_date=None,
+    thru_date=None,
+    output_file=None,
+    top=None,
+    rank=False,
 ):
     mornings = HotelDataFrame().by_morning().loc[start_date:thru_date]
     cities_df = pd.read_csv(CITIES_PATH,
@@ -35,6 +40,13 @@ def frequency_table(
         by=['nights','location'],
         ascending=[False, True],
     )
+    if rank:
+        grouped['rank'] = grouped['nights'] \
+            .rank(method='min', ascending=False) \
+            .astype('int')
+        columns = grouped.columns.to_list()
+        columns = columns[-1:] + columns[:-1]
+        grouped = grouped[columns]
     
     if top is not None:
         grouped = grouped.head(top)
@@ -111,5 +123,11 @@ if __name__ == "__main__":
         help="how many results to show",
         type=int
     )
+    parser.add_argument('--rank',
+        help="show a ranking column",
+        action='store_true'
+    )
     args = parser.parse_args()
-    frequency_table(args.by, args.start, args.thru, args.output, args.top)
+    frequency_table(
+        args.by, args.start, args.thru, args.output, args.top, args.rank
+    )
