@@ -1,52 +1,52 @@
 abbrev,name,latitude,longitude
-AK,Alaska,65.3609,-151.604
-AL,Alabama,32.8551,-86.7184
-AR,Arkansas,34.7563,-92.1428
-AZ,Arizona,34.3046,-111.935
-CA,California,36.7496,-119.591
-CO,Colorado,38.9998,-105.543
-CT,Connecticut,41.6486,-72.7594
-DC,District of Columbia,38.8922,-77.0113
-DE,Delaware,38.8657,-75.4112
-FL,Florida,28.1568,-81.6228
-GA,Georgia,32.8547,-83.4078
-HI,Hawaii,21.4919,-157.999
-IA,Iowa,42.0423,-93.3891
-ID,Idaho,43.7825,-114.133
-IL,Illinois,39.946,-89.1991
-IN,Indiana,39.8874,-86.1396
-KS,Kansas,38.5,-98.3309
-KY,Kentucky,37.3994,-85.5729
-LA,Louisiana,30.5274,-91.9991
-MA,Massachusetts,42.3739,-71.9993
-MD,Maryland,39.3874,-77.0454
-ME,Maine,45.148,-69.1973
-MI,Michigan,43.4343,-84.9479
-MN,Minnesota,46.0592,-93.364
-MO,Missouri,38.5487,-92.446
-MS,Mississippi,32.8657,-89.7189
-MT,Montana,46.9965,-110.044
-NC,North Carolina,35.6152,-78.866
-ND,North Dakota,47.4675,-100.302
-NE,Nebraska,41.5002,-99.6855
-NH,New Hampshire,43.5993,-71.6301
-NJ,New Jersey,40.0449,-74.4653
-NM,New Mexico,34.5002,-106.024
-NV,Nevada,39.4299,-117.02
-NY,New York,43.1988,-75.3242
-OH,Ohio,40.0924,-82.6719
-OK,Oklahoma,35.452,-97.1309
-OR,Oregon,43.8333,-120.386
-PA,Pennsylvania,40.8601,-77.6094
-RI,Rhode Island,41.6242,-71.5082
-SC,South Carolina,33.8578,-80.6471
-SD,South Dakota,44.4711,-100.255
-TN,Tennessee,35.7514,-86.3415
-TX,Texas,31.131,-98.7607
-UT,Utah,39.5007,-111.544
-VA,Virginia,37.7403,-78.2431
-VT,Vermont,44.0886,-72.7317
-WA,Washington,47.4865,-120.361
-WI,Wisconsin,44.3709,-89.5831
-WV,West Virginia,38.6422,-80.7128
-WY,Wyoming,42.9999,-107.552
+AK,Alaska,65.36,-151.6
+AL,Alabama,32.86,-86.72
+AR,Arkansas,34.76,-92.14
+AZ,Arizona,34.3,-111.94
+CA,California,36.75,-119.59
+CO,Colorado,39.0,-105.54
+CT,Connecticut,41.65,-72.76
+DC,District of Columbia,38.89,-77.01
+DE,Delaware,38.87,-75.41
+FL,Florida,28.16,-81.62
+GA,Georgia,32.85,-83.41
+HI,Hawaii,21.49,-158.0
+IA,Iowa,42.04,-93.39
+ID,Idaho,43.78,-114.13
+IL,Illinois,39.95,-89.2
+IN,Indiana,39.89,-86.14
+KS,Kansas,38.5,-98.33
+KY,Kentucky,37.4,-85.57
+LA,Louisiana,30.53,-92.0
+MA,Massachusetts,42.37,-72.0
+MD,Maryland,39.39,-77.05
+ME,Maine,45.15,-69.2
+MI,Michigan,43.43,-84.95
+MN,Minnesota,46.06,-93.36
+MO,Missouri,38.55,-92.45
+MS,Mississippi,32.87,-89.72
+MT,Montana,47.0,-110.04
+NC,North Carolina,35.62,-78.87
+ND,North Dakota,47.47,-100.3
+NE,Nebraska,41.5,-99.69
+NH,New Hampshire,43.6,-71.63
+NJ,New Jersey,40.04,-74.47
+NM,New Mexico,34.5,-106.02
+NV,Nevada,39.43,-117.02
+NY,New York,43.2,-75.32
+OH,Ohio,40.09,-82.67
+OK,Oklahoma,35.45,-97.13
+OR,Oregon,43.83,-120.39
+PA,Pennsylvania,40.86,-77.61
+RI,Rhode Island,41.62,-71.51
+SC,South Carolina,33.86,-80.65
+SD,South Dakota,44.47,-100.26
+TN,Tennessee,35.75,-86.34
+TX,Texas,31.13,-98.76
+UT,Utah,39.5,-111.54
+VA,Virginia,37.74,-78.24
+VT,Vermont,44.09,-72.73
+WA,Washington,47.49,-120.36
+WI,Wisconsin,44.37,-89.58
+WV,West Virginia,38.64,-80.71
+WY,Wyoming,43.0,-107.55
