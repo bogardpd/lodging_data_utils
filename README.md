@@ -30,8 +30,23 @@ The hotel data should be in an Excel spreadsheet, with a sheet title of `Hotel D
 
 * The `Checkout Date` of the hotel stay
 * The number of `Nights` spent at the hotel during this stay
-* The `City` where the hotel is located
-
-`City` should be a string containing the country code, subdivision codes (if needed), and city name separated by forward slashes. These should match the structure of the data in `data/cities.csv`. For example, Los Angeles would be stored as `US/CA/Los Angeles`.
+* The `City` where the hotel is located, as described in City Format below
 
 Some scripts may require additional columns.
+
+### City Format
+
+City names should be formed of the following, in order:
+
+- ISO 3166 A2 country code
+- Subdivision part of ISO 3166-2 subdivision code (if applicable)
+- City name (capital A-Z and spaces only). US cities should use [USPS city name](https://tools.usps.com/zip-code-lookup.htm) if available.
+
+All of the above should be separated by forward slashes. For example:
+
+- `AU/NSW/SYDNEY`
+- `IS/REYKJAVIK`
+- `US/MO/SAINT LOUIS`
+- `US/NC/WINSTON SALEM`
+
+Locations of overnight flights can also be included. If the location is to be the midpoint of a flight path, use `OVERNIGHT FLIGHT`, a forward slash, and the IATA code of both airports separated by a hyphen (`OVERNIGHT FLIGHT/DFW-SYD`). If only the arrival airport is to be used, use `OVERNIGHT FLIGHT`, a forward slash, and the arrival IATA code (`OVERNIGHT FLIGHT/KEF`).

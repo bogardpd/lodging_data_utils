@@ -5,10 +5,15 @@ import argparse
 import datetime
 import numpy as np
 import pandas as pd
+import sqlite3
+import tomllib
 from pathlib import Path
 
-from modules.coordinates import CITIES_PATH, METROS_PATH, US_STATES_PATH
 from modules.hotel_data_frame import HotelDataFrame
+
+with open(Path(__file__).parent / "config.toml", 'rb') as f:
+    config = tomllib.load(f)
+con = sqlite3.connect(Path(config['files']['location_db']).expanduser())
 
 def frequency_table(
     by='city',
@@ -19,10 +24,8 @@ def frequency_table(
     rank=False,
 ):
     mornings = HotelDataFrame().by_morning().loc[start_date:thru_date]
-    cities_df = pd.read_csv(CITIES_PATH,
-        index_col='city',
-        dtype={'metro_id': 'string'}
-    )
+    cities_df = pd.read_sql("SELECT * FROM cities", con).set_index('city_id')
+    cities_df['metro_id'] = cities_df['metro_id'].astype(str)
     mornings = mornings.join(cities_df, on='city')
 
     if by == 'metro':
@@ -68,10 +71,6 @@ def group_cities(mornings):
     if mornings.empty:
         return pd.DataFrame()
     mornings = mornings.assign(type='city')
-    mornings['name'] = mornings.apply(lambda x:
-        str(x['city']).split("/")[-1],
-        axis=1
-    )
     grouped = mornings.groupby('city').agg(
         location=('name', 'first'),
         type=('type', 'first'),
@@ -86,12 +85,14 @@ def group_metros(mornings):
     if mornings.empty:
         return pd.DataFrame()
     mornings = mornings.assign(type='metro')
-    metros_df = pd.read_csv(METROS_PATH, index_col='metro_id')
+    metros_df = pd.read_sql("SELECT * FROM metro_areas", con)
+    metros_df = metros_df.set_index('metro_id')
     mornings = mornings.join(metros_df,
         on='metro_id',
         rsuffix='_metro'
     )
     grouped = mornings.groupby('metro_id').agg(
+        title=('metro_title', 'first'),
         location=('short_name', 'first'),
         type=('type', 'first'),
         metro_id=('metro_id', 'first'),
@@ -107,13 +108,14 @@ def group_states(mornings):
     if mornings.empty:
         return pd.DataFrame()
     mornings = mornings.assign(type='state')
-    states_df = pd.read_csv(US_STATES_PATH, index_col='abbrev')
+    states_df = pd.read_sql("SELECT * FROM us_states", con)
+    states_df = states_df.set_index('abbrev')
     mornings = mornings.join(states_df,
         on='state',
         rsuffix='_state'
     )
     grouped = mornings.groupby('state').agg(
-        location=('name', 'first'),
+        location=('name_state', 'first'),
         type=('type', 'first'),
         latitude=('latitude', 'first'),
         longitude=('longitude', 'first'),

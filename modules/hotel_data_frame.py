@@ -28,6 +28,9 @@ class HotelDataFrame:
 
         # Force checkout_date to be a date column.
         hotel_sheet.checkout_date = hotel_sheet.checkout_date.dt.date
+
+        # Force city ID to be uppercase.
+        hotel_sheet['city'] = hotel_sheet['city'].str.upper()
         
         # Store sorted dataframe.
         columns = (['checkout_date', 'nights', 'city'] + additional_columns)
