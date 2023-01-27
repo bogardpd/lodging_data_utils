@@ -1,2 +1,4 @@
+home_location = "US/OH/BEAVERCREEK"
+
 [files]
 location_db = "~/OneDrive/Projects/Maps/_data/Locations.sqlite3"

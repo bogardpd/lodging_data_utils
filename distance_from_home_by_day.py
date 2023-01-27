@@ -8,9 +8,12 @@ import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
 from matplotlib.gridspec import GridSpec
 from pathlib import Path
+import tomllib
 import numpy as np
 
-HOME_LOCATION = "US/OH/Beavercreek"
+with open(Path(__file__).parent / "config.toml", 'rb') as f:
+    config = tomllib.load(f)
+
 KM_PER_MILE = 1.609
 
 def main(type, years, output=None):
@@ -55,7 +58,7 @@ class SingleYearDistanceChart(DistanceByDayChart):
             HotelDataFrame(),
             date(self.year,1,1),
             date(self.year,12,31),
-            HOME_LOCATION,
+            config['home_location'],
         )
 
     def plot(self):
@@ -115,7 +118,7 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
             HotelDataFrame(),
             date(self.start_year,1,1),
             date(self.end_year,12,31),
-            HOME_LOCATION,
+            config['home_location'],
         )
         self.by_year_data = {}
         self.days_of_year = {}
