@@ -2,6 +2,8 @@
 
 This package contains utilities for working with an [Excel spreadsheet of hotel stay data](#hotel-data-format).
 
+For all of the below scripts, the location on any given day is considered to be where the traveler woke up the morning of that day.
+
 ## Utilities
 
 ### Distance from Home by Day
@@ -38,8 +40,8 @@ Some scripts may require additional columns.
 
 City names should be formed of the following, in order:
 
-- ISO 3166 A2 country code
-- Subdivision part of ISO 3166-2 subdivision code (if applicable)
+- [ISO 3166 Alpha-2](https://www.iso.org/obp/ui/#search) country code
+- Subdivision part of [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) subdivision code (if applicable)
 - City name (capital A-Z and spaces only). US cities should use [USPS city name](https://tools.usps.com/zip-code-lookup.htm) if available.
 
 All of the above should be separated by forward slashes. For example:
@@ -49,4 +51,10 @@ All of the above should be separated by forward slashes. For example:
 - `US/MO/SAINT LOUIS`
 - `US/NC/WINSTON SALEM`
 
-Locations of overnight flights can also be included. If the location is to be the midpoint of a flight path, use `OVERNIGHT FLIGHT`, a forward slash, and the IATA code of both airports separated by a hyphen (`OVERNIGHT FLIGHT/DFW-SYD`). If only the arrival airport is to be used, use `OVERNIGHT FLIGHT`, a forward slash, and the arrival IATA code (`OVERNIGHT FLIGHT/KEF`).
+### Overnight Flights
+
+A traveler may wake up the morning of a particular day on an overnight flight.
+
+In most cases, the location of a red-eye flight should be the airport where the flight arrives. Such a location should be recorded as `FLIGHT`, a forward slash, and the arrival IATA code (`FLIGHT/KEF`).
+
+In certain situations, an overnight flight may last longer than a calendar day, such as some westbound flights across the International Date Line that land two calendar days after they depart. For example, consider a flight that departs DFW on 10 Feb (Dallas time) and lands in SYD on 12 Feb (Sydney time). The traveler’s location on the morning of 11 Feb should be recorded as the midpoint of the flight, represented as `FLIGHT`, a forward slash, and the IATA code of both airports separated by a hyphen (`FLIGHT/DFW-SYD`). The location for the morning of 12 February should be recorded as the arrival airport only (`FLIGHT/SYD`).

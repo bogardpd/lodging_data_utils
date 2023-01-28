@@ -25,7 +25,7 @@ def frequency_table(
 ):
     mornings = HotelDataFrame().by_morning().loc[start_date:thru_date]
     cities_df = pd.read_sql("SELECT * FROM cities", con).set_index('city_id')
-    cities_df['metro_id'] = cities_df['metro_id'].astype(str)
+    cities_df['metro_id'] = cities_df['metro_id']
     mornings = mornings.join(cities_df, on='city')
 
     if by == 'metro':
@@ -36,6 +36,16 @@ def frequency_table(
         metros_grouped = group_metros(metro_mornings)
 
         grouped = pd.concat([cities_grouped, metros_grouped])
+        column_order = [
+            'title',
+            'location',
+            'type',
+            'metro_id',
+            'latitude',
+            'longitude',
+            'nights',
+        ]
+        grouped = grouped[column_order]
     elif by == 'state':
         mornings = mornings[mornings['city'].str.match("US")]
         mornings['state'] = mornings['city'].apply(lambda x:
@@ -71,6 +81,9 @@ def group_cities(mornings):
     if mornings.empty:
         return pd.DataFrame()
     mornings = mornings.assign(type='city')
+    mornings.loc[
+        mornings['city'].str.startswith('FLIGHT'), 'type'
+    ] = 'flight'
     grouped = mornings.groupby('city').agg(
         location=('name', 'first'),
         type=('type', 'first'),
@@ -102,6 +115,7 @@ def group_metros(mornings):
     )
     grouped['metro_id'] = grouped['metro_id'].astype('string')
     grouped.index.names = ['loc_id']
+    
     return grouped
 
 def group_states(mornings):

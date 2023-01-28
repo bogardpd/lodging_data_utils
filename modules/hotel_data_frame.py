@@ -86,7 +86,7 @@ class HotelDataFrame:
             fm = first_morning(checkout, nights)
             if reject_flight_midpoints:
                 location_list = city.split("/")
-                if (location_list[0] == "Overnight Flight"
+                if (location_list[0] == "FLIGHT"
                         and "-" in location_list[1]):
                     continue
             if start_date:
