@@ -58,3 +58,30 @@ A traveler may wake up the morning of a particular day on an overnight flight.
 In most cases, the location of a red-eye flight should be the airport where the flight arrives. Such a location should be recorded as `FLIGHT`, a forward slash, and the arrival IATA code (`FLIGHT/KEF`).
 
 In certain situations, an overnight flight may last longer than a calendar day, such as some westbound flights across the International Date Line that land two calendar days after they depart. For example, consider a flight that departs DFW on 10 Feb (Dallas time) and lands in SYD on 12 Feb (Sydney time). The traveler’s location on the morning of 11 Feb should be recorded as the midpoint of the flight, represented as `FLIGHT`, a forward slash, and the IATA code of both airports separated by a hyphen (`FLIGHT/DFW-SYD`). The location for the morning of 12 February should be recorded as the arrival airport only (`FLIGHT/SYD`).
+
+## Database Format
+
+Some of these scripts require an SQLite database of location data, whose location should be set in `config.toml`. It should have three tables: `cities`, `metro_areas`, and `us_states`. At a minimum, every city listed in the hotel spreadsheet should have an entry in the `cities` table.
+
+### cities
+
+- `city_id` (TEXT): A unique identifier for each city as described in [City Format](#city-format) above
+- `name` (TEXT): The city’s name
+- `latitude` (REAL): Latitude of the city in decimal degrees
+- `longitude` (REAL): Longitude of the city in decimal degrees
+- `metro_id` (TEXT): The id of the city’s metro area (as defined in the `metro_areas` table), or null if the city is not in a metro area
+
+### metro_areas
+
+- `metro_id` (TEXT): A unique identifier for the metro area. Should always start with the ISO A2 country code and a slash, and typically then follows the city ID format for the metro area’s main city (`IS/REYKJAVIK`). However, if the country has its own ID scheme for metro areas, use that instead of a city name (`US/35620`).
+- `metro_title` (TEXT): The official name of the metro area, or the city name of the primary city if an official name is not available
+- `short_name` (TEXT): The name of the primary city of the metro area
+- `latitude` (REAL): Latitude of the metro in decimal degrees
+- `longitude` (REAL): Longitude of the metro in decimal degrees
+
+### us_states
+
+- `abbrev` (TEXT): Two-letter postal code for the state
+- `name` (TEXT): Name of the state
+- `latitude` (REAL): Latitude of the state in decimal degrees
+- `longitude` (REAL): Longitude of the state in decimal degrees
