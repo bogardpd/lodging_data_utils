@@ -21,9 +21,12 @@ def frequency_table(
     thru_date=None,
     output_file=None,
     top=None,
+    exclude_flights=False,
     rank=False,
 ):
     mornings = HotelDataFrame().by_morning().loc[start_date:thru_date]
+    if exclude_flights:
+        mornings = mornings[~mornings.city.str.startswith('FLIGHT/')]
     cities_df = pd.read_sql("SELECT * FROM cities", con).set_index('city_id')
     cities_df['metro_id'] = cities_df['metro_id']
     mornings = mornings.join(cities_df, on='city')
@@ -165,11 +168,15 @@ if __name__ == "__main__":
         help="how many results to show",
         type=int
     )
+    parser.add_argument('--exclude_flights',
+        help="do not include nights on flights",
+        action='store_true',
+    )
     parser.add_argument('--rank',
         help="show a ranking column",
         action='store_true'
     )
     args = parser.parse_args()
     frequency_table(
-        args.by, args.start, args.thru, args.output, args.top, args.rank
+        args.by, args.start, args.thru, args.output, args.top, args.exclude_flights, args.rank
     )
