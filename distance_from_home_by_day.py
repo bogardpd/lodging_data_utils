@@ -71,7 +71,7 @@ class SingleYearDistanceChart(DistanceByDayChart):
         fig, ax = plt.subplots(1,1,figsize=(9,3),dpi=96)
         ax.plot(data['dates'],data['distances'])
         self.apply_styles(ax, data, self.year, include_xaxis=True)
-        ax.set_title(f"Distance from Home ({self.year})")
+        # ax.set_title(f"Distance from Home ({self.year})")
         y_max_miles = max(data['distances']) * 1.1
         y_max_km = y_max_miles * KM_PER_MILE
 
