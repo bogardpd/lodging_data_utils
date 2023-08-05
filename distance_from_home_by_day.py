@@ -15,6 +15,10 @@ with open(Path(__file__).parent / "config.toml", 'rb') as f:
     config = tomllib.load(f)
 
 KM_PER_MILE = 1.609
+COLORS = {
+    'line': "#ee7733",
+    'face': "#bf500c",
+}
 
 def main(type, years, output=None):
     if type == 'single':
@@ -31,7 +35,7 @@ class DistanceByDayChart():
 
     def apply_styles(self, ax, ax_data, year, include_xaxis=False):
         ax.fill_between(ax_data['dates'], ax_data['distances'], 0,
-            facecolor='blue', alpha=0.1)
+            facecolor=COLORS['face'], alpha=0.1)
         ax.xaxis.set_major_locator(mdates.MonthLocator())
         ax.xaxis.set_minor_locator(mdates.MonthLocator(bymonthday=16))
         ax.xaxis.grid(alpha=0.5)
@@ -69,7 +73,7 @@ class SingleYearDistanceChart(DistanceByDayChart):
             'distances': list(distances.values()),
         }
         fig, ax = plt.subplots(1,1,figsize=(9,3),dpi=96)
-        ax.plot(data['dates'],data['distances'])
+        ax.plot(data['dates'],data['distances'], color=COLORS['line'])
         self.apply_styles(ax, data, self.year, include_xaxis=True)
         # ax.set_title(f"Distance from Home ({self.year})")
         y_max_miles = max(data['distances']) * 1.1
