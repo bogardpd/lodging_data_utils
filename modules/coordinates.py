@@ -18,7 +18,7 @@ def all_coordinates():
 def coordinates(city):
     """Returns the coordinates for a city as [lat, lon].
     
-    City should be provided in 'US/CA/Los Angeles' format.
+    City should be provided in 'US/CA/LOS ANGELES' format.
     """
     try:
         row = LOCATION_COORDINATES.loc[city]
