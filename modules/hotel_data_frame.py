@@ -20,24 +20,19 @@ class HotelDataFrame:
         # Read Excel spreadsheet.
         hotel_sheet = pd.read_excel(
             self.HOTEL_FILE_PATH,
-            sheet_name='Hotel Data',
-            parse_dates=['Checkout Date'],
+            sheet_name='Stays',
+            parse_dates=['CheckoutDate'],
         )
-        
-        # Normalize column names.
-        hotel_sheet.columns = hotel_sheet.columns.str.replace(
-            r'\s+', '_', regex=True
-        ).str.lower()
 
         # Force checkout_date to be a date column.
-        hotel_sheet.checkout_date = hotel_sheet.checkout_date.dt.date
+        hotel_sheet.CheckoutDate = hotel_sheet.CheckoutDate.dt.date
 
         # Force city ID to be uppercase.
-        hotel_sheet['city'] = hotel_sheet['city'].str.upper()
+        hotel_sheet['City'] = hotel_sheet['City'].str.upper()
         
         # Store sorted dataframe.
-        columns = (['checkout_date', 'nights', 'city'] + additional_columns)
-        self.data = hotel_sheet[columns].sort_values('checkout_date')
+        columns = (['CheckoutDate', 'Nights', 'City'] + additional_columns)
+        self.data = hotel_sheet[columns].sort_values('CheckoutDate')
 
     def df(self):
         """Returns a Pandas DataFrame for hotel data."""
@@ -63,10 +58,10 @@ class HotelDataFrame:
         stays = [
             pd.DataFrame.from_dict({
                 'morning': [
-                    row.checkout_date - timedelta(days=i)
-                    for i in reversed(range(row.nights))
+                    row.CheckoutDate - timedelta(days=i)
+                    for i in reversed(range(row.Nights))
                 ],
-                'city': [row.city] * row.nights,
+                'city': [row.City] * row.Nights,
             })
             for row in input_df.itertuples()
         ]

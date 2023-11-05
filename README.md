@@ -28,7 +28,7 @@ For this script to work, the [hotel data](#hotel-data-format) must also have a `
 
 ## Hotel Data Format
 
-The hotel data should be in an Excel spreadsheet, with a sheet title of `Hotel Data`. The data should contain a row for each hotel stay, in a titled table with at least the following columns:
+The hotel data should be in an Excel spreadsheet, with a sheet title of `StaysData`. The data should contain a row for each hotel stay, in a titled table with at least the following columns:
 
 * The `Checkout Date` of the hotel stay
 * The number of `Nights` spent at the hotel during this stay

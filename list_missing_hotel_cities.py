@@ -11,7 +11,7 @@ class MissingHotelCitiesError(Exception):
 
 def main(args):
     hotel_df = HotelDataFrame().df()
-    hotel_cities = set(hotel_df['city'])
+    hotel_cities = set(hotel_df['City'])
 
     coordinates = all_coordinates()
     coordinates_cities = set(coordinates.index.values.tolist())
