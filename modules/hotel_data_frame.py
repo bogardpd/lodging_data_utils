@@ -1,15 +1,18 @@
 import pandas as pd
+import tomllib
 from pathlib import Path
 from datetime import timedelta
 
 from modules.common import first_morning
 from modules.coordinates import coordinates
 
+with open(Path(__file__).parent.parent / "config.toml", 'rb') as f:
+    config = tomllib.load(f)
+
 class HotelDataFrame:
     """Manages a pandas dataframe of hotel stay data."""
     
-    HOTEL_FILE_PATH = (Path.home()
-        / Path("OneDrive/Documents/Travel/Hotels.xlsx"))
+    HOTEL_FILE_PATH = Path(config['files']['lodging_data']).expanduser()
 
     def __init__(self, additional_columns=[]):
         """Initialize a HotelDataFrame."""
