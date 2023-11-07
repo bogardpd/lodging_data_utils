@@ -12,11 +12,11 @@ For all of the below scripts, the location on any given day is considered to be 
 
 This script generates an SVG XY scatter chart showing every calendar day (from 1 Jan to 31 Dec) on the X axis, and distance from home on the Y axis, with points colored by year. An average distance from home for each day is also shown.
 
-### Location Frequency Map Data
+### Frequency Table
 
-[location_frequency_map_data.py](location_frequency_map_data.py)
+[frequency_table.py](frequency_table.py)
 
-This script generates a CSV file with each row containing a `City`, `Latitude`, `Longitude`, and `Frequency` (count of nights). This can be used to generate a heatmap in GIS software by plotting a point for each date.
+This script generates a Pandas DataFrame with each row containing a `location`, `type` (city, state, or metro), `latitude`, `longitude`, and `nights` (count of nights). This can be exported to CSV for use in GIS software.
 
 ### Nights Away and Home
 
