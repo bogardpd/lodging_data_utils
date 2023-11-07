@@ -10,7 +10,7 @@ For all of the below scripts, the location on any given day is considered to be 
 
 [distance_from_home_by_day.py](distance_from_home_by_day.py)
 
-This script generates an SVG XY scatter chart showing every calendar day (from 1 Jan to 31 Dec) on the X axis, and distance from home on the Y axis, with points colored by year. An average distance from home for each day is also shown.
+This script generates a Matplotlib chart showing every calendar day (from 1 Jan to 31 Dec) on the X axis, and distance from home on the Y axis. Can also be used to show multiple years at once, as well as an average distance from home for each calendar day.
 
 ### Frequency Table
 
@@ -23,8 +23,6 @@ This script generates a Pandas DataFrame with each row containing a `location`, 
 [nights_away_and_home.py](nights_away_and_home.py)
 
 This script generates an SVG image for a plot of nights spent traveling (divided into work and personal nights) and nights spent at home.
-
-For this script to work, the [hotel data](#hotel-data-format) must also have a `Purpose` column with values of either `Business` or `Personal` for each stay.
 
 ## Hotel Data Format
 
