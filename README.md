@@ -28,13 +28,24 @@ For this script to work, the [hotel data](#hotel-data-format) must also have a `
 
 ## Hotel Data Format
 
-The hotel data should be in an Excel spreadsheet, with a sheet title of `StaysData`. The data should contain a row for each hotel stay, in a titled table with at least the following columns:
+The hotel data should be in an Excel spreadsheet, with a sheet title of `Stays`. The data should contain a row for each hotel stay, in a titled table with at least the following columns:
 
-* The `Checkout Date` of the hotel stay
-* The number of `Nights` spent at the hotel during this stay
-* The `City` where the hotel is located, as described in City Format below
+| Column | Format | Description |
+|--------|--------|-------------|
+| CheckoutDate | Date | The departure date from the stay, in **YYYY-MM-DD** format. If departure occurs prior to midnight but the stay is booked/billed through the following morning, then the following morning should be used as the checkout date. |
+| Nights | Number (Integer) | The number of nights spent on the stay. Should be equal to the difference in days between the check-in date and the check-out date. |
+| City | Text | The `City` where the hotel is located, as described in [City Format](#city-format) below |
+| FacilityId | Number (Integer) | An optional identifier, tying the stay to a specific building or campus. May be used with an external geodata store to match stays to feature IDs. |
+| Type | Text | **Hotel** (a hotel room), **STR** (Short Term Rental, such as Airbnb or VRBO), **Residence** (someone’s home), or **Flight** (as described in [Overnight Flights](#overnight-flights)).
+| Portfolio | Text | A collection of hotel brands or short-term rentals, usually with its own loyalty program (e.g. **Hilton** or **VRBO**). Leave blank if this stay does not have a hotel portfolio. |
+| Brand | Text | The brand of hotel (e.g. **Hampton Inn**). Short-term rentals will generally leave this blank. Hotels which are not part of a chain, residences, and overnight flights should leave this blank. |
+| Location | Text | The name of the hotel. If the hotel is part of a chain and the chain is part of the name, include the chain in the name (e.g. **Embassy Suites by Hilton Chicago Downtown Magnificent Mile**). |
+| Code | Text | The unique identifier a Portfolio uses for this particular property, if available. |
+| Purpose | Text | **Business** or **Personal**. |
+| Room | Text | The room number(s) for this particular stay, if applicable. |
+| Comment | Text | An optional comment field. |
 
-Some scripts may require additional columns.
+If additional columns are desired, they should be named in PascalCase format.
 
 ### City Format
 
