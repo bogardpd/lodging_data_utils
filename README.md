@@ -1,6 +1,6 @@
 # Hotel Data Utilities
 
-This package contains utilities for working with an [Excel spreadsheet of hotel stay data](#hotel-data-format).
+This package contains utilities for working with an [Excel spreadsheet of hotel (and other lodging) stay data](#lodging-data-format).
 
 For all of the below scripts, the location on any given day is considered to be where the traveler woke up the morning of that day.
 
@@ -24,9 +24,9 @@ This script generates a Pandas DataFrame with each row containing a *location*, 
 
 This script generates an SVG image for a plot of nights spent traveling (divided into work and personal nights) and nights spent at home.
 
-## Hotel Data Format
+## Lodging Data Format
 
-The hotel data should be in an Excel spreadsheet, with a sheet title of *Stays*. The data should contain a row for each hotel stay, in a titled table with at least the following columns:
+The lodging data should be in an Excel spreadsheet, with a sheet title of *Stays*. The data should contain a row for each lodging stay, in a titled table with at least the following columns:
 
 | Column | Format | Description |
 |--------|--------|-------------|
@@ -70,7 +70,7 @@ In certain situations, an overnight flight may last longer than a calendar day, 
 
 ## Database Format
 
-Some of these scripts require an SQLite database of location data, whose location should be set in config.toml. It should have three tables: *cities*, *metro_areas*, and *us_states*. At a minimum, every city listed in the hotel spreadsheet should have an entry in the *cities* table.
+Some of these scripts require an SQLite database of location data, whose location should be set in config.toml. It should have three tables: *cities*, *metro_areas*, and *us_states*. At a minimum, every city listed in the lodging spreadsheet should have an entry in the *cities* table.
 
 ### cities
 

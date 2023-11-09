@@ -11,9 +11,9 @@ from pathlib import Path
 
 from modules.hotel_data_frame import HotelDataFrame
 
-with open(Path(__file__).parent / "config.toml", 'rb') as f:
-    config = tomllib.load(f)
-con = sqlite3.connect(Path(config['files']['location_db']).expanduser())
+with open(Path(__file__).parent / "data_sources.toml", 'rb') as f:
+    sources = tomllib.load(f)
+con = sqlite3.connect(Path(sources['locations']['path']).expanduser())
 
 def frequency_table(
     by='city',

@@ -1,0 +1,6 @@
+[stays]
+path = "~/OneDrive/Documents/Travel/Lodging/Lodging.xlsx"
+sheet = "Stays"
+
+[locations]
+path = "~/OneDrive/Projects/Maps/_data/Locations.sqlite3"

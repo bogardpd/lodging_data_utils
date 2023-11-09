@@ -3,10 +3,11 @@ import tomllib
 import sqlite3
 from pathlib import Path
 
-with open(Path(__file__).parent.parent / "config.toml", 'rb') as f:
-    config = tomllib.load(f)
+ROOT = Path(__file__).parent.parent
+with open(ROOT / "data_sources.toml", 'rb') as f:
+    sources = tomllib.load(f)
 
-db_path = Path(config['files']['location_db']).expanduser()
+db_path = Path(sources['locations']['path']).expanduser()
 con = sqlite3.connect(db_path)
 sql_loc = "SELECT * FROM cities ORDER BY city_id"
 LOCATION_COORDINATES = pd.read_sql(sql_loc, con).set_index('city_id')

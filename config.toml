@@ -1,5 +1,1 @@
 home_location = "US/OH/BEAVERCREEK"
-
-[files]
-lodging_data = "~/OneDrive/Documents/Travel/Lodging/Lodging.xlsx"
-location_db = "~/OneDrive/Projects/Maps/_data/Locations.sqlite3"
