@@ -241,6 +241,13 @@ if __name__ == "__main__":
         required=False,
         default=None
     )
+    parser_single.add_argument(
+        '--output',
+        dest='output',
+        type=Path,
+        help="Output file(s) to save the graph to",
+        default=None,
+    )
     
     parser_multi = subparsers.add_parser(
         'multi',
@@ -261,8 +268,7 @@ if __name__ == "__main__":
         type=int,
         help="End year (inclusive)",
     )
-
-    parser.add_argument(
+    parser_multi.add_argument(
         '--output',
         dest='output',
         type=Path,
