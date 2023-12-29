@@ -87,11 +87,7 @@ class SingleYearDistanceChart(DistanceByDayChart):
         ax_km = ax.twinx()
         ax_km.set_ylim([0,y_max_km])
         ax_km.set_ylabel("Distance (km)")
-
-        location_dates = {
-            # date(2020,3,9): "Denver",
-            # date(2020,3,12): "Travel Restrictions Start",
-        }
+        
         if self.labels is not None:
             with open(self.labels, newline='', encoding='UTF-8') as lf:
                 reader = csv.DictReader(lf)
