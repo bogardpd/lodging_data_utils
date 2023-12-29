@@ -2,7 +2,7 @@ from modules.collections import DateCollection
 from modules.hotel_data_frame import HotelDataFrame
 
 import argparse
-from datetime import date
+from datetime import date, datetime
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
@@ -10,6 +10,7 @@ from matplotlib.gridspec import GridSpec
 from pathlib import Path
 import tomllib
 import numpy as np
+import csv
 
 with open(Path(__file__).parent / "config.toml", 'rb') as f:
     config = tomllib.load(f)
@@ -20,9 +21,9 @@ COLORS = {
     'face': "#bf500c",
 }
 
-def main(type, years, output=None):
+def main(type, years, output=None, labels=None):
     if type == 'single':
-        SingleYearDistanceChart(years[0], output).plot()
+        SingleYearDistanceChart(years[0], output, labels).plot()
     elif type == 'multi':
         YearsAndAverageDistanceChart(*years, output).plot()
     
@@ -54,7 +55,7 @@ class DistanceByDayChart():
 class SingleYearDistanceChart(DistanceByDayChart):
     """A chart showing distance by day for a single year."""
 
-    def __init__(self, year, output=None):
+    def __init__(self, year, output=None, labels=None):
         super().__init__()
         self.year = int(year)
         self.output = output
@@ -64,6 +65,7 @@ class SingleYearDistanceChart(DistanceByDayChart):
             date(self.year,12,31),
             config['home_location'],
         )
+        self.labels = labels
 
     def plot(self):
         distances = self.locations.distances()
@@ -90,18 +92,21 @@ class SingleYearDistanceChart(DistanceByDayChart):
             # date(2020,3,9): "Denver",
             # date(2020,3,12): "Travel Restrictions Start",
         }
-
-        for loc_date, city in location_dates.items():
-            day = loc_date.timetuple().tm_yday
-            ax.annotate(city,
-                xy=(data['dates'][day], data['distances'][day]),
-                xycoords = 'data',
-                xytext = (15,30),
-                textcoords='offset points',
-                arrowprops = dict(
-                    arrowstyle = "->",
-                )
-            )
+        if self.labels is not None:
+            with open(self.labels, newline='', encoding='UTF-8') as lf:
+                reader = csv.DictReader(lf)
+                for row in reader:
+                    dt = datetime.strptime(row['checkout_date'], "%Y-%m-%d")
+                    yday = dt.date().timetuple().tm_yday - 1
+                    ax.annotate(row['location'],
+                        xy=(data['dates'][yday], data['distances'][yday]),
+                        xycoords = 'data',
+                        xytext = (15,30),
+                        textcoords='offset points',
+                        arrowprops = dict(
+                            arrowstyle = "->",
+                        )      
+                    )
 
         plt.tight_layout()
         if self.output is None:
@@ -226,9 +231,19 @@ if __name__ == "__main__":
         help="Create a chart for a single year.",
     )
     parser_single.add_argument(
-        'year',
+        '--year',
+        dest='year',
         type=int,
+        required=True,
         help="Year to generate chart for"
+    )
+    parser_single.add_argument(
+        '--labels',
+        dest='labels',
+        type=Path,
+        help="CSV file of checkout_date,location pairs to label",
+        required=False,
+        default=None
     )
     
     parser_multi = subparsers.add_parser(
@@ -239,18 +254,21 @@ if __name__ == "__main__":
         )
     )
     parser_multi.add_argument(
-        'start_year',
+        '--start_year',
+        dest='start_year',
         type=int,
         help="Start year (inclusive)",
     )
     parser_multi.add_argument(
-        'end_year',
+        '--end_year',
+        dest='end_year',
         type=int,
         help="End year (inclusive)",
     )
 
     parser.add_argument(
-        'output',
+        '--output',
+        dest='output',
         type=Path,
         help="Output file(s) to save the graph to",
         default=None,
@@ -258,7 +276,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     if args.type == 'single':
-        main('single', [args.year], args.output)
+        main('single', [args.year], args.output, args.labels)
     else:
         main('multi', [args.start_year, args.end_year], args.output)
     
