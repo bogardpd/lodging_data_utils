@@ -38,9 +38,13 @@ The lodging data should be in an Excel spreadsheet, with a sheet title of *Stays
 | *Portfolio* | Text | A collection of hotel brands or short-term rentals, usually with its own loyalty program (e.g. **Hilton** or **VRBO**). Leave blank if this stay does not have a hotel portfolio. |
 | *Brand* | Text | The brand of hotel (e.g. **Hampton Inn**). Short-term rentals will generally leave this blank. Hotels which are not part of a chain, residences, and overnight flights should leave this blank. |
 | *Location* | Text | The name of the lodging. If the lodging is a chain hotel and the chain is part of the name, include the chain in the name (e.g. **Embassy Suites by Hilton Chicago Downtown Magnificent Mile**). Residences should be named after the person(s) occupying the residence. |
-| *Code* | Text | The unique identifier a Portfolio uses for this particular property, if available. |
+| *FacilityId* | Number (Integer) | A unique identifier for the particular building or campus of the lodging. Allows tracking whether a stay occurred at the same facility as another stay, even if the lodging was re-branded in between the stays. This also allows the lodging to be correlated with an external geospatial database, if one is used. |
+| *Code* | Text | The unique identifier a Portfolio uses for this particular property, if available. Otherwise, this should be left blank. |
+| *SabreGDS* | Text | For hotels and short-term rentals, the Sabre GDS identifier for the hotel at the time of the stay, if available. Otherwise, this should be left blank. |
 | *Purpose* | Text | **Business** or **Personal**. |
 | *Room* | Text | The room number(s) for this particular stay, if applicable. |
+| *Qualifying* | Text | **Yes** or **No** (blanks are considered to be **Yes**). Whether the stay counts for status at the Portfolio. |
+| *LifetimeQualifying* | Text | **Yes** or **No** (blanks are considered to be **Yes**). Whether the stay counts for lifetime status at the Portfolio. |
 | *Comment* | Text | An optional comment field. |
 
 If additional columns are desired, they should be named in PascalCase format.
