@@ -3,6 +3,7 @@ from modules.hotel_data_frame import HotelDataFrame
 
 import argparse
 from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
@@ -21,9 +22,14 @@ COLORS = {
     'face': "#bf500c",
 }
 
-def main(type, years, output=None, labels=None):
+def main(type, years, output=None, labels=None, earliest_prior_year=None):
     if type == 'single':
-        SingleYearDistanceChart(years[0], output, labels).plot()
+        SingleYearDistanceChart(
+            years[0],
+            output,
+            labels,
+            earliest_prior_year,
+        ).plot()
     elif type == 'multi':
         YearsAndAverageDistanceChart(*years, output).plot()
     
@@ -55,7 +61,10 @@ class DistanceByDayChart():
 class SingleYearDistanceChart(DistanceByDayChart):
     """A chart showing distance by day for a single year."""
 
-    def __init__(self, year, output=None, labels=None):
+    def __init__(
+            self, year,
+            output=None, labels=None, earliest_prior_year=None,
+        ):
         super().__init__()
         self.year = int(year)
         self.output = output
@@ -65,20 +74,51 @@ class SingleYearDistanceChart(DistanceByDayChart):
             date(self.year,12,31),
             config['home_location'],
         )
+        if earliest_prior_year is None:
+            self.prior_locations = {}
+        else:
+            prior_years = range(int(earliest_prior_year), self.year)
+            self.prior_locations = {
+                y: DateCollection(
+                    HotelDataFrame(),
+                    date(y,1,1),
+                    date(y,12,31),
+                    config['home_location'],
+                ) for y in prior_years}
         self.labels = labels
 
     def plot(self):
+        fig, ax = plt.subplots(1,1,figsize=(9,3),dpi=96)
+        
+        # Plot prior years (if any):
+        max_miles_prior = 0
+        for y, pl in self.prior_locations.items():
+            distances = pl.distances()
+            dates = [
+                d + relativedelta(years=(self.year - y))
+                for d in distances.keys()
+            ]
+            distances = list(distances.values())
+            max_miles_prior = max(max_miles_prior, max(distances))
+            data = {
+                'title': str(y),
+                'dates': dates,
+                'distances': distances,
+            }
+            ax.plot(data['dates'], data['distances'], color="#cccccc", alpha=0.4)
+        
+        # Plot current year.
         distances = self.locations.distances()
         data = {
             'title': str(self.year),
             'dates': list(distances.keys()),
             'distances': list(distances.values()),
         }
-        fig, ax = plt.subplots(1,1,figsize=(9,3),dpi=96)
         ax.plot(data['dates'],data['distances'], color=COLORS['line'])
+
+        # Configure plot.
         self.apply_styles(ax, data, self.year, include_xaxis=True)
-        # ax.set_title(f"Distance from Home ({self.year})")
-        y_max_miles = max(data['distances']) * 1.1
+        y_max_miles = max(max_miles_prior, max(data['distances'])) * 1.1
         y_max_km = y_max_miles * KM_PER_MILE
 
         ax.set_ylim([0,y_max_miles])
@@ -248,6 +288,13 @@ if __name__ == "__main__":
         help="Output file(s) to save the graph to",
         default=None,
     )
+    parser_single.add_argument(
+        '--earliest_prior_year',
+        dest='earliest_prior_year',
+        type=int,
+        help="Include lines for prior years back through this year",
+        default=None
+    )
     
     parser_multi = subparsers.add_parser(
         'multi',
@@ -278,7 +325,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     if args.type == 'single':
-        main('single', [args.year], args.output, args.labels)
+        main(
+            'single',
+            [args.year],
+            args.output,
+            args.labels,
+            args.earliest_prior_year,
+        )
     else:
         main('multi', [args.start_year, args.end_year], args.output)
     
