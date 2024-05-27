@@ -19,6 +19,7 @@ with open(Path(__file__).parent / "config.toml", 'rb') as f:
 KM_PER_MILE = 1.609
 COLORS = {
     'line': "#ee7733",
+    'line_prior': "#cccccc",
     'face': "#bf500c",
 }
 
@@ -105,7 +106,12 @@ class SingleYearDistanceChart(DistanceByDayChart):
                 'dates': dates,
                 'distances': distances,
             }
-            ax.plot(data['dates'], data['distances'], color="#cccccc", alpha=0.4)
+            ax.plot(
+                data['dates'],
+                data['distances'],
+                color=COLORS['line_prior'],
+                alpha=0.4
+            )
         
         # Plot current year.
         distances = self.locations.distances()
