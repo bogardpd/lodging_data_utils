@@ -21,6 +21,8 @@ COLORS = {
     'line': "#ee7733",
     'line_prior': "#cccccc",
     'face': "#bf500c",
+    'grid_major': "#d0d0d0",
+    'grid_minor': "#f0f0f0",
 }
 
 def main(type, years, output=None, labels=None, earliest_prior_year=None):
@@ -46,7 +48,7 @@ class DistanceByDayChart():
             facecolor=COLORS['face'], alpha=0.1)
         ax.xaxis.set_major_locator(mdates.MonthLocator())
         ax.xaxis.set_minor_locator(mdates.MonthLocator(bymonthday=16))
-        ax.xaxis.grid(alpha=0.5)
+        ax.xaxis.grid(True, which='major', color=COLORS['grid_major'])
         ax.xaxis.set_tick_params(length=0)
         ax.set_xlim([date(year,1,1),date(year,12,31)])
         for tick in ax.xaxis.get_minor_ticks():
@@ -129,6 +131,10 @@ class SingleYearDistanceChart(DistanceByDayChart):
 
         ax.set_ylim([0,y_max_miles])
         ax.set_ylabel("Distance (miles)")
+
+        ax.yaxis.grid(True, which='major', color=COLORS['grid_major'])
+        ax.yaxis.grid(True, which='minor', color=COLORS['grid_minor'])
+        ax.yaxis.set_minor_locator(ticker.AutoMinorLocator())
 
         ax_km = ax.twinx()
         ax_km.set_ylim([0,y_max_km])
