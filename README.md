@@ -32,8 +32,9 @@ The lodging data should be in an Excel spreadsheet, with a sheet title of *Stays
 |--------|--------|-------------|
 | *CheckoutDate* | Date | The departure date from the stay (in the lodging location’s time zone), in **YYYY-MM-DD** format. If departure occurs prior to midnight but the stay is booked/billed through the following morning, then the following morning should be used as the checkout date. |
 | *Nights* | Number (Integer) | The number of nights spent on the stay. Should be equal to the difference in days between the check-in date and the check-out date. |
-| *City* | Text | The city where the lodging is located, as described in [City Format](#city-format). |
 | *FacilityId* | Number (Integer) | An optional identifier, tying the stay to a specific building or campus. May be used with an external geodata store to match stays to feature IDs. |
+| *CityId* | Text | The city where the lodging is located, as described in [City Format](#city-format). |
+| *MetroID* | Text | The metro where the lodging is located, as described in [Metro Format](#city-format). |
 | *Type* | Text | **Hotel** (a hotel room), **STR** (Short Term Rental, such as Airbnb or VRBO), **Residence** (someone’s home), or **Flight** (as described in [Overnight Flights](#overnight-flights)).
 | *Portfolio* | Text | A collection of hotel brands or short-term rentals, usually with its own loyalty program (e.g. **Hilton** or **VRBO**). Leave blank if this stay does not have a hotel portfolio. |
 | *Brand* | Text | The brand of hotel (e.g. **Hampton Inn**). Short-term rentals will generally leave this blank. Hotels which are not part of a chain, residences, and overnight flights should leave this blank. |
@@ -63,6 +64,18 @@ All of the above should be separated by forward slashes. For example:
 - **IS/REYKJAVIK**
 - **US/MO/SAINT LOUIS**
 - **US/NC/WINSTON SALEM**
+
+### Metro Format
+
+If a country has a defined unique identifier for metro areas, then the metro ID should be the [ISO 3166 Alpha-2](https://www.iso.org/obp/ui/#search) country code, followed by a forward slash, followed by an identifier.
+
+Otherwise, the metro ID should match the format of the city ID of the metro's principle city.
+
+For example:
+
+- **US/10740**
+- **CA/TORONTO**
+- **JP/KANTO**
 
 ### Overnight Flights
 

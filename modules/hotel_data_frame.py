@@ -29,10 +29,10 @@ class HotelDataFrame:
         hotel_sheet.CheckoutDate = hotel_sheet.CheckoutDate.dt.date
 
         # Force city ID to be uppercase.
-        hotel_sheet['City'] = hotel_sheet['City'].str.upper()
+        hotel_sheet['CityId'] = hotel_sheet['CityId'].str.upper()
         
         # Store sorted dataframe.
-        columns = (['CheckoutDate', 'Nights', 'City'] + additional_columns)
+        columns = (['CheckoutDate', 'Nights', 'CityId'] + additional_columns)
         self.data = hotel_sheet[columns].sort_values('CheckoutDate')
 
     def df(self):
@@ -62,7 +62,7 @@ class HotelDataFrame:
                     row.CheckoutDate - timedelta(days=i)
                     for i in reversed(range(row.Nights))
                 ],
-                'city': [row.City] * row.Nights,
+                'city': [row.CityId] * row.Nights,
             })
             for row in input_df.itertuples()
         ]
