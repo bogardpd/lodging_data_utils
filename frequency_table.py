@@ -3,9 +3,7 @@ CBSA metro area."""
 
 import argparse
 import datetime
-import numpy as np
 import pandas as pd
-import sqlite3
 import tomllib
 from pathlib import Path
 
@@ -13,7 +11,7 @@ from modules.hotel_data_frame import HotelDataFrame
 
 with open(Path(__file__).parent / "data_sources.toml", 'rb') as f:
     sources = tomllib.load(f)
-con = sqlite3.connect(Path(sources['locations']['path']).expanduser())
+lodging_path = Path(sources['lodging']).expanduser()
 
 def frequency_table(
     by='city',
@@ -27,26 +25,28 @@ def frequency_table(
     mornings = HotelDataFrame().by_morning().loc[start_date:thru_date]
     if exclude_flights:
         mornings = mornings[~mornings.city.str.startswith('FLIGHT/')]
-    cities_df = pd.read_sql("SELECT * FROM cities", con).set_index('city_id')
-    cities_df['metro_id'] = cities_df['metro_id']
+    cities_df = pd.read_excel(
+        lodging_path,
+        sheet_name='Cities',
+    ).set_index('Id')
     mornings = mornings.join(cities_df, on='city')
 
     if by == 'metro':
-        city_mornings = mornings[mornings['metro_id'].isnull()]
-        metro_mornings = mornings[mornings['metro_id'].notnull()]
+        city_mornings = mornings[mornings['CurrentMetro'].isnull()]
+        metro_mornings = mornings[mornings['CurrentMetro'].notnull()]
         
         cities_grouped = group_cities(city_mornings)
         metros_grouped = group_metros(metro_mornings)
 
         grouped = pd.concat([cities_grouped, metros_grouped])
         column_order = [
-            'title',
-            'location',
-            'type',
-            'metro_id',
-            'latitude',
-            'longitude',
-            'nights',
+            'Title',
+            'Location',
+            'Type',
+            'MetroId',
+            'Latitude',
+            'Longitude',
+            'Nights',
         ]
         grouped = grouped[column_order]
     elif by == 'state':
@@ -59,18 +59,18 @@ def frequency_table(
         grouped = group_cities(mornings)
     
     grouped = grouped.sort_values(
-        by=['nights','location'],
+        by=['Nights','Location'],
         ascending=[False, True],
     )
     if rank:
-        grouped['rank'] = grouped['nights'] \
+        grouped['Rank'] = grouped['Nights'] \
             .rank(method='min', ascending=False) \
             .astype('int')
         columns = grouped.columns.to_list()
         columns = columns[-1:] + columns[:-1]
         grouped = grouped[columns]
     
-    total_nights = grouped['nights'].sum()
+    total_nights = grouped['Nights'].sum()
     if top is not None:
         grouped = grouped.head(top)
     print(grouped)
@@ -88,11 +88,11 @@ def group_cities(mornings):
         mornings['city'].str.startswith('FLIGHT'), 'type'
     ] = 'flight'
     grouped = mornings.groupby('city').agg(
-        location=('name', 'first'),
-        type=('type', 'first'),
-        latitude=('latitude', 'first'),
-        longitude=('longitude', 'first'),
-        nights=('city', 'count'),
+        Location=('Name', 'first'),
+        Type=('type', 'first'),
+        Latitude=('Latitude', 'first'),
+        Longitude=('Longitude', 'first'),
+        Nights=('city', 'count'),
     )
     grouped.index.names = ['loc_id']
     return grouped
@@ -101,22 +101,23 @@ def group_metros(mornings):
     if mornings.empty:
         return pd.DataFrame()
     mornings = mornings.assign(type='metro')
-    metros_df = pd.read_sql("SELECT * FROM metro_areas", con)
-    metros_df = metros_df.set_index('metro_id')
+    metros_df = pd.read_excel(
+        lodging_path, sheet_name='Metros'
+    ).set_index('Id')
     mornings = mornings.join(metros_df,
-        on='metro_id',
+        on='CurrentMetro',
         rsuffix='_metro'
     )
-    grouped = mornings.groupby('metro_id').agg(
-        title=('metro_title', 'first'),
-        location=('short_name', 'first'),
-        type=('type', 'first'),
-        metro_id=('metro_id', 'first'),
-        latitude=('latitude_metro', 'first'),
-        longitude=('longitude_metro', 'first'),
-        nights=('city', 'count'),
+    grouped = mornings.groupby('CurrentMetro').agg(
+        Title=('Title', 'first'),
+        Location=('ShortName', 'first'),
+        Type=('type', 'first'),
+        MetroId=('CurrentMetro', 'first'),
+        Latitude=('Latitude_metro', 'first'),
+        Longitude=('Longitude_metro', 'first'),
+        Nights=('city', 'count'),
     )
-    grouped['metro_id'] = grouped['metro_id'].astype('string')
+    grouped['MetroId'] = grouped['MetroId'].astype('string')
     grouped.index.names = ['loc_id']
     
     return grouped
@@ -125,18 +126,20 @@ def group_states(mornings):
     if mornings.empty:
         return pd.DataFrame()
     mornings = mornings.assign(type='state')
-    states_df = pd.read_sql("SELECT * FROM us_states", con)
-    states_df = states_df.set_index('abbrev')
+    states_df = pd.read_excel(
+        lodging_path,
+        sheet_name='USStates',
+    ).set_index('Abbrev')
     mornings = mornings.join(states_df,
         on='state',
         rsuffix='_state'
     )
     grouped = mornings.groupby('state').agg(
-        location=('name_state', 'first'),
-        type=('type', 'first'),
-        latitude=('latitude', 'first'),
-        longitude=('longitude', 'first'),
-        nights=('city', 'count'),
+        Location=('Name_state', 'first'),
+        Type=('type', 'first'),
+        Latitude=('Latitude', 'first'),
+        Longitude=('Longitude', 'first'),
+        Nights=('city', 'count'),
     )
     grouped.index.names = ['state']
     return grouped

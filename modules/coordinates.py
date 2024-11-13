@@ -7,10 +7,11 @@ ROOT = Path(__file__).parent.parent
 with open(ROOT / "data_sources.toml", 'rb') as f:
     sources = tomllib.load(f)
 
-db_path = Path(sources['locations']['path']).expanduser()
-con = sqlite3.connect(db_path)
-sql_loc = "SELECT * FROM cities ORDER BY city_id"
-LOCATION_COORDINATES = pd.read_sql(sql_loc, con).set_index('city_id')
+lodging_path = Path(sources['lodging']).expanduser()
+LOCATION_COORDINATES = pd.read_excel(
+    lodging_path,
+    sheet_name='Cities',
+).set_index('Id')
 
 def all_coordinates():
     """Returns a hash of all coordinates data."""
@@ -23,9 +24,9 @@ def coordinates(city):
     """
     try:
         row = LOCATION_COORDINATES.loc[city]
-        return([row.latitude,row.longitude])
+        return([row.Latitude,row.Longitude])
     except KeyError as err:
         print(f"\nCould not find coordinates for:")
         print(city)
-        print(f"\nPlease add it to {db_path}.\n")
+        print(f"\nPlease add it to {lodging_path}.\n")
         raise SystemExit()

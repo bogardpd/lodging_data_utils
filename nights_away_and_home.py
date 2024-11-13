@@ -10,7 +10,7 @@ OUTPUT_SVG_PATH = "output/Nights Away and Home.svg"
 START_DATE = date(2009,2,9)
 END_DATE = date.today()
 
-hotel_df = HotelDataFrame(['purpose'])
+hotel_df = HotelDataFrame(['Purpose'])
 away_home_rows = GroupedStayCollection(hotel_df).rows()
 away_home_rows = list(filter(lambda r: r['away'].start >= START_DATE,
     away_home_rows))

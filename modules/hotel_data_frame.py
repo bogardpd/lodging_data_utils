@@ -13,7 +13,7 @@ with open(ROOT / "data_sources.toml", 'rb') as f:
 class HotelDataFrame:
     """Manages a pandas dataframe of hotel stay data."""
     
-    HOTEL_FILE_PATH = Path(sources['stays']['path']).expanduser()
+    HOTEL_FILE_PATH = Path(sources['lodging']).expanduser()
 
     def __init__(self, additional_columns=[]):
         """Initialize a HotelDataFrame."""
@@ -21,7 +21,7 @@ class HotelDataFrame:
         # Read Excel spreadsheet.
         hotel_sheet = pd.read_excel(
             self.HOTEL_FILE_PATH,
-            sheet_name=sources['stays']['sheet'],
+            sheet_name='Stays',
             parse_dates=['CheckoutDate'],
         )
 
