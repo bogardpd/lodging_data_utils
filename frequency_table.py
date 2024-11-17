@@ -13,6 +13,20 @@ with open(Path(__file__).parent / "data_sources.toml", 'rb') as f:
     sources = tomllib.load(f)
 lodging_path = Path(sources['lodging']).expanduser()
 
+total_labels = {
+    'night': ["night", "nights"],
+    'state': ["state", "states"],
+    'metro': ["metro area", "metro areas"],
+    'city': ["city", "cities"],
+}
+
+def pluralize_total(label, count):
+    if count == 1:
+        label_str = total_labels[label][0]
+    else:
+        label_str = total_labels[label][1]
+    return f"Total {total_labels[label][1]}: {count}"
+
 def frequency_table(
     by='City',
     start_date=None,
@@ -23,7 +37,6 @@ def frequency_table(
     rank=False,
 ):
     mornings = HotelDataFrame().by_morning().loc[start_date:thru_date]
-    print(mornings)
     if exclude_flights:
         mornings = mornings[~mornings.city.str.startswith('FLIGHT/')]
     cities_df = pd.read_excel(
@@ -72,10 +85,12 @@ def frequency_table(
         grouped = grouped[columns]
     
     total_nights = grouped['Nights'].sum()
+    total_locs = len(grouped)
     if top is not None:
         grouped = grouped.head(top)
     print(grouped)
-    print("Total night(s):", total_nights)
+    print(pluralize_total(by, total_locs))
+    print(pluralize_total('night', total_nights))
 
     if output_file is not None:
         grouped.to_csv(output_file, index=False)
