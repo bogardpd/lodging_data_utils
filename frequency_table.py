@@ -151,7 +151,6 @@ def group_states(mornings):
         on='State',
         rsuffix='State'
     )
-    print(mornings)
     grouped = mornings.groupby('State').agg(
         Location=('NameState', 'first'),
         Type=('type', 'first'),
