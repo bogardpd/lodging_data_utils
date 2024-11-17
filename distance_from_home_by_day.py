@@ -144,9 +144,9 @@ class SingleYearDistanceChart(DistanceByDayChart):
             with open(self.labels, newline='', encoding='UTF-8') as lf:
                 reader = csv.DictReader(lf)
                 for row in reader:
-                    dt = datetime.strptime(row['checkout_date'], "%Y-%m-%d")
+                    dt = datetime.strptime(row['CheckoutDate'], "%Y-%m-%d")
                     yday = dt.date().timetuple().tm_yday - 1
-                    ax.annotate(row['location'],
+                    ax.annotate(row['Location'],
                         xy=(data['dates'][yday], data['distances'][yday]),
                         xycoords = 'data',
                         xytext = (15,30),
@@ -289,7 +289,7 @@ if __name__ == "__main__":
         '--labels',
         dest='labels',
         type=Path,
-        help="CSV file of checkout_date,location pairs to label",
+        help="CSV file of CheckoutDate,Location pairs to label",
         required=False,
         default=None
     )

@@ -21,7 +21,7 @@ class DateCollection:
         
         self._hotel_df = hotel_df
         self._default_value = None if default_location == None else {
-            'city': default_location,
+            'City': default_location,
             'coordinates': coordinates(default_location)}
         # Create dictionary of dates with locations set to None by default:
         self.locations = {d:self._default_value for d in inclusive_date_range(
@@ -63,7 +63,7 @@ class DateCollection:
         for day in dates:
             if day in self.locations.keys():
                 self.locations[day] = {
-                    'city': location,
+                    'City': location,
                     'coordinates': coordinates(location)}
 
     def distances(self):
@@ -76,7 +76,7 @@ class DateCollection:
                 "default_location must be set in order to calculate distances")
         distances = {}
         for date, loc in self.locations.items():
-            distances[date] = self._home_distance(loc['city'])
+            distances[date] = self._home_distance(loc['City'])
         return distances
 
 
@@ -154,11 +154,11 @@ class StayPeriod:
 
         if is_away:
             self.cities = [{
-                'city': city,
-                'purpose': purpose,
-                'start': self.start,
-                'end': self.end,
-                'nights': self.nights
+                'City': city,
+                'Purpose': purpose,
+                'Start': self.start,
+                'End': self.end,
+                'Nights': self.nights
             }]            
         else:
             self.cities = []
@@ -181,7 +181,7 @@ class StayPeriod:
         away_purposes = []
         for loc in self.cities:
             away_purposes.extend(
-                loc['purpose'].lower() for i in range(loc['nights']))
+                loc['Purpose'].lower() for i in range(loc['Nights']))
         return(away_purposes)
 
     def date_range_string(self):
@@ -217,21 +217,21 @@ class StayPeriod:
         self.nights = (stay_checkout_date - self.start).days
 
         if (len(self.cities) == 0
-                or self.cities[-1]['city'] != city
-                or self.cities[-1]['purpose'] != purpose):
+                or self.cities[-1]['City'] != city
+                or self.cities[-1]['Purpose'] != purpose):
             # Create a new city:
             self.cities.append({
-                'city': city,
-                'purpose': purpose,
-                'start': stay_checkin_date,
-                'end': stay_checkout_date,
-                'nights': (stay_checkout_date - stay_checkin_date).days
+                'City': city,
+                'Purpose': purpose,
+                'Start': stay_checkin_date,
+                'End': stay_checkout_date,
+                'Nights': (stay_checkout_date - stay_checkin_date).days
             })
         else:
             # Merge into previous city:
-            self.cities[-1]['end'] = stay_checkout_date
-            self.cities[-1]['nights'] = (
-                stay_checkout_date - self.cities[-1]['start']).days
+            self.cities[-1]['End'] = stay_checkout_date
+            self.cities[-1]['Nights'] = (
+                stay_checkout_date - self.cities[-1]['Start']).days
 
     def mornings(self):
         """Return a list containing all morning dates during the stay.

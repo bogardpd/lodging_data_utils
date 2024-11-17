@@ -14,7 +14,7 @@ with open(Path(__file__).parent / "data_sources.toml", 'rb') as f:
 lodging_path = Path(sources['lodging']).expanduser()
 
 def frequency_table(
-    by='city',
+    by='City',
     start_date=None,
     thru_date=None,
     output_file=None,
@@ -23,13 +23,14 @@ def frequency_table(
     rank=False,
 ):
     mornings = HotelDataFrame().by_morning().loc[start_date:thru_date]
+    print(mornings)
     if exclude_flights:
         mornings = mornings[~mornings.city.str.startswith('FLIGHT/')]
     cities_df = pd.read_excel(
         lodging_path,
         sheet_name='Cities',
     ).set_index('Id')
-    mornings = mornings.join(cities_df, on='city')
+    mornings = mornings.join(cities_df, on='City')
 
     if by == 'metro':
         city_mornings = mornings[mornings['CurrentMetro'].isnull()]
@@ -50,8 +51,8 @@ def frequency_table(
         ]
         grouped = grouped[column_order]
     elif by == 'state':
-        mornings = mornings[mornings['city'].str.match("US")]
-        mornings['state'] = mornings['city'].apply(lambda x:
+        mornings = mornings[mornings['City'].str.match("US")]
+        mornings['state'] = mornings['City'].apply(lambda x:
             str(x).split('/')[1]
         )
         grouped = group_states(mornings)
@@ -83,18 +84,18 @@ def frequency_table(
 def group_cities(mornings):
     if mornings.empty:
         return pd.DataFrame()
-    mornings = mornings.assign(type='city')
+    mornings = mornings.assign(type='City')
     mornings.loc[
-        mornings['city'].str.startswith('FLIGHT'), 'type'
+        mornings['City'].str.startswith('FLIGHT'), 'type'
     ] = 'flight'
-    grouped = mornings.groupby('city').agg(
+    grouped = mornings.groupby('City').agg(
         Location=('Name', 'first'),
         Type=('type', 'first'),
         Latitude=('Latitude', 'first'),
         Longitude=('Longitude', 'first'),
-        Nights=('city', 'count'),
+        Nights=('City', 'count'),
     )
-    grouped.index.names = ['loc_id']
+    grouped.index.names = ['LocId']
     return grouped
 
 def group_metros(mornings):
@@ -115,10 +116,10 @@ def group_metros(mornings):
         MetroId=('CurrentMetro', 'first'),
         Latitude=('Latitude_metro', 'first'),
         Longitude=('Longitude_metro', 'first'),
-        Nights=('city', 'count'),
+        Nights=('City', 'count'),
     )
     grouped['MetroId'] = grouped['MetroId'].astype('string')
-    grouped.index.names = ['loc_id']
+    grouped.index.names = ['LocId']
     
     return grouped
 
@@ -139,7 +140,7 @@ def group_states(mornings):
         Type=('type', 'first'),
         Latitude=('Latitude', 'first'),
         Longitude=('Longitude', 'first'),
-        Nights=('city', 'count'),
+        Nights=('City', 'count'),
     )
     grouped.index.names = ['state']
     return grouped

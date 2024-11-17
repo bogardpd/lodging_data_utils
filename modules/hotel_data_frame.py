@@ -58,16 +58,16 @@ class HotelDataFrame:
         input_df = self.data
         stays = [
             pd.DataFrame.from_dict({
-                'morning': [
+                'Morning': [
                     row.CheckoutDate - timedelta(days=i)
                     for i in reversed(range(row.Nights))
                 ],
-                'city': [row.CityId] * row.Nights,
+                'City': [row.CityId] * row.Nights,
             })
             for row in input_df.itertuples()
         ]
         output = pd.concat(stays, ignore_index=True)
-        output = output.set_index('morning')
+        output = output.set_index('Morning')
         return output
 
     def location_frequencies(self,
@@ -102,13 +102,13 @@ class HotelDataFrame:
                     nights = nights - (checkout - end_date).days
                 
             if city in frequencies:
-                frequencies[city]['frequency'] += nights
+                frequencies[city]['Frequency'] += nights
             else:
                 latitude, longitude = coordinates(city)
                 frequencies[city] = {
-                    'latitude': latitude,
-                    'longitude': longitude,
-                    'frequency': nights,
+                    'Latitude': latitude,
+                    'Longitude': longitude,
+                    'Frequency': nights, 
                 }
 
         return frequencies
