@@ -17,15 +17,9 @@ total_labels = {
     'night': ["night", "nights"],
     'state': ["state", "states"],
     'metro': ["metro area", "metro areas"],
+    'historicmetro': ["metro area", "metro areas"],
     'city': ["city", "cities"],
 }
-
-def pluralize_total(label, count):
-    if count == 1:
-        label_str = total_labels[label][0]
-    else:
-        label_str = total_labels[label][1]
-    return f"Total {total_labels[label][1]}: {count}"
 
 def frequency_table(
     by='City',
@@ -45,12 +39,13 @@ def frequency_table(
     ).set_index('Id')
     mornings = mornings.join(cities_df, on='City')
 
-    if by == 'metro':
+    if (by == 'metro') or (by == 'historicmetro'):
         city_mornings = mornings[mornings['CurrentMetro'].isnull()]
         metro_mornings = mornings[mornings['CurrentMetro'].notnull()]
         
         cities_grouped = group_cities(city_mornings)
-        metros_grouped = group_metros(metro_mornings)
+        historic = (by == 'historicmetro')
+        metros_grouped = group_metros(metro_mornings, historic=historic)
 
         grouped = pd.concat([cities_grouped, metros_grouped])
         column_order = [
@@ -113,24 +108,30 @@ def group_cities(mornings):
     grouped.index.names = ['LocId']
     return grouped
 
-def group_metros(mornings):
+def group_metros(mornings, historic=False):
     if mornings.empty:
         return pd.DataFrame()
     mornings = mornings.assign(type='metro')
     metros_df = pd.read_excel(
         lodging_path, sheet_name='Metros'
     ).set_index('Id')
+    
+    if historic:
+        which_metro = "MetroId"
+    else:
+        which_metro = "CurrentMetro"
+    
     mornings = mornings.join(metros_df,
-        on='CurrentMetro',
-        rsuffix='_metro'
+        on=which_metro,
+        rsuffix='Metro'
     )
-    grouped = mornings.groupby('CurrentMetro').agg(
+    grouped = mornings.groupby(which_metro).agg(
         Title=('Title', 'first'),
         Location=('ShortName', 'first'),
         Type=('type', 'first'),
-        MetroId=('CurrentMetro', 'first'),
-        Latitude=('Latitude_metro', 'first'),
-        Longitude=('Longitude_metro', 'first'),
+        MetroId=(which_metro, 'first'),
+        Latitude=('LatitudeMetro', 'first'),
+        Longitude=('LongitudeMetro', 'first'),
         Nights=('City', 'count'),
     )
     grouped['MetroId'] = grouped['MetroId'].astype('string')
@@ -159,6 +160,13 @@ def group_states(mornings):
     )
     grouped.index.names = ['state']
     return grouped
+
+def pluralize_total(label, count):
+    if count == 1:
+        label_str = total_labels[label][0]
+    else:
+        label_str = total_labels[label][1]
+    return f"Total {label_str}: {count}"
     
 
 if __name__ == "__main__":
@@ -167,7 +175,7 @@ if __name__ == "__main__":
     )
     parser.add_argument('--by',
         help="group by `city`, `metro` or `state`",
-        choices=['city','metro','state'],
+        choices=['city','metro','historicmetro', 'state'],
         default='city',
     )
     parser.add_argument('--start',

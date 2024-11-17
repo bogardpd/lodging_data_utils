@@ -32,7 +32,7 @@ class HotelDataFrame:
         hotel_sheet['CityId'] = hotel_sheet['CityId'].str.upper()
         
         # Store sorted dataframe.
-        columns = (['CheckoutDate', 'Nights', 'CityId'] + additional_columns)
+        columns = (['CheckoutDate', 'Nights', 'CityId', 'MetroId'] + additional_columns)
         self.data = hotel_sheet[columns].sort_values('CheckoutDate')
 
     def df(self):
@@ -42,7 +42,7 @@ class HotelDataFrame:
     def min_date(self):
         """Returns the earliest away date.
 
-        This is one day after the checkin date for the first trip.
+        This is one day after the check-in date for the first trip.
         """
 
         earliest_hotel_id = self.data['checkout_date'].idxmin()
@@ -63,6 +63,7 @@ class HotelDataFrame:
                     for i in reversed(range(row.Nights))
                 ],
                 'City': [row.CityId] * row.Nights,
+                'MetroId': [row.MetroId] * row.Nights,
             })
             for row in input_df.itertuples()
         ]

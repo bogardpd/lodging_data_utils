@@ -22,13 +22,14 @@ class DateCollection:
         self._hotel_df = hotel_df
         self._default_value = None if default_location == None else {
             'City': default_location,
-            'coordinates': coordinates(default_location)}
+            'Coordinates': coordinates(default_location)}
         # Create dictionary of dates with locations set to None by default:
         self.locations = {d:self._default_value for d in inclusive_date_range(
             start_date, end_date)}
 
         # Set locations from hotel data:
-        for row in self._hotel_df.data.values.tolist():
+        columns=['CheckoutDate', 'Nights', 'CityId']
+        for row in self._hotel_df.data[columns].values.tolist():
             self._set_location(*row)
     
     def _home_distance(self, location):
@@ -36,7 +37,7 @@ class DateCollection:
         
         The Haversine formula is used to calculate the distance.
         """
-        home_coordinates = self._default_value['coordinates']
+        home_coordinates = self._default_value['Coordinates']
         location_coordinates = coordinates(location)
         phi_1 = home_coordinates[0] * self.DEG_TO_RAD
         phi_2 = location_coordinates[0] * self.DEG_TO_RAD
@@ -64,7 +65,7 @@ class DateCollection:
             if day in self.locations.keys():
                 self.locations[day] = {
                     'City': location,
-                    'coordinates': coordinates(location)}
+                    'Coordinates': coordinates(location)}
 
     def distances(self):
         """Returns a dictionary of dates and distance from home.
