@@ -32,7 +32,7 @@ def frequency_table(
 ):
     mornings = HotelDataFrame().by_morning().loc[start_date:thru_date]
     if exclude_flights:
-        mornings = mornings[~mornings.city.str.startswith('FLIGHT/')]
+        mornings = mornings[~mornings.City.str.startswith('FLIGHT/')]
     cities_df = pd.read_excel(
         lodging_path,
         sheet_name='Cities',
