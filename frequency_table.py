@@ -60,7 +60,7 @@ def frequency_table(
         grouped = grouped[column_order]
     elif by == 'state':
         mornings = mornings[mornings['City'].str.match("US")]
-        mornings['state'] = mornings['City'].apply(lambda x:
+        mornings['State'] = mornings['City'].apply(lambda x:
             str(x).split('/')[1]
         )
         grouped = group_states(mornings)
@@ -148,17 +148,19 @@ def group_states(mornings):
         sheet_name='USStates',
     ).set_index('Abbrev')
     mornings = mornings.join(states_df,
-        on='state',
-        rsuffix='_state'
+        on='State',
+        rsuffix='State'
     )
-    grouped = mornings.groupby('state').agg(
-        Location=('Name_state', 'first'),
+    print(mornings)
+    grouped = mornings.groupby('State').agg(
+        Location=('NameState', 'first'),
         Type=('type', 'first'),
+        StateId=('State', 'first'),
         Latitude=('Latitude', 'first'),
         Longitude=('Longitude', 'first'),
         Nights=('City', 'count'),
     )
-    grouped.index.names = ['state']
+    grouped.index.names = ['State']
     return grouped
 
 def pluralize_total(label, count):
