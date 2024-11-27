@@ -29,6 +29,7 @@ def frequency_table(
     top=None,
     exclude_flights=False,
     rank=False,
+    silent=False,
 ):
     mornings = HotelDataFrame().by_morning().loc[start_date:thru_date]
     if exclude_flights:
@@ -83,9 +84,10 @@ def frequency_table(
     total_locs = len(grouped)
     if top is not None:
         grouped = grouped.head(top)
-    print(grouped)
-    print(pluralize_total(by, total_locs))
-    print(pluralize_total('night', total_nights))
+    if not silent:
+        print(grouped)
+        print(pluralize_total(by, total_locs))
+        print(pluralize_total('night', total_nights))
 
     if output_file is not None:
         grouped.to_csv(output_file, index=False)
@@ -204,7 +206,12 @@ if __name__ == "__main__":
         help="show a ranking column",
         action='store_true'
     )
+    parser.add_argument('--silent',
+        help="do not show table in console",
+        action='store_true'
+    )
     args = parser.parse_args()
     frequency_table(
-        args.by, args.start, args.thru, args.output, args.top, args.exclude_flights, args.rank
+        args.by, args.start, args.thru, args.output, args.top,
+        args.exclude_flights, args.rank, args.silent,
     )
