@@ -130,7 +130,7 @@ class SingleYearDistanceChart(DistanceByDayChart):
         y_max_km = y_max_miles * KM_PER_MILE
 
         ax.set_ylim([0,y_max_miles])
-        ax.set_ylabel("Distance (miles)")
+        ax.set_ylabel("Miles from home")
 
         ax.yaxis.grid(True, which='major', color=COLORS['grid_major'])
         ax.yaxis.grid(True, which='minor', color=COLORS['grid_minor'])
@@ -138,7 +138,7 @@ class SingleYearDistanceChart(DistanceByDayChart):
 
         ax_km = ax.twinx()
         ax_km.set_ylim([0,y_max_km])
-        ax_km.set_ylabel("Distance (km)")
+        ax_km.set_ylabel("Kilometers from home")
         
         if self.labels is not None:
             with open(self.labels, newline='', encoding='UTF-8') as lf:
