@@ -11,6 +11,7 @@ from matplotlib.gridspec import GridSpec
 from pathlib import Path
 import tomllib
 import numpy as np
+import pandas as pd
 import csv
 
 with open(Path(__file__).parent / "config.toml", 'rb') as f:
@@ -157,9 +158,11 @@ class SingleYearDistanceChart(DistanceByDayChart):
                     )
 
         plt.tight_layout()
+        print(self.output)
         if self.output is None:
             plt.show()
         else:
+            pd.DataFrame(data).to_csv(self.output.with_suffix('.csv'), index=False)
             plt.savefig(self.output)
             print(f"Saved distance by day chart to {self.output}.")
 
@@ -261,7 +264,7 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
         avg_ax_km = avg_ax.twinx()
         avg_ax_km.set_ylim([0,y_max_km])
         avg_ax_km.set_ylabel("Distance (km)")
-
+        
         fig.tight_layout()
         if self.output is None:
             plt.show()
