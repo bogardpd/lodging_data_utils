@@ -1,6 +1,6 @@
 # Hotel Data Utilities
 
-This package contains utilities for working with an [Excel spreadsheet of hotel (and other lodging) stay data](#lodging-data-format).
+This package contains utilities for working with [hotel (and other lodging) stay data](docs/data_structure.md#lodging-data-format).
 
 For all of the below scripts, the location on any given day is considered to be where the traveler woke up the morning of that day.
 
