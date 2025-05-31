@@ -16,7 +16,7 @@ Information for each stay should be stored in a sheet titled *Stays*. The data s
 | *Portfolio* | Text | A collection of hotel brands or short-term rentals, usually with its own loyalty program (e.g. **Hilton** or **VRBO**). Leave blank if this stay does not have a hotel portfolio. |
 | *Brand* | Text | The brand of hotel (e.g. **Hampton Inn**). Short-term rentals will generally leave this blank. Hotels which are not part of a chain, residences, and overnight flights should leave this blank. |
 | *Location* | Text | The name of the lodging. If the lodging is a chain hotel and the chain is part of the name, include the chain in the name (e.g. **Embassy Suites by Hilton Chicago Downtown Magnificent Mile**). Residences should be named after the person(s) occupying the residence. |
-| *LodgingId* | Number (Integer) | An optional identifier, used to group stays that occurred at the same lodging instance. (This usually means a specific property, but different lodging instances could occupy the same property at different times as described in [Lodging Database Criteria for New vs. Updated Records](lodging_new_vs_updated_records.md).) May be used with an external geodata store to match stays to feature IDs. |
+| *LodgingId* | Number (Integer) | An optional identifier, used to group stays that occurred at the same lodging instance. (This usually means a specific property, but different lodging instances could occupy the same property at different times as described in [Lodging Database Criteria for New vs. Updated Records](lodging_new_vs_updated_records.md).) May be used with an external geodata store (as described in [Lodging GeoPackage](#lodging-geopackage)) to match stays to feature IDs. |
 | *CityId* | Text | The city where the lodging is located, as described in [City Format](#city-format). |
 | *MetroId* | Text | The metro where the lodging is located as of the CheckoutDate, as described in [Metro Format](#city-format). |
 | *Purpose* | Text | **Business** or **Personal**. |
@@ -71,6 +71,27 @@ Reference data for U.S. states should be kept in a sheet titled _USStates_. The 
 | *Name* | Text | Name of the state. |
 | *Latitude* | Number | Latitude of the state in decimal degrees. |
 | *Longitude* | Number | Longitude of the state in decimal degrees. |
+
+## Lodging GeoPackage
+
+Lodging location data is stored in a GeoPackage file.
+
+### lodging_locations (Point)
+
+The `lodging_locations` table stores information about distinct lodging properties, including hotels, residences, and short-term rentals.
+
+| Column | Format | Description |
+|--------|--------|-------------|
+| *fid* | Number (Integer) | Primary key for the lodging location. Uniquely identifies each lodging property. |
+| *geom* | Point | A point geometry representing the lodging location’s geographic coordinates (latitude/longitude). |
+| *name* | Text | Full name of the lodging, including brand if part of the official property name (e.g. **Hilton Chicago O’Hare Airport**). |
+| *type* | Text | The type of lodging: **Hotel**, **STR** (short-term rental), or **Residence**. |
+| *city_id* | Text | The ID of the city where the lodging is located, using the format described in [City Format](#city-format). |
+| *address* | Text | Full address of the lodging, including street, city, state, postal code, and country. |
+| *brand* | Text | The brand of hotel, if applicable (e.g. **Holiday Inn**). May be blank for STRs and residences. |
+| *portfolio* | Text | The loyalty program or hotel portfolio this lodging belongs to (e.g. **Marriott**, **IHG**, **Hilton**). May be blank. |
+| *comments* | Text | Optional comment or note about the lodging location. |
+| *portfolio_code* | Text | Internal or portfolio-specific identifier for the lodging location (e.g. a code used in loyalty systems). May be blank. |
 
 ## City Format
 
