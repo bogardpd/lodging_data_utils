@@ -13,7 +13,7 @@ with open(ROOT / "data_sources.toml", 'rb') as f:
 class HotelDataFrame:
     """Manages a pandas dataframe of hotel stay data."""
     
-    HOTEL_FILE_PATH = Path(sources['lodging']).expanduser()
+    HOTEL_FILE_PATH = Path(sources['lodging_xlsx']).expanduser()
 
     def __init__(self, additional_columns=[]):
         """Initialize a HotelDataFrame."""

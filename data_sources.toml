@@ -1,1 +1,2 @@
-lodging = "~/OneDrive/Documents/Travel/Lodging/Lodging.xlsx"
+lodging_xlsx = "~/OneDrive/Documents/Travel/Lodging/Lodging.xlsx"
+lodging_gpkg = "~/OneDrive/Documents/Travel/Lodging/Lodging.gpkg"

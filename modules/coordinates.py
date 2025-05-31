@@ -7,7 +7,7 @@ ROOT = Path(__file__).parent.parent
 with open(ROOT / "data_sources.toml", 'rb') as f:
     sources = tomllib.load(f)
 
-lodging_path = Path(sources['lodging']).expanduser()
+lodging_path = Path(sources['lodging_xlsx']).expanduser()
 LOCATION_COORDINATES = pd.read_excel(
     lodging_path,
     sheet_name='Cities',

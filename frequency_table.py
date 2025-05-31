@@ -11,7 +11,7 @@ from modules.hotel_data_frame import HotelDataFrame
 
 with open(Path(__file__).parent / "data_sources.toml", 'rb') as f:
     sources = tomllib.load(f)
-lodging_path = Path(sources['lodging']).expanduser()
+lodging_path = Path(sources['lodging_xlsx']).expanduser()
 
 total_labels = {
     'night': ["night", "nights"],

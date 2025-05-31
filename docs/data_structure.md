@@ -1,8 +1,15 @@
 # Lodging Data Structure
 
+These scripts use two sources of data:
+
+- A [Excel spreadsheet](#lodging-spreadsheet) containing stay, city, and metro data
+- A [GeoPackage file](#lodging-geopackage) containing lodging location data
+
+The location of these files is defined in [data_sources.toml](/data_sources.toml), with the keys `lodging_xlsx` and `lodging_gpkg` respectively.
+
 ## Lodging Spreadsheet
 
-The lodging data should be in an Excel spreadsheet, with the following sheets:
+Stay, city, and metro data is stored in an Excel spreadsheet. The Excel file has the following sheets:
 
 ### Stays
 
@@ -13,7 +20,7 @@ Information for each stay should be stored in a sheet titled *Stays*. The data s
 | *CheckoutDate* | Date | The departure date from the stay (in the lodging location’s time zone), in **YYYY-MM-DD** format. If departure occurs prior to midnight but the stay is booked/billed through the following morning, then the following morning should be used as the checkout date. |
 | *Nights* | Number (Integer) | The number of nights spent on the stay. Should be equal to the difference in days between the check-in date and the check-out date. |
 | *Type* | Text | **Hotel** (a hotel room), **STR** (Short Term Rental, such as Airbnb or VRBO), **Residence** (someone’s home), or **Flight** (as described in [Overnight Flights](#overnight-flights)).
-| *Portfolio* | Text | A collection of hotel brands or short-term rentals, usually with its own loyalty program (e.g. **Hilton** or **VRBO**). Leave blank if this stay does not have a hotel portfolio. |
+| *Portfolio* | Text | The collection of hotel brands or short-term rentals, usually with its own loyalty program (e.g. **Hilton** or **VRBO**), that this lodging belongs to. Leave blank if this stay does not have a hotel portfolio. |
 | *Brand* | Text | The brand of hotel (e.g. **Hampton Inn**). Short-term rentals will generally leave this blank. Hotels which are not part of a chain, residences, and overnight flights should leave this blank. |
 | *Location* | Text | The name of the lodging. If the lodging is a chain hotel and the chain is part of the name, include the chain in the name (e.g. **Embassy Suites by Hilton Chicago Downtown Magnificent Mile**). Residences should be named after the person(s) occupying the residence. |
 | *LodgingId* | Number (Integer) | An optional identifier, used to group stays that occurred at the same lodging instance. (This usually means a specific property, but different lodging instances could occupy the same property at different times as described in [Lodging Database Criteria for New vs. Updated Records](lodging_new_vs_updated_records.md).) May be used with an external geodata store (as described in [Lodging GeoPackage](#lodging-geopackage)) to match stays to feature IDs. |
@@ -26,6 +33,10 @@ Information for each stay should be stored in a sheet titled *Stays*. The data s
 | *Comment* | Text | An optional comment field. |
 
 If additional columns are desired, they should be named in PascalCase format.
+
+> [!NOTE]
+> The data for each stay should be accurate for the time the stay occurred. For example, if a hotel has since changed portfolios, the stay record should still reflect that hotel’s portfolio _at the time of the stay_.
+
 
 #### Overnight Flights
 
@@ -41,7 +52,7 @@ Reference data for cities should be kept in a sheet titled _Cities_. The data sh
 
 | Field | Format | Description |
 |-------|--------|-------------|
-| *Id* | Text | A unique identifier for each city as described in [City Format](#city-format). |
+| *Id* | Text | A unique identifier for the city, as described in [City Format](#city-format). |
 | *Name* | Text | The city’s name. |
 | *Region* | Text | The city’s first-level administrative division (state, province, etc.) if appropriate for its country.
 | *Country* | Text | The city’s country. |
@@ -55,7 +66,7 @@ Reference data for metro areas should be kept in a sheet titled _Metros_. The da
 
 | Field | Format | Description |
 |-------|--------|-------------|
-| *Id* | Text | A unique identifier for the metro area. Should always start with the ISO A2 country code and a slash, and typically then follows the city ID format for the metro area’s main city (**IS/REYKJAVIK**). However, if the country has its own ID scheme for metro areas, use that instead of a city name (**US/35620**). |
+| *Id* | Text | A unique identifier for the metro area, as described in [Metro Format](#metro-format). |
 | *Title* | Title | The official name of the metro area, or the city name of the primary city if an official name is not available. |
 | *ShortName* | Text | The name of the primary city of the metro area. |
 | *Latitude* | Number | Latitude of the metro in decimal degrees. |
