@@ -16,7 +16,7 @@ This script generates a Matplotlib chart showing every calendar day (from 1 Jan 
 
 [frequency_table.py](frequency_table.py)
 
-This script generates a Pandas DataFrame with each row containing a *Location*, *Type* (city, state, or metro), *Latitude*, *Longitude*, and *Nights* (count of nights). This can be exported to CSV for use in GIS software.
+This script generates a Pandas DataFrame with each row containing a *Location*, *Type* (location, city, region, or metro), *Latitude*, *Longitude*, and *Nights* (count of nights). This can be exported to CSV for use in GIS software.
 
 ### Nights Away and Home
 
