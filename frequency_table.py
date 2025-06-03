@@ -177,8 +177,8 @@ if __name__ == "__main__":
         description="Create a CSV of hotel locations and nights."
     )
     parser.add_argument('--by',
-        help="group by `city`, `metro` or `state`",
-        choices=['city','metro','historicmetro', 'state'],
+        help="group by `location`, `city`, `metro` or `region`",
+        choices=['location','city','metro','region'],
         default='city',
     )
     parser.add_argument('--start',
