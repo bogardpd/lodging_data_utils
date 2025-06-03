@@ -14,25 +14,42 @@ class LodgingLog:
     """A class to manage lodging information for a trip."""
     
     def __init__(self):
-        """
-        Initializes the LodgingLog.
-        """
-        
+        """Initializes the LodgingLog."""
         self.lodging_path = Path(SOURCES['lodging_gpkg']).expanduser()
-        self.mornings = self.__mornings()
-        common_params = {
-            'engine': 'pyogrio',
-            'fid_as_index': True,
+        self.dtypes = {
+            'stay_fid': 'int64',
+            'nights': 'int64',
+            'stay_location_fid': 'int64',
+            'city_fid': 'Int64',
+            'metro_fid': 'Int64',
+            'region_fid': 'Int64',
         }
+        
 
-        # Load the stay_locations data from the GeoPackage.
-        self.stay_locations_gdf = gpd.read_file(
+    def geodata(self, layer):
+        """
+        Returns a GeoDataFrame for the specified layer in the GeoPackage.
+        
+        Args:
+            layer (str): The name of the layer to read from the GeoPackage.
+        
+        Returns:
+            GeoDataFrame: A GeoDataFrame containing the data from the specified layer.
+        """
+        gdf = gpd.read_file(
             self.lodging_path,
-            layer='stay_locations',
-            **common_params,
+            layer=layer,
+            engine='pyogrio',
+            fid_as_index=True
         )
+        # Convert id columns to Int64.
+        for col in ['city_fid', 'metro_fid', 'region_fid']:
+            if col in gdf.columns:
+                gdf[col] = gdf[col].astype('Int64')
 
-    def __mornings(self):
+        return gdf
+
+    def mornings(self):
         """
         Returns a DataFrame with a row for each morning away from home.
         """
