@@ -8,6 +8,7 @@ import tomllib
 from pathlib import Path
 
 from modules.hotel_data_frame import HotelDataFrame
+from modules.lodging_log import LodgingLog
 
 with open(Path(__file__).parent / "data_sources.toml", 'rb') as f:
     sources = tomllib.load(f)
@@ -31,6 +32,7 @@ def frequency_table(
     rank=False,
     silent=False,
 ):
+       
     mornings = HotelDataFrame().by_morning().loc[start_date:thru_date]
     if exclude_flights:
         mornings = mornings[~mornings.City.str.startswith('FLIGHT/')]
