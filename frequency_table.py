@@ -29,6 +29,12 @@ def frequency_table(
     
     log = LodgingLog()
     mornings = log.mornings().loc[start_date:thru_date]
+    geodata = {
+        'stay_locations': log.geodata('stay_locations'),
+        'cities': log.geodata('cities'),
+        'metros': log.geodata('metros'),
+        'regions': log.geodata('regions'),
+    }
     if exclude_flights:
         mornings = mornings[
             ~mornings.stay_type.str.contains('Flight', case=False)
@@ -38,7 +44,7 @@ def frequency_table(
     mornings[
         ['loc_type', 'type_fid', 'title', 'name', 'key', 'lat', 'lon']
     ] = mornings.apply(
-        lambda row: location_attrs(row, log, by),
+        lambda row: location_attrs(row, log, by, geodata),
         axis=1,
         result_type='expand',
     )
@@ -83,7 +89,7 @@ def frequency_table(
         grouped.to_csv(output_file, index=False)
         print(f"Saved CSV to `{output_file}`.")
 
-def location_attrs(row, log, by):
+def location_attrs(row, log, by, geodata):
     """Get the attributes of each location row."""
     priority = {
         'location': ['stay_location'],
@@ -95,7 +101,7 @@ def location_attrs(row, log, by):
         'stay_location': {
             'name': 'StayLocation',
             'fid': 'stay_location_fid',
-            'table': log.geodata('stay_locations'),
+            'table': 'stay_locations',
             'cols': {
                 'key': None,
                 'name': 'name',
@@ -105,7 +111,7 @@ def location_attrs(row, log, by):
         'city': {
             'name': 'City',
             'fid': 'city_fid',
-            'table': log.geodata('cities'),
+            'table': 'cities',
             'cols': {
                 'key': 'key',
                 'name': 'name',
@@ -115,7 +121,7 @@ def location_attrs(row, log, by):
         'metro': {
             'name': 'Metro',
             'fid': 'metro_fid',
-            'table': log.geodata('metros'),
+            'table': 'metros',
             'key_col': 'key',
             'title_col': 'name','cols': {
                 'key': 'key',
@@ -126,7 +132,7 @@ def location_attrs(row, log, by):
         'region': {
             'name': 'Region',
             'fid': 'region_fid',
-            'table': log.geodata('regions'),
+            'table': 'regions',
             'cols': {
                 'key': 'iso_3166_2',
                 'name': 'name',
@@ -137,7 +143,7 @@ def location_attrs(row, log, by):
     for loc_type in priority[by]:
         if pd.notnull(row[loc_types[loc_type]['fid']]):
             type_fid = row[loc_types[loc_type]['fid']]
-            record = loc_types[loc_type]['table'].loc[type_fid]
+            record = geodata[loc_types[loc_type]['table']].loc[type_fid]
             col_vals = {}
             for k, v in loc_types[loc_type]['cols'].items():
                 if v is None:
