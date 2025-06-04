@@ -57,7 +57,7 @@ def frequency_table(
         ascending=[False, True],
     )
     
-    # Remove Title if not needed.
+    # Remove Title or LocId if not needed.
     grouped = grouped.dropna(axis=1, how='all')
    
     if rank:
@@ -117,8 +117,8 @@ def location_attrs(row, log, by, geodata):
             'key_col': 'key',
             'title_col': 'name','cols': {
                 'key': 'key',
-                'name': 'short_name',
-                'title': 'name',
+                'name': 'name',
+                'title': 'title',
             },
         },
         'region': {
