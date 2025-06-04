@@ -34,7 +34,8 @@ class LodgingLog:
             layer (str): The name of the layer to read from the GeoPackage.
         
         Returns:
-            GeoDataFrame: A GeoDataFrame containing the data from the specified layer.
+            GeoDataFrame: A GeoDataFrame containing the data from the
+            specified layer.
         """
         gdf = gpd.read_file(
             self.lodging_path,
@@ -56,8 +57,8 @@ class LodgingLog:
         # Read an SQLite table into a DataFrame.
         conn = sqlite3.connect(self.lodging_path)
         query = """
-        SELECT stays.fid as stay_fid, checkout_date, purpose, nights,
-        stay_location_fid, city_fid, metro_fid, region_fid
+        SELECT stays.fid as stay_fid, checkout_date, stays.type as stay_type,
+        purpose, nights, stay_location_fid, city_fid, metro_fid, region_fid
         FROM stays
         JOIN stay_locations on stays.stay_location_fid = stay_locations.fid
         LEFT JOIN cities on stay_locations.city_fid = cities.fid
@@ -82,6 +83,7 @@ class LodgingLog:
                 ],
                 'stay_fid': [row.stay_fid] * row.nights,
                 'purpose': [row.purpose] * row.nights,
+                'stay_type': [row.stay_type] * row.nights,
                 'stay_location_fid': [row.stay_location_fid] * row.nights,
                 'city_fid': [row.city_fid] * row.nights,
                 'metro_fid': [row.metro_fid] * row.nights,

@@ -14,13 +14,6 @@ with open(Path(__file__).parent / "data_sources.toml", 'rb') as f:
     sources = tomllib.load(f)
 lodging_path = Path(sources['lodging_xlsx']).expanduser()
 
-total_labels = {
-    'night': ["night", "nights"],
-    'state': ["state", "states"],
-    'metro': ["metro area", "metro areas"],
-    'historicmetro': ["metro area", "metro areas"],
-    'city': ["city", "cities"],
-}
 
 def frequency_table(
     by='City',
@@ -32,48 +25,43 @@ def frequency_table(
     rank=False,
     silent=False,
 ):
-       
-    mornings = HotelDataFrame().by_morning().loc[start_date:thru_date]
+    """Create a frequency table of hotel locations and nights."""
+    
+    log = LodgingLog()
+    mornings = log.mornings().loc[start_date:thru_date]
     if exclude_flights:
-        mornings = mornings[~mornings.City.str.startswith('FLIGHT/')]
-    cities_df = pd.read_excel(
-        lodging_path,
-        sheet_name='Cities',
-    ).set_index('Id')
-    mornings = mornings.join(cities_df, on='City')
-
-    if (by == 'metro') or (by == 'historicmetro'):
-        city_mornings = mornings[mornings['CurrentMetro'].isnull()]
-        metro_mornings = mornings[mornings['CurrentMetro'].notnull()]
-        
-        cities_grouped = group_cities(city_mornings)
-        historic = (by == 'historicmetro')
-        metros_grouped = group_metros(metro_mornings, historic=historic)
-
-        grouped = pd.concat([cities_grouped, metros_grouped])
-        column_order = [
-            'Title',
-            'Location',
-            'Type',
-            'MetroId',
-            'Latitude',
-            'Longitude',
-            'Nights',
+        mornings = mornings[
+            ~mornings.stay_type.str.contains('Flight', case=False)
         ]
-        grouped = grouped[column_order]
-    elif by == 'state':
-        mornings = mornings[mornings['City'].str.match("US")]
-        mornings['State'] = mornings['City'].apply(lambda x:
-            str(x).split('/')[1]
-        )
-        grouped = group_states(mornings)
-    else:
-        grouped = group_cities(mornings)
+
+    # Determine the type of location.
+    mornings[
+        ['loc_type', 'type_fid', 'title', 'name', 'key', 'lat', 'lon']
+    ] = mornings.apply(
+        lambda row: location_attrs(row, log, by),
+        axis=1,
+        result_type='expand',
+    )
+
+    # Group and count the nights by location.
+    grouped = mornings.groupby('type_fid').agg(
+        Location=('name', 'first'),
+        Title=('title', 'first'),
+        LocId=('key', 'first'),
+        Type=('loc_type', 'first'),
+        Latitude=('lat', 'first'),
+        Longitude=('lon', 'first'),
+        Nights=('type_fid', 'count'),
+    )
     
     grouped = grouped.sort_values(
         by=['Nights','Location'],
         ascending=[False, True],
     )
+    
+    # Remove Title if not needed.
+    grouped = grouped.dropna(axis=1, how='all')
+   
     if rank:
         grouped['Rank'] = grouped['Nights'] \
             .rank(method='min', ascending=False) \
@@ -87,7 +75,7 @@ def frequency_table(
     if top is not None:
         grouped = grouped.head(top)
     if not silent:
-        print(grouped)
+        print(grouped.to_string(index=False))
         print(pluralize_total(by, total_locs))
         print(pluralize_total('night', total_nights))
 
@@ -95,78 +83,94 @@ def frequency_table(
         grouped.to_csv(output_file, index=False)
         print(f"Saved CSV to `{output_file}`.")
 
-def group_cities(mornings):
-    if mornings.empty:
-        return pd.DataFrame()
-    mornings = mornings.assign(type='City')
-    mornings.loc[
-        mornings['City'].str.startswith('FLIGHT'), 'type'
-    ] = 'flight'
-    grouped = mornings.groupby('City').agg(
-        Location=('Name', 'first'),
-        Type=('type', 'first'),
-        Latitude=('Latitude', 'first'),
-        Longitude=('Longitude', 'first'),
-        Nights=('City', 'count'),
-    )
-    grouped.index.names = ['LocId']
-    return grouped
-
-def group_metros(mornings, historic=False):
-    if mornings.empty:
-        return pd.DataFrame()
-    mornings = mornings.assign(type='metro')
-    metros_df = pd.read_excel(
-        lodging_path, sheet_name='Metros'
-    ).set_index('Id')
-    
-    if historic:
-        which_metro = "MetroId"
-    else:
-        which_metro = "CurrentMetro"
-    
-    mornings = mornings.join(metros_df,
-        on=which_metro,
-        rsuffix='Metro'
-    )
-    grouped = mornings.groupby(which_metro).agg(
-        Title=('Title', 'first'),
-        Location=('ShortName', 'first'),
-        Type=('type', 'first'),
-        MetroId=(which_metro, 'first'),
-        Latitude=('LatitudeMetro', 'first'),
-        Longitude=('LongitudeMetro', 'first'),
-        Nights=('City', 'count'),
-    )
-    grouped['MetroId'] = grouped['MetroId'].astype('string')
-    grouped.index.names = ['LocId']
-    
-    return grouped
-
-def group_states(mornings):
-    if mornings.empty:
-        return pd.DataFrame()
-    mornings = mornings.assign(type='state')
-    states_df = pd.read_excel(
-        lodging_path,
-        sheet_name='USStates',
-    ).set_index('Abbrev')
-    mornings = mornings.join(states_df,
-        on='State',
-        rsuffix='State'
-    )
-    grouped = mornings.groupby('State').agg(
-        Location=('NameState', 'first'),
-        Type=('type', 'first'),
-        StateId=('State', 'first'),
-        Latitude=('Latitude', 'first'),
-        Longitude=('Longitude', 'first'),
-        Nights=('City', 'count'),
-    )
-    grouped.index.names = ['State']
-    return grouped
+def location_attrs(row, log, by):
+    """Get the attributes of each location row."""
+    priority = {
+        'location': ['stay_location'],
+        'city': ['city', 'stay_location'],
+        'metro': ['metro', 'city', 'stay_location'],
+        'region': ['region', 'city', 'stay_location'],
+    }
+    loc_types = {
+        'stay_location': {
+            'name': 'StayLocation',
+            'fid': 'stay_location_fid',
+            'table': log.geodata('stay_locations'),
+            'cols': {
+                'key': None,
+                'name': 'name',
+                'title': None,
+            },
+        },
+        'city': {
+            'name': 'City',
+            'fid': 'city_fid',
+            'table': log.geodata('cities'),
+            'cols': {
+                'key': 'key',
+                'name': 'name',
+                'title': None,
+            },
+        },
+        'metro': {
+            'name': 'Metro',
+            'fid': 'metro_fid',
+            'table': log.geodata('metros'),
+            'key_col': 'key',
+            'title_col': 'name','cols': {
+                'key': 'key',
+                'name': 'short_name',
+                'title': 'name',
+            },
+        },
+        'region': {
+            'name': 'Region',
+            'fid': 'region_fid',
+            'table': log.geodata('regions'),
+            'cols': {
+                'key': 'iso_3166_2',
+                'name': 'name',
+                'title': None,
+            },
+        },
+    }
+    for loc_type in priority[by]:
+        if pd.notnull(row[loc_types[loc_type]['fid']]):
+            type_fid = row[loc_types[loc_type]['fid']]
+            record = loc_types[loc_type]['table'].loc[type_fid]
+            col_vals = {}
+            for k, v in loc_types[loc_type]['cols'].items():
+                if v is None:
+                    col_vals[k] = pd.NA
+                else:
+                    col_vals[k] = record[v]
+            geometry = record.geometry
+            if geometry is None:
+                lat = pd.NA
+                lon = pd.NA
+            else:
+                lat = geometry.y
+                lon = geometry.x
+            return (
+                loc_types[loc_type]['name'],
+                f"{loc_type}_{type_fid}",
+                col_vals['title'],
+                col_vals['name'],
+                col_vals['key'],
+                lat,
+                lon,
+            )
+    return (pd.NA, pd.NA, pd.NA, pd.NA, pd.NA, pd.NA)
 
 def pluralize_total(label, count):
+    """Return a string with the total count and label."""
+    total_labels = {
+        'night': ["night", "nights"],
+        'region': ["region", "regions"],
+        'metro': ["metro area", "metro areas"],
+        'city': ["city", "cities"],
+        'location': ["location", "locations"],
+    }
     if count == 1:
         label_str = total_labels[label][0]
     else:
