@@ -4,16 +4,9 @@ CBSA metro area."""
 import argparse
 import datetime
 import pandas as pd
-import tomllib
 from pathlib import Path
 
-from modules.hotel_data_frame import HotelDataFrame
 from modules.lodging_log import LodgingLog
-
-with open(Path(__file__).parent / "data_sources.toml", 'rb') as f:
-    sources = tomllib.load(f)
-lodging_path = Path(sources['lodging_xlsx']).expanduser()
-
 
 def frequency_table(
     by='City',
@@ -59,7 +52,6 @@ def frequency_table(
         Longitude=('lon', 'first'),
         Nights=('type_fid', 'count'),
     )
-    
     grouped = grouped.sort_values(
         by=['Nights','Location'],
         ascending=[False, True],
