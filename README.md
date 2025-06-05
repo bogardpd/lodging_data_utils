@@ -1,6 +1,6 @@
 # Hotel Data Utilities
 
-This package contains utilities for working with [hotel (and other lodging) stay data](docs/data_structure.md#lodging-data-format).
+This package contains utilities for working with [a GeoPackage file containing hotel (and other lodging) stay data](docs/data_structure.md).
 
 For all of the below scripts, the location on any given day is considered to be where the traveler woke up the morning of that day.
 
@@ -26,4 +26,4 @@ This script generates an SVG image for a plot of nights spent traveling (divided
 
 ## Data Structure
 
-These scripts depend on lodging data structured in a particular format, as documented in [Data Structure](docs/data_structure.md).
+These scripts depend on lodging data structured in GeoPackage with a particular format, as documented in [Data Structure](docs/data_structure.md).
