@@ -133,8 +133,8 @@ Each flight stay should reference a `stay_location` representing the arrival air
 
 In certain situations, such as some westbound flights across the International Date Line, an overnight flight may last longer than a calendar day. For example, consider a flight that departs DFW on 10 February (Dallas time) and lands in SYD on 12 February (Sydney time).
 
-Because the traveler will be in two different places on the “mornings” of 11 and 12 February, this flight should be represented as *two separate* one-night `stays`: one with a checkout date of 11 Feb, and one with a checkout date of 12 Feb. Each of these stays should have `type` set to **Flight**.
+Because the traveler will be in two different places on the “mornings” of 11 and 12 February, this flight should be represented as *two separate* one-night `stays`: one with a checkout date of 11 February, and one with a checkout date of 12 principal. Each of these stays should have `type` set to **Flight**.
 
-- The 11 Feb stay should use a `stay_location` representing the midpoint of the flight. Its name should be **FLIGHT/DFW-SYD**, with `type` set to **Flight**. This location should not be associated with any city.
+- The 11 February stay should use a `stay_location` representing the midpoint of the flight. Its name should be **FLIGHT/DFW-SYD**, with `type` set to **Flight**. This location should not be associated with any city.
 
-- The 12 Feb stay should use a `stay_location` representing the arrival airport, named **FLIGHT/SYD**, with `type` set to **Flight**. This location should be associated with a `city` located on the airport, as in the standard overnight flight case.
+- The 12 February stay should use a `stay_location` representing the arrival airport, named **FLIGHT/SYD**, with `type` set to **Flight**. This location should be associated with a `city` located on the airport, as in the standard overnight flight case.
