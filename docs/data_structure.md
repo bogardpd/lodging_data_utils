@@ -27,7 +27,7 @@ The `stays` table contains records of each of the traveler’s stays at a hotel 
 | *stay_location_fid* | INT (64 bit) | Foreign key referencing the `stay_locations` table. |
 | *purpose* | TEXT | **Business** or **Personal**. |
 | *room* | TEXT | Optional. Room number(s) for the stay, if available. Separate multiple room numbers with newlines. |
-| *comment* | TEXT | Optional. Comment or note about the stay. |
+| *comments* | TEXT | Optional. Comment or note about the stay. |
 
 > [!NOTE]
 > The data for each stay should be accurate for the time the stay occurred. For example, if a hotel has since changed portfolios, the stay record should still reflect that hotel’s portfolio _at the time of the stay_.
@@ -36,8 +36,12 @@ The `stays` table contains records of each of the traveler’s stays at a hotel 
 
 The `homes` table contains places the traveler has lived, for use in generating [Distance from Home by Day](/#distance-from-home-by-day) charts.
 
-> [!NOTE]
-> Documentation for this table has not yet been written.
+| Column | Data Types | Description |
+|--------|--------|-------------|
+| *fid* | INT (64 bit) | Primary key for the home record. |
+| *move_in_date* | DATE | Date that the traveler moved into this home (in the lodging location’s time zone), in **YYYY-MM-DD** format. The mornings associated with this home will start the following morning, and go through the next chronological move_in_date (or through the present day, if this is the most recent move_in_date). |
+| *stay_location_fid* | INT (64 bit) | Foreign key referencing the `stay_locations` table. |
+| *comments* | TEXT | Optional. Comment or note about the home. |
 
 ### stay_locations (Point)
 
@@ -73,6 +77,7 @@ The `cities` table stores point features for cities relevant to lodging stays.
 | *region_fid* | INT (64 bit) | Optional. Foreign key referencing the `regions` table, if the city belongs to a country subdivision (state, province, etc.) defined in ISO 3166-2. |
 | *country* | TEXT | The city’s country name. |
 | *metro_fid* | INT (64 bit) | Optional. Foreign key referencing the `metros` table and representing the city’s present-day metropolitan area, if the city belongs to one. |
+| *comments* | TEXT | Optional. Comment or note about the city. |
 
 #### City Key Format
 
@@ -100,6 +105,7 @@ The `metros` table stores point features for metropolitan areas.
 | *key* | TEXT | Unique identifier for the metro (see [Metro Key Format](#metro-key-format)). |
 | *title* | TEXT | Official or descriptive title of the metro area, or the city name of the principal city if an official name is not available. |
 | *name* | TEXT | Principal city name of the metro, intended for map labels. In some cases where the metro has a name more well-known than any of the cities (e.g. **Inland Empire** instead of **San Bernardino** or **Riverside**, California), this name may be used instead. |
+| *comments* | TEXT | Optional. Comment or note about the metro area. |
 
 #### Metro Key Format
 
@@ -123,6 +129,7 @@ The `regions` table stores point features for first-level administrative divisio
 | *geom* | POINT | Geographic coordinates (latitude/longitude) best representing the region (usually the point furthest from any edge of the region). |
 | *iso_3166_2* | TEXT | ISO 3166-2 subdivision code. |
 | *name* | TEXT | Name of the region, intended for map labels. |
+| *comments* | TEXT | Optional. Comment or note about the region. |
 
 ## Overnight Flights
 
