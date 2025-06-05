@@ -22,7 +22,6 @@ The `stays` table contains records of each of the traveler’s stays at a hotel 
 | *fid* | INT (64 bit) | Primary key for the stay record. |
 | *checkout_date* | DATE | Date of departure from the stay (in the lodging location’s time zone), in **YYYY-MM-DD** format. If departure occurs prior to midnight but the stay is booked/billed through the following morning, then the following morning should be used as the checkout date. |
 | *nights* | MEDIUMINT (32 bit) | Number of nights spent on the stay. Should be equal to the difference in days between the check-in date and the check-out date. |
-| *type* | TEXT | **Hotel** (a hotel room), **STR** (Short Term Rental, such as Airbnb or VRBO), **Residence** (someone’s home), or **Flight** (as described in [Overnight Flights](#overnight-flights)). |
 | *portfolio* | TEXT | Optional. The collection of hotel brands or short-term rentals, usually with its own loyalty program (e.g. **Hilton** or **VRBO**), that this lodging belongs to. Leave null if this stay does not have a portfolio. |
 | *brand* | TEXT | Optional. Hotel brand (e.g. **Hampton Inn**). Short-term rentals will generally leave this null. Hotels which are not part of a chain, residences, and overnight flights should leave this null. |
 | *stay_location_fid* | INT (64 bit) | Foreign key referencing the `stay_locations` table. |
@@ -127,13 +126,11 @@ The `regions` table stores point features for first-level administrative divisio
 
 ## Overnight Flights
 
-A traveler may wake up the morning of a given day while still on an overnight flight. These instances should be treated as stays and recorded in the `stays` table, with `type` set to **Flight**.
+A traveler may wake up the morning of a given day while still on an overnight flight. These instances should be treated as stays and recorded in the `stays` table.
 
-Each flight stay should reference a `stay_location` representing the arrival airport. The `type` of this location should also be **Flight**. The `name` should be the airport where the flight arrives, formatted as **FLIGHT**, a forward slash, and the arrival airport’s IATA code (**FLIGHT/KEF**). The airport location should also have a corresponding `city`, located at the airport, with a name formatted as **AIRPORT**, a forward slash, and the IATA code (**AIRPORT/KEF**). This airport city may belong to a `metro` and/or `region` if applicable.
+Each flight stay should reference a `stay_location` representing the arrival airport. The `type` of this location should be **Flight**. The `name` should be the airport where the flight arrives, formatted as **FLIGHT**, a forward slash, and the arrival airport’s IATA code (**FLIGHT/KEF**). The airport location should also have a corresponding `city`, located at the airport, with a name formatted as **AIRPORT**, a forward slash, and the IATA code (**AIRPORT/KEF**). This airport city may belong to a `metro` and/or `region` if applicable.
 
-In certain situations, such as some westbound flights across the International Date Line, an overnight flight may last longer than a calendar day. For example, consider a flight that departs DFW on 10 February (Dallas time) and lands in SYD on 12 February (Sydney time).
-
-Because the traveler will be in two different places on the “mornings” of 11 and 12 February, this flight should be represented as *two separate* one-night `stays`: one with a checkout date of 11 February, and one with a checkout date of 12 principal. Each of these stays should have `type` set to **Flight**.
+In certain situations, such as some westbound flights across the International Date Line, an overnight flight may last longer than a calendar day. For example, consider a flight that departs DFW on 10 February (Dallas time) and lands in SYD on 12 February (Sydney time). Because the traveler will be in two different places on the “mornings” of 11 and 12 February, this flight should be represented as *two separate* one-night `stays`: one with a checkout date of 11 February, and one with a checkout date of 12 February.
 
 - The 11 February stay should use a `stay_location` representing the midpoint of the flight. Its name should be **FLIGHT/DFW-SYD**, with `type` set to **Flight**. This location should not be associated with any city.
 

@@ -30,7 +30,7 @@ def frequency_table(
     }
     if exclude_flights:
         mornings = mornings[
-            ~mornings.stay_type.str.contains('Flight', case=False)
+            ~mornings.type.str.contains('Flight', case=False)
         ]
 
     # Determine the type of location.
@@ -95,7 +95,7 @@ def location_attrs(row, log, by, geodata):
             'fid': 'stay_location_fid',
             'table': 'stay_locations',
             'cols': {
-                'key': None,
+                'key': 'fid',
                 'name': 'name',
                 'title': None,
             },
@@ -141,7 +141,10 @@ def location_attrs(row, log, by, geodata):
                 if v is None:
                     col_vals[k] = pd.NA
                 else:
-                    col_vals[k] = record[v]
+                    if v == 'fid':
+                        col_vals[k] = type_fid
+                    else:
+                        col_vals[k] = record[v]
             geometry = record.geometry
             if geometry is None:
                 lat = pd.NA
