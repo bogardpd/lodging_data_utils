@@ -25,6 +25,14 @@ class LodgingLog:
             'region_fid': 'Int64',
         }
         
+        # Store geodata in a cache for quick access.
+        # This avoids reading the GeoPackage multiple times.
+        self.geodata_cache = {
+            'stay_locations': self.geodata('stay_locations'),
+            'cities': self.geodata('cities'),
+            'metros': self.geodata('metros'),
+            'regions': self.geodata('regions'),
+        }
 
     def geodata(self, layer):
         """
@@ -94,6 +102,158 @@ class LodgingLog:
         output = pd.concat(stay_frames, ignore_index=True)
         output = output.set_index('morning')
         return output
+    
+    def mornings_by(self,
+        by='location',
+        start_date=None,
+        thru_date=None,
+        exclude_flights=False,
+    ):
+        """
+        Returns a DataFrame with a row for each morning away from home,
+        grouped by the specified location type.
+        
+        Args:
+            by (str): The type of location to group by. Options are:
+                'location', 'city', 'metro', 'region'.
+        
+        Returns:
+            DataFrame: A DataFrame with mornings grouped by the specified
+            location type.
+        """
+        if by not in ['location', 'city', 'metro', 'region']:
+            raise ValueError(f"Invalid grouping type: {by}")
+        mornings = self.mornings().loc[start_date:thru_date]
+        if exclude_flights:
+            mornings = mornings[
+                ~mornings.type.str.contains('Flight', case=False)
+            ]
+        
+        # Get the attributes of each location row.
+        mornings[
+            ['loc_type', 'type_fid', 'title', 'name', 'key', 'lat', 'lon']
+        ] = mornings.apply(
+            lambda row: self.location_attrs(row, by),
+            axis=1,
+            result_type='expand',
+        )
 
+        return mornings    
 
+    def home_mornings(self):
+        """
+        Returns a DataFrame with the location of home for each morning.
+        Uses the home's city if available; otherwise, uses the home's
+        stay_location.
+        """
+        def get_home_location(row):
+            """Returns the home location based on city or stay_location."""
+            if pd.notna(row.city_fid):
+                geom = self.geodata_cache['cities'].loc[row.city_fid].geometry
+            else:
+                geom = self.geodata_cache['stay_locations'].loc[
+                    row.stay_location_fid
+                ].geometry
+            return (geom.y, geom.x)
+        
+        # Read an SQLite table into a DataFrame.
+        conn = sqlite3.connect(self.lodging_path)
+        query = """
+        SELECT homes.fid, move_in_date, stay_location_fid, city_fid
+        FROM homes
+        JOIN stay_locations on homes.stay_location_fid = stay_locations.fid
+        ORDER BY move_in_date
+        """
+        home_mornings = pd.read_sql_query(query, conn,
+            parse_dates=['move_in_date'], dtype={'fid': 'int64'},
+        )
+        home_mornings[['lat', 'lon']] = home_mornings.apply(
+            lambda row: get_home_location(row),
+            axis=1,
+            result_type='expand',
+        )
+        return home_mornings
+    
+    def location_attrs(self, row, by):
+        """Get the attributes of each location row."""
+        priority = {
+            'location': ['stay_location'],
+            'city': ['city', 'stay_location'],
+            'metro': ['metro', 'city', 'stay_location'],
+            'region': ['region', 'city', 'stay_location'],
+        }
+        loc_types = {
+            'stay_location': {
+                'name': 'StayLocation',
+                'fid': 'stay_location_fid',
+                'table': 'stay_locations',
+                'cols': {
+                    'key': 'fid',
+                    'name': 'name',
+                    'title': None,
+                },
+            },
+            'city': {
+                'name': 'City',
+                'fid': 'city_fid',
+                'table': 'cities',
+                'cols': {
+                    'key': 'key',
+                    'name': 'name',
+                    'title': None,
+                },
+            },
+            'metro': {
+                'name': 'Metro',
+                'fid': 'metro_fid',
+                'table': 'metros',
+                'key_col': 'key',
+                'title_col': 'name','cols': {
+                    'key': 'key',
+                    'name': 'name',
+                    'title': 'title',
+                },
+            },
+            'region': {
+                'name': 'Region',
+                'fid': 'region_fid',
+                'table': 'regions',
+                'cols': {
+                    'key': 'iso_3166_2',
+                    'name': 'name',
+                    'title': None,
+                },
+            },
+        }
+        for loc_type in priority[by]:
+            if pd.notnull(row[loc_types[loc_type]['fid']]):
+                type_fid = row[loc_types[loc_type]['fid']]
+                table = loc_types[loc_type]['table']
+                record = self.geodata_cache[table].loc[type_fid]
+                col_vals = {}
+                for k, v in loc_types[loc_type]['cols'].items():
+                    if v is None:
+                        col_vals[k] = pd.NA
+                    else:
+                        if v == 'fid':
+                            col_vals[k] = type_fid
+                        else:
+                            col_vals[k] = record[v]
+                geometry = record.geometry
+                if geometry is None:
+                    lat = pd.NA
+                    lon = pd.NA
+                else:
+                    lat = geometry.y
+                    lon = geometry.x
+                return (
+                    loc_types[loc_type]['name'],
+                    f"{loc_type}_{type_fid}",
+                    col_vals['title'],
+                    col_vals['name'],
+                    col_vals['key'],
+                    lat,
+                    lon,
+                )
+        return (pd.NA, pd.NA, pd.NA, pd.NA, pd.NA, pd.NA)
        

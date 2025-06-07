@@ -21,25 +21,12 @@ def frequency_table(
     """Create a frequency table of hotel locations and nights."""
     
     log = LodgingLog()
-    mornings = log.mornings().loc[start_date:thru_date]
-    geodata = {
-        'stay_locations': log.geodata('stay_locations'),
-        'cities': log.geodata('cities'),
-        'metros': log.geodata('metros'),
-        'regions': log.geodata('regions'),
-    }
-    if exclude_flights:
-        mornings = mornings[
-            ~mornings.type.str.contains('Flight', case=False)
-        ]
-
-    # Determine the type of location.
-    mornings[
-        ['loc_type', 'type_fid', 'title', 'name', 'key', 'lat', 'lon']
-    ] = mornings.apply(
-        lambda row: location_attrs(row, log, by, geodata),
-        axis=1,
-        result_type='expand',
+    
+    mornings = log.mornings_by(
+        by=by,
+        start_date=start_date,
+        thru_date=thru_date,
+        exclude_flights=exclude_flights,
     )
 
     # Group and count the nights by location.
@@ -80,88 +67,7 @@ def frequency_table(
     if output_file is not None:
         grouped.to_csv(output_file, index=False)
         print(f"Saved CSV to `{output_file}`.")
-
-def location_attrs(row, log, by, geodata):
-    """Get the attributes of each location row."""
-    priority = {
-        'location': ['stay_location'],
-        'city': ['city', 'stay_location'],
-        'metro': ['metro', 'city', 'stay_location'],
-        'region': ['region', 'city', 'stay_location'],
-    }
-    loc_types = {
-        'stay_location': {
-            'name': 'StayLocation',
-            'fid': 'stay_location_fid',
-            'table': 'stay_locations',
-            'cols': {
-                'key': 'fid',
-                'name': 'name',
-                'title': None,
-            },
-        },
-        'city': {
-            'name': 'City',
-            'fid': 'city_fid',
-            'table': 'cities',
-            'cols': {
-                'key': 'key',
-                'name': 'name',
-                'title': None,
-            },
-        },
-        'metro': {
-            'name': 'Metro',
-            'fid': 'metro_fid',
-            'table': 'metros',
-            'key_col': 'key',
-            'title_col': 'name','cols': {
-                'key': 'key',
-                'name': 'name',
-                'title': 'title',
-            },
-        },
-        'region': {
-            'name': 'Region',
-            'fid': 'region_fid',
-            'table': 'regions',
-            'cols': {
-                'key': 'iso_3166_2',
-                'name': 'name',
-                'title': None,
-            },
-        },
-    }
-    for loc_type in priority[by]:
-        if pd.notnull(row[loc_types[loc_type]['fid']]):
-            type_fid = row[loc_types[loc_type]['fid']]
-            record = geodata[loc_types[loc_type]['table']].loc[type_fid]
-            col_vals = {}
-            for k, v in loc_types[loc_type]['cols'].items():
-                if v is None:
-                    col_vals[k] = pd.NA
-                else:
-                    if v == 'fid':
-                        col_vals[k] = type_fid
-                    else:
-                        col_vals[k] = record[v]
-            geometry = record.geometry
-            if geometry is None:
-                lat = pd.NA
-                lon = pd.NA
-            else:
-                lat = geometry.y
-                lon = geometry.x
-            return (
-                loc_types[loc_type]['name'],
-                f"{loc_type}_{type_fid}",
-                col_vals['title'],
-                col_vals['name'],
-                col_vals['key'],
-                lat,
-                lon,
-            )
-    return (pd.NA, pd.NA, pd.NA, pd.NA, pd.NA, pd.NA)
+        
 
 def pluralize_total(label, count):
     """Return a string with the total count and label."""

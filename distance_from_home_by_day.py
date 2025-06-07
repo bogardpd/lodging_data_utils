@@ -1,5 +1,6 @@
 from modules.collections import DateCollection
 from modules.hotel_data_frame import HotelDataFrame
+from modules.lodging_log import LodgingLog
 
 import argparse
 from datetime import date, datetime
@@ -70,6 +71,13 @@ class SingleYearDistanceChart(DistanceByDayChart):
             output=None, labels=None, earliest_prior_year=None,
         ):
         super().__init__()
+        
+        # log = LodgingLog()
+        # mornings_lodging = log.mornings()
+        # mornings_homes = log.home_mornings()
+        # print(mornings_lodging)
+        # print(mornings_homes)
+
         self.year = int(year)
         self.output = output
         self.locations = DateCollection(
