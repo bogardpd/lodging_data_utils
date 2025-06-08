@@ -3,10 +3,11 @@ CBSA metro area."""
 
 import argparse
 import datetime
-import pandas as pd
 from pathlib import Path
 
 from modules.lodging_log import LodgingLog
+
+COORD_DECIMALS = 4  # Number of decimal places for coordinates
 
 def frequency_table(
     by='City',
@@ -43,6 +44,10 @@ def frequency_table(
         by=['Nights','Location'],
         ascending=[False, True],
     )
+
+    # Round coordinates to a fixed number of decimal places.
+    grouped['Latitude'] = grouped['Latitude'].round(COORD_DECIMALS)
+    grouped['Longitude'] = grouped['Longitude'].round(COORD_DECIMALS)
     
     # Remove Title or LocId if not needed.
     grouped = grouped.dropna(axis=1, how='all')
