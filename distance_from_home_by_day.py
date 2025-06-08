@@ -136,6 +136,19 @@ class DistanceByDayChart():
         if homes.empty:
             raise ValueError(f"No home location found for {morning}.")
         return [homes.iloc[0]['lat'], homes.iloc[0]['lon']]
+    
+    def normalize_year(self, year_series, year):
+        """Returns a normalized year for plotting purposes."""
+        ds = year_series.copy()
+        # Drop February 29 if year is not a leap year.
+        if year % 4 != 0 or (year % 100 == 0 and year % 400 != 0):
+            ds = ds.drop((2, 29), errors='ignore')
+
+        # Convert index to date objects.
+        ds.index = ds.index.map(
+            lambda d: date(year, d[0], d[1])
+        )
+        return ds
         
 
 class SingleYearDistanceChart(DistanceByDayChart):
@@ -159,39 +172,34 @@ class SingleYearDistanceChart(DistanceByDayChart):
                     f"must be less than year ({self.year})."
                 )
             years = [earliest_prior_year, self.year]
+            self.prior_years = range(earliest_prior_year, self.year)
         else:
             # Do not include prior years.
             years = [self.year, self.year]
-            self.prior_locations = {}
 
-        dist_matrix = self.date_year_distance_matrix(years)
-        self.current_year_distances = dist_matrix[self.year].dropna()
-        
-        if earliest_prior_year is not None:
-            prior_years = range(int(earliest_prior_year), self.year)
-            self.prior_locations = {
-                y: dist_matrix[y].dropna()
-                for y in prior_years
-            }
+        self.dist_matrix = self.date_year_distance_matrix(years)
         self.labels = labels
 
     def plot(self):
+        """
+        Plot the distance by day chart.
+
+        Note: if self.year is not a leap year, February 29 will not be
+        included in the chart for any prior years.
+        """
         fig, ax = plt.subplots(1,1,figsize=(9,3),dpi=96)
         
         # Plot prior years (if any):
         max_miles_prior = 0
-        for y, pl in self.prior_locations.items():
-            distances = pl
-            dates = [
-                d + relativedelta(years=(self.year - y))
-                for d in distances.index
-            ]
-            distances = list(distances['distance_mi'])
-            max_miles_prior = max(max_miles_prior, max(distances))
+        for y in self.prior_years:
+            # Normalize the year series to the current year.
+            # This is necessary to ensure that the x-axis dates match.
+            year_series = self.normalize_year(self.dist_matrix[y], self.year)
+            max_miles_prior = max(max_miles_prior, year_series.max())
             data = {
                 'title': str(y),
-                'dates': dates,
-                'distances': distances,
+                'dates': year_series.index,
+                'distances': year_series.values,
             }
             ax.plot(
                 data['dates'],
@@ -201,11 +209,13 @@ class SingleYearDistanceChart(DistanceByDayChart):
             )
         
         # Plot current year.
-        distances = self.current_year_distances
+        current_year_series = self.normalize_year(
+            self.dist_matrix[self.year], self.year
+        )
         data = {
             'title': str(self.year),
-            'dates': list(distances.index),
-            'distances': list(distances['distance_mi']),
+            'dates': current_year_series.index,
+            'distances': current_year_series.values,
         }
         ax.plot(data['dates'],data['distances'], color=COLORS['line'])
 
@@ -246,7 +256,9 @@ class SingleYearDistanceChart(DistanceByDayChart):
         if self.output is None:
             plt.show()
         else:
-            pd.DataFrame(data).to_csv(self.output.with_suffix('.csv'), index=False)
+            pd.DataFrame(data).to_csv(
+                self.output.with_suffix('.csv'), index=False
+            )
             plt.savefig(self.output)
             print(f"Saved distance by day chart to {self.output}.")
 
@@ -299,8 +311,12 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
         }
         for month, days in self.days_of_year.items():
             for day, distances in days.items():
-                average_distance_data['dates'].append(date(avg_year, month, day))
-                average_distance_data['distances'].append(np.mean(distances))
+                average_distance_data['dates'].append(
+                    date(avg_year, month, day)
+                )
+                average_distance_data['distances'].append(
+                    np.mean(distances)
+                )
 
         # Set plot preferences.
         year_title_options = {
@@ -319,7 +335,12 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
             year_axs[index] = fig.add_subplot(gs[index, 0])
             year_axs[index].plot(data['dates'], data['distances'])
             is_bottom = (index == (self.end_year - self.start_year))
-            self.apply_styles(year_axs[index], data, year, include_xaxis=is_bottom)
+            self.apply_styles(
+                year_axs[index],
+                data,
+                year,
+                include_xaxis=is_bottom
+            )
             for i, spine in year_axs[index].spines.items():
                 spine.set_visible(False)
             year_axs[index].get_yaxis().set_visible(False)
@@ -329,7 +350,7 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
             year_axs[index].set_yticks([0,6000,12000])
             year_axs[index].set_title(data['title'], **year_title_options)
             if is_bottom:
-                month_letters = ["J","F","M","A","M","J","J","A","S","O","N","D"]
+                month_letters = list("JFMAMJJASOND")
                 year_axs[index].set_xticklabels(month_letters, minor=True)
             
 
