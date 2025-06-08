@@ -140,7 +140,7 @@ class LodgingLog:
 
         return mornings    
 
-    def home_mornings(self):
+    def home_locations(self):
         """
         Returns a DataFrame with the location of home for each morning.
         Uses the home's city if available; otherwise, uses the home's

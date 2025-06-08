@@ -10,6 +10,7 @@ import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
 from matplotlib.gridspec import GridSpec
 from pathlib import Path
+from pyproj import Geod
 import tomllib
 import numpy as np
 import pandas as pd
@@ -18,7 +19,8 @@ import csv
 with open(Path(__file__).parent / "config.toml", 'rb') as f:
     config = tomllib.load(f)
 
-KM_PER_MILE = 1.609
+KM_PER_MILE = 1.609344
+
 COLORS = {
     'line': "#ee7733",
     'line_prior': "#cccccc",
@@ -43,7 +45,8 @@ class DistanceByDayChart():
     """Parent class for distance by day charts."""
 
     def __init__(self):
-        pass
+        self.log = LodgingLog()
+        self.home_locations = self.log.home_locations()
 
     def apply_styles(self, ax, ax_data, year, include_xaxis=False):
         ax.fill_between(ax_data['dates'], ax_data['distances'], 0,
@@ -63,6 +66,63 @@ class DistanceByDayChart():
         else:
             ax.get_xaxis().set_ticklabels([])
 
+    def home_lat_lon(self, morning):
+        """
+        Returns the latitude and longitude of the home location for a
+        given morning.
+        """
+        morning = pd.Timestamp(morning)
+        homes = self.home_locations[
+            self.home_locations['move_in_date'] < morning
+        ].sort_values(by='move_in_date', ascending=False).head(1)
+        if homes.empty:
+            raise ValueError(f"No home location found for {morning}.")
+        return [homes.iloc[0]['lat'], homes.iloc[0]['lon']]
+
+    def year_morning_distances(self, year):
+        """
+        Returns a DataFrame of morning distances from home for the year.
+        """
+        def morning_distance(morning, mornings_lodging):
+            """Calculate distance from home for a given morning."""
+            morning = pd.Timestamp(morning)
+            if morning in mornings_lodging.index:
+                # Morning is away from home.
+                home_lat_lon = self.home_lat_lon(morning)
+                lodging_lat_lon = mornings_lodging.loc[
+                    morning, ['lat', 'lon']
+                ].values.tolist()
+                geod = Geod(ellps='WGS84')
+                return geod.inv(
+                    home_lat_lon[1], home_lat_lon[0],
+                    lodging_lat_lon[1], lodging_lat_lon[0],
+                )[2] / (1000 * KM_PER_MILE) # Convert meters to miles
+            else:
+                # Morning is at home.
+                return 0.0
+
+        mornings_lodging = self.log.mornings_by(
+            by='city',
+            start_date=date(year, 1, 1),
+            thru_date=date(year, 12, 31),
+            exclude_flights=False,
+        )
+
+        df = pd.DataFrame()
+        df['morning'] = pd.date_range(
+            start=date(year, 1, 1),
+            end=date(year, 12, 31),
+            freq='D',
+        )
+        df['distance_mi'] = df['morning'].apply(
+            lambda d: morning_distance(d, mornings_lodging)
+        )
+
+        return df.set_index('morning').sort_index()
+
+    
+        
+
 class SingleYearDistanceChart(DistanceByDayChart):
     """A chart showing distance by day for a single year."""
 
@@ -71,32 +131,20 @@ class SingleYearDistanceChart(DistanceByDayChart):
             output=None, labels=None, earliest_prior_year=None,
         ):
         super().__init__()
-        
-        # log = LodgingLog()
-        # mornings_lodging = log.mornings()
-        # mornings_homes = log.home_mornings()
-        # print(mornings_lodging)
-        # print(mornings_homes)
 
         self.year = int(year)
         self.output = output
-        self.locations = DateCollection(
-            HotelDataFrame(),
-            date(self.year,1,1),
-            date(self.year,12,31),
-            config['home_location'],
-        )
+
+        self.current_year_distances = self.year_morning_distances(year)
+        
         if earliest_prior_year is None:
             self.prior_locations = {}
         else:
             prior_years = range(int(earliest_prior_year), self.year)
             self.prior_locations = {
-                y: DateCollection(
-                    HotelDataFrame(),
-                    date(y,1,1),
-                    date(y,12,31),
-                    config['home_location'],
-                ) for y in prior_years}
+                y: self.year_morning_distances(y)
+                for y in prior_years
+            }
         self.labels = labels
 
     def plot(self):
@@ -105,12 +153,12 @@ class SingleYearDistanceChart(DistanceByDayChart):
         # Plot prior years (if any):
         max_miles_prior = 0
         for y, pl in self.prior_locations.items():
-            distances = pl.distances()
+            distances = pl
             dates = [
                 d + relativedelta(years=(self.year - y))
-                for d in distances.keys()
+                for d in distances.index
             ]
-            distances = list(distances.values())
+            distances = list(distances['distance_mi'])
             max_miles_prior = max(max_miles_prior, max(distances))
             data = {
                 'title': str(y),
@@ -125,11 +173,11 @@ class SingleYearDistanceChart(DistanceByDayChart):
             )
         
         # Plot current year.
-        distances = self.locations.distances()
+        distances = self.current_year_distances
         data = {
             'title': str(self.year),
-            'dates': list(distances.keys()),
-            'distances': list(distances.values()),
+            'dates': list(distances.index),
+            'distances': list(distances['distance_mi']),
         }
         ax.plot(data['dates'],data['distances'], color=COLORS['line'])
 
