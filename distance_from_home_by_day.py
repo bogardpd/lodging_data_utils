@@ -1,25 +1,19 @@
-from modules.collections import DateCollection
-from modules.hotel_data_frame import HotelDataFrame
 from modules.lodging_log import LodgingLog
 
 import argparse
 from datetime import date, datetime
-from dateutil.relativedelta import relativedelta
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
 from matplotlib.gridspec import GridSpec
 from pathlib import Path
 from pyproj import Geod
-import tomllib
 import numpy as np
 import pandas as pd
 import csv
 
-with open(Path(__file__).parent / "config.toml", 'rb') as f:
-    config = tomllib.load(f)
-
-KM_PER_MILE = 1.609344
+KM_PER_MILE = 1.6093
+DECIMAL_PLACES = 2 # Number of decimal places to round distances to.
 
 COLORS = {
     'line': "#ee7733",
@@ -68,11 +62,11 @@ class DistanceByDayChart():
 
     def date_year_distance_matrix(self, years_inclusive):
         """
-        Returns a DataFrame of distances from home for each day in the
+        Returns a DataFrame of miles from home for each day in the
         specified inclusive range of years.
         """
         def morning_distance(morning, mornings_lodging):
-            """Calculate distance from home for a given morning."""
+            """Calculate miles from home for a given morning."""
             morning = pd.Timestamp(morning)
             if morning in mornings_lodging.index:
                 # Morning is away from home.
@@ -108,7 +102,7 @@ class DistanceByDayChart():
         # Calculate distance from home for each morning.
         df['distance_mi'] = df['morning'].apply(
             lambda d: morning_distance(d, lodging_mornings)
-        )
+        ).round(DECIMAL_PLACES)
 
         # Split out years, months, and days.
         df['year'] = df['morning'].dt.year
@@ -176,6 +170,7 @@ class SingleYearDistanceChart(DistanceByDayChart):
         else:
             # Do not include prior years.
             years = [self.year, self.year]
+            self.prior_years = None
 
         self.dist_matrix = self.date_year_distance_matrix(years)
         self.labels = labels
@@ -191,22 +186,25 @@ class SingleYearDistanceChart(DistanceByDayChart):
         
         # Plot prior years (if any):
         max_miles_prior = 0
-        for y in self.prior_years:
-            # Normalize the year series to the current year.
-            # This is necessary to ensure that the x-axis dates match.
-            year_series = self.normalize_year(self.dist_matrix[y], self.year)
-            max_miles_prior = max(max_miles_prior, year_series.max())
-            data = {
-                'title': str(y),
-                'dates': year_series.index,
-                'distances': year_series.values,
-            }
-            ax.plot(
-                data['dates'],
-                data['distances'],
-                color=COLORS['line_prior'],
-                alpha=0.4
-            )
+        if self.prior_years is not None:
+            for y in self.prior_years:
+                # Normalize the year series to the current year. This is
+                # necessary to ensure that the x-axis dates match.
+                year_series = self.normalize_year(
+                    self.dist_matrix[y], self.year
+                )
+                max_miles_prior = max(max_miles_prior, year_series.max())
+                data = {
+                    'title': str(y),
+                    'dates': year_series.index,
+                    'distances': year_series.values,
+                }
+                ax.plot(
+                    data['dates'],
+                    data['distances'],
+                    color=COLORS['line_prior'],
+                    alpha=0.4
+                )
         
         # Plot current year.
         current_year_series = self.normalize_year(
@@ -267,56 +265,24 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
 
     def __init__(self, start_year, end_year, output=None):
         super().__init__()
-        self.start_year = start_year
-        self.end_year = end_year
+        self.start_year = int(start_year)
+        self.end_year = int(end_year)
         self.output = output
-        locations = DateCollection(
-            HotelDataFrame(),
-            date(self.start_year,1,1),
-            date(self.end_year,12,31),
-            config['home_location'],
-        )
-        self.by_year_data = {}
-        self.days_of_year = {}
-        for this_date, distance in locations.distances().items():
-            # Store distance for each day in its year's dictionary.    
-            if this_date.year not in self.by_year_data:
-                self.by_year_data[this_date.year] = {
-                    'title': str(this_date.year),
-                    'dates': [],
-                    'distances': [],
-                }
-            self.by_year_data[this_date.year]['dates'].append(this_date)
-            self.by_year_data[this_date.year]['distances'].append(distance)
 
-            # Store distance in day of year for calculating averages.
-            if this_date.month not in self.days_of_year:
-                self.days_of_year[this_date.month] = {}
-            if this_date.day not in self.days_of_year[this_date.month]:
-                self.days_of_year[this_date.month][this_date.day] = []
-            self.days_of_year[this_date.month][this_date.day].append(distance)
+        self.dist_matrix = self.date_year_distance_matrix(
+            [self.start_year, self.end_year]
+        )
 
     def plot(self):
-        # Create a placeholder year to use for storing days of the year
-        # when calculating averages for each day. Should be a leap year
-        # so all days are included. 
-        avg_year = 2020
+        """
+        Plot a distance by day chart for each year and a chart
+        averaging all years.
+        """
 
-        # Calculate averages.
-        average_distance_data = {
-            'title': (f"Average Distance From Home by Day of Year "
-                f"({self.start_year}–{self.end_year})"),
-            'dates': [],
-            'distances': [],
-        }
-        for month, days in self.days_of_year.items():
-            for day, distances in days.items():
-                average_distance_data['dates'].append(
-                    date(avg_year, month, day)
-                )
-                average_distance_data['distances'].append(
-                    np.mean(distances)
-                )
+        # Create a placeholder year to use for storing days of the year
+        # when calculating mean miles for each day. Use a leap year so
+        # all days are included. 
+        MEAN_DATA_YEAR = 2020
 
         # Set plot preferences.
         year_title_options = {
@@ -325,13 +291,21 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
             'alpha': 0.6,
             'fontsize': 10,
         }
-        
-        fig = plt.figure(dpi=96,figsize=(9,6))
-        gs = GridSpec(12, 2, width_ratios=[1,3])
 
+        # Initialize the figure and grid.
+        fig = plt.figure(dpi=96,figsize=(9,6))
+        gs = GridSpec(12, 2, width_ratios=[1,3])      
+
+        # Create plots for each year.
         year_axs = {}
         for index, year in enumerate(range(self.start_year, self.end_year+1)):
-            data = self.by_year_data[year]
+            # data = self.by_year_data[year]
+            year_ds = self.normalize_year(self.dist_matrix[year], year)
+            data = {
+                'title': str(year),
+                'dates': year_ds.index,
+                'distances': year_ds.values,
+            }
             year_axs[index] = fig.add_subplot(gs[index, 0])
             year_axs[index].plot(data['dates'], data['distances'])
             is_bottom = (index == (self.end_year - self.start_year))
@@ -352,23 +326,31 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
             if is_bottom:
                 month_letters = list("JFMAMJJASOND")
                 year_axs[index].set_xticklabels(month_letters, minor=True)
-            
+        
+        # Plot mean distance data.
+        self.dist_matrix['mean'] = (
+            self.dist_matrix.mean(axis=1).round(DECIMAL_PLACES)
+        )
+        mean_ds = self.normalize_year(self.dist_matrix['mean'], MEAN_DATA_YEAR)
+        mean_dist_data = {
+            'title': (f"Average Distance From Home by Day of Year "
+                f"({self.start_year}–{self.end_year})"),
+            'dates': mean_ds.index,
+            'distances': mean_ds.values,
+        }
+        mean_ax = fig.add_subplot(gs[:, 1])
+        mean_ax.plot(mean_dist_data['dates'], mean_dist_data['distances'])
+        self.apply_styles(mean_ax, data, MEAN_DATA_YEAR, include_xaxis=True)
+        mean_ax.set_title(mean_dist_data['title'])
 
-        data = average_distance_data
-        avg_ax = fig.add_subplot(gs[:, 1])
-        avg_ax.plot(data['dates'], data['distances'])
-        self.apply_styles(avg_ax, data, avg_year, include_xaxis=True)
-        avg_ax.set_title(data['title'])
-
+        # Configure y-axes for mean distance plot.
         y_max_miles = 3000
         y_max_km = y_max_miles * KM_PER_MILE
-
-        avg_ax.set_ylim([0,y_max_miles])
-        avg_ax.set_ylabel("Distance (miles)")
-
-        avg_ax_km = avg_ax.twinx()
-        avg_ax_km.set_ylim([0,y_max_km])
-        avg_ax_km.set_ylabel("Distance (km)")
+        mean_ax.set_ylim([0,y_max_miles])
+        mean_ax.set_ylabel("Distance (miles)")
+        mean_ax_km = mean_ax.twinx()
+        mean_ax_km.set_ylim([0,y_max_km])
+        mean_ax_km.set_ylabel("Distance (km)")
         
         fig.tight_layout()
         if self.output is None:
