@@ -66,22 +66,10 @@ class DistanceByDayChart():
         else:
             ax.get_xaxis().set_ticklabels([])
 
-    def home_lat_lon(self, morning):
+    def date_year_distance_matrix(self, years_inclusive):
         """
-        Returns the latitude and longitude of the home location for a
-        given morning.
-        """
-        morning = pd.Timestamp(morning)
-        homes = self.home_locations[
-            self.home_locations['move_in_date'] < morning
-        ].sort_values(by='move_in_date', ascending=False).head(1)
-        if homes.empty:
-            raise ValueError(f"No home location found for {morning}.")
-        return [homes.iloc[0]['lat'], homes.iloc[0]['lon']]
-
-    def year_morning_distances(self, year):
-        """
-        Returns a DataFrame of morning distances from home for the year.
+        Returns a DataFrame of distances from home for each day in the
+        specified inclusive range of years.
         """
         def morning_distance(morning, mornings_lodging):
             """Calculate distance from home for a given morning."""
@@ -101,26 +89,53 @@ class DistanceByDayChart():
                 # Morning is at home.
                 return 0.0
 
-        mornings_lodging = self.log.mornings_by(
+        # Get all lodging in the specified range of years.
+        lodging_mornings = self.log.mornings_by(
             by='city',
-            start_date=date(year, 1, 1),
-            thru_date=date(year, 12, 31),
+            start_date=date(years_inclusive[0], 1, 1),
+            thru_date=date(years_inclusive[1], 12, 31),
             exclude_flights=False,
         )
 
+        # Create a DataFrame with all mornings in the range.
         df = pd.DataFrame()
         df['morning'] = pd.date_range(
-            start=date(year, 1, 1),
-            end=date(year, 12, 31),
+            start=date(years_inclusive[0], 1, 1),
+            end=date(years_inclusive[1], 12, 31),
             freq='D',
         )
+
+        # Calculate distance from home for each morning.
         df['distance_mi'] = df['morning'].apply(
-            lambda d: morning_distance(d, mornings_lodging)
+            lambda d: morning_distance(d, lodging_mornings)
         )
 
-        return df.set_index('morning').sort_index()
+        # Split out years, months, and days.
+        df['year'] = df['morning'].dt.year
+        df['month'] = df['morning'].dt.month
+        df['day'] = df['morning'].dt.day
 
-    
+        # Create a pivot table with years as columns and dates as rows.
+        df = df.pivot_table(
+            index=['month', 'day'],
+            columns='year',
+            values='distance_mi',
+            fill_value=pd.NA,
+        )
+        return df
+
+    def home_lat_lon(self, morning):
+        """
+        Returns the latitude and longitude of the home location for a
+        given morning.
+        """
+        morning = pd.Timestamp(morning)
+        homes = self.home_locations[
+            self.home_locations['move_in_date'] < morning
+        ].sort_values(by='move_in_date', ascending=False).head(1)
+        if homes.empty:
+            raise ValueError(f"No home location found for {morning}.")
+        return [homes.iloc[0]['lat'], homes.iloc[0]['lon']]
         
 
 class SingleYearDistanceChart(DistanceByDayChart):
@@ -135,14 +150,27 @@ class SingleYearDistanceChart(DistanceByDayChart):
         self.year = int(year)
         self.output = output
 
-        self.current_year_distances = self.year_morning_distances(year)
-        
-        if earliest_prior_year is None:
-            self.prior_locations = {}
+        if earliest_prior_year is not None:
+            # Include prior years.
+            earliest_prior_year = int(earliest_prior_year)
+            if earliest_prior_year >= self.year:
+                raise ValueError(
+                    f"earliest_prior_year ({earliest_prior_year}) "
+                    f"must be less than year ({self.year})."
+                )
+            years = [earliest_prior_year, self.year]
         else:
+            # Do not include prior years.
+            years = [self.year, self.year]
+            self.prior_locations = {}
+
+        dist_matrix = self.date_year_distance_matrix(years)
+        self.current_year_distances = dist_matrix[self.year].dropna()
+        
+        if earliest_prior_year is not None:
             prior_years = range(int(earliest_prior_year), self.year)
             self.prior_locations = {
-                y: self.year_morning_distances(y)
+                y: dist_matrix[y].dropna()
                 for y in prior_years
             }
         self.labels = labels
