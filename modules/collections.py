@@ -98,11 +98,10 @@ class GroupedStayCollection:
         grouped = []
         previous_checkout = None
         for stay in hotel_data_frame.data.values.tolist():
-            print(stay)
             checkout = stay[0]
             nights = stay[1]
             city = stay[2]
-            purpose = stay[3]
+            purpose = stay[4]
             checkin = checkin_date(checkout, nights)
 
             if (len(grouped) == 0) or checkin != previous_checkout:
