@@ -1,3 +1,9 @@
+"""
+A script to generate charts showing distance from home for each day of
+a year. Can also include prior years and average distance across a
+range of years.
+"""
+
 from modules.lodging_log import LodgingLog
 
 import argparse
@@ -8,7 +14,6 @@ import matplotlib.ticker as ticker
 from matplotlib.gridspec import GridSpec
 from pathlib import Path
 from pyproj import Geod
-import numpy as np
 import pandas as pd
 import csv
 

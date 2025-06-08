@@ -1,11 +1,14 @@
-"""Creates a CSV of hotel locations and nights, either by city or by
-CBSA metro area."""
+"""
+Creates a table of lodging locations and the number of nights spent at
+each location, grouped by location, city, metro area, or region.
+"""
+
+from modules.lodging_log import LodgingLog
 
 import argparse
 import datetime
 from pathlib import Path
 
-from modules.lodging_log import LodgingLog
 
 COORD_DECIMALS = 4  # Number of decimal places for coordinates
 
