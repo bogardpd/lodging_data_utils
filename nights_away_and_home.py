@@ -4,7 +4,6 @@ from hotel log data.
 """
 
 from modules.collections import GroupedStayCollection
-from modules.hotel_data_frame import HotelDataFrame
 from modules.svg_chart import SVGChart
 
 from datetime import date
@@ -12,20 +11,16 @@ from pathlib import Path
 
 import argparse
 
-def nights_away_and_home(output_file):
+def nights_away_and_home(output_file, start_date=None, thru_date=None):
     """Main function to generate nights away and home chart."""
+    
+    gsc = GroupedStayCollection(start_date, thru_date)
 
-    START_DATE = date(2009,2,9)
-    END_DATE = date.today()
-
-    hotel_df = HotelDataFrame(['Purpose'])
-    away_home_rows = GroupedStayCollection(hotel_df).rows()
-    away_home_rows = list(filter(lambda r: r['away'].start >= START_DATE,
-        away_home_rows))
-
-    # Create SVG:
-    svg = SVGChart(away_home_rows, START_DATE, END_DATE)
+    svg = SVGChart(gsc)
     svg.export(output_file)
+    
+    return
+    ####################################################################
 
     # Show statistics:
     current_home_nights = away_home_rows[-1]['home'].nights
@@ -67,6 +62,18 @@ if __name__ == "__main__":
         type=Path,
         required=True,
     )
+    parser.add_argument('--start',
+        help="The first morning to include in the chart (YYYY-MM-DD).",
+        type=date.fromisoformat,
+    )
+    parser.add_argument('--thru',
+        help="The last morning to include in the chart (YYYY-MM-DD).",
+        type=date.fromisoformat,
+    )
     args = parser.parse_args()
 
-    nights_away_and_home(args.output)
+    nights_away_and_home(
+        args.output,
+        start_date=args.start,
+        thru_date=args.thru
+    )

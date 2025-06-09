@@ -1,119 +1,81 @@
 """Contains classes for creating various collections of hotel data."""
 
-import math
-from modules.common import checkin_date
+from modules.lodging_log import LodgingLog
+
 from modules.common import first_morning
-from modules.common import inclusive_date_range
-from modules.common import stay_mornings
-from modules.coordinates import coordinates
 from datetime import date
-from dateutil import rrule
-
-
-class DateCollection:
-    """Manages a range of dates with a location assigned to each."""
-    
-    DEG_TO_RAD = math.pi / 180
-    EARTH_MEAN_RADIUS = 3958.7613 # miles
-        
-    def __init__(self, hotel_df, start_date, end_date, default_location=None):
-        """Initialize a DateCollection."""
-        
-        self._hotel_df = hotel_df
-        self._default_value = None if default_location == None else {
-            'City': default_location,
-            'Coordinates': coordinates(default_location)}
-        # Create dictionary of dates with locations set to None by default:
-        self.locations = {d:self._default_value for d in inclusive_date_range(
-            start_date, end_date)}
-
-        # Set locations from hotel data:
-        columns=['CheckoutDate', 'Nights', 'CityId']
-        for row in self._hotel_df.data[columns].values.tolist():
-            self._set_location(*row)
-    
-    def _home_distance(self, location):
-        """Returns the distance from home to the provided location.
-        
-        The Haversine formula is used to calculate the distance.
-        """
-        home_coordinates = self._default_value['Coordinates']
-        location_coordinates = coordinates(location)
-        phi_1 = home_coordinates[0] * self.DEG_TO_RAD
-        phi_2 = location_coordinates[0] * self.DEG_TO_RAD
-        delta_phi = (
-            (location_coordinates[0] - home_coordinates[0])
-            * self.DEG_TO_RAD)
-        delta_lambda = (
-            (location_coordinates[1] - home_coordinates[1])
-            * self.DEG_TO_RAD)
-        a = (math.sin(delta_phi/2)**2
-            + math.cos(phi_1)
-            * math.cos(phi_2)
-            * math.sin(delta_lambda/2)**2)
-        distance = (2
-            * self.EARTH_MEAN_RADIUS
-            * math.atan2(math.sqrt(a), math.sqrt(1-a)))
-        return distance
-
-    def _set_location(self, checkout_date, nights, location):
-        """ Sets the locations for the dates in a given hotel stay."""
-        dates = stay_mornings(
-            checkin_date(checkout_date, nights), checkout_date)
-        
-        for day in dates:
-            if day in self.locations.keys():
-                self.locations[day] = {
-                    'City': location,
-                    'Coordinates': coordinates(location)}
-
-    def distances(self):
-        """Returns a dictionary of dates and distance from home.
-
-        The distance from home is in miles.
-        """
-        if self._default_value == None:
-            raise TypeError(
-                "default_location must be set in order to calculate distances")
-        distances = {}
-        for date, loc in self.locations.items():
-            distances[date] = self._home_distance(loc['City'])
-        return distances
+import pandas as pd
 
 
 class GroupedStayCollection:
     """Groups consecutive away-from-home stays.
         
-        Creates an array of dictionaries of away period/home period
+        Creates a list of dictionaries of away period/home period
         pairs, with details for each in nested dictionaries.
         """
     END_DATE = date.today()
 
-    def __init__(self, hotel_data_frame):
+    def __init__(self, start_date=None, thru_date=None):
         """Initialize a GroupedStayCollection."""
-        self.groups = self._group_stays(hotel_data_frame)
-        
-    def _group_stays(self, hotel_data_frame):
-        """Groups consecutive away-from-home stays."""
-        grouped = []
-        previous_checkout = None
-        for stay in hotel_data_frame.data.values.tolist():
-            checkout = stay[0]
-            nights = stay[1]
-            city = stay[2]
-            purpose = stay[4]
-            checkin = checkin_date(checkout, nights)
+        self.log = LodgingLog()
+        self.start_date = start_date
+        if self.start_date is None:
+            # Use the first morning in the log as the start date.
+            start_date = self.log.index.min().date()
+        self.thru_date = thru_date
+        if self.thru_date is None:
+            # Use today as the thru date.
+            self.thru_date = date.today()
 
-            if (len(grouped) == 0) or checkin != previous_checkout:
-                # Create new StayPeriod:
-                grouped.append(
-                    StayPeriod(True, checkout, nights, city, purpose))
+        self.groups = self._group_stays()
+        
+    def _group_stays(self):
+        """Groups consecutive away-from-home stays."""
+
+        # Get lodging data from the log.
+        lodging = self.log.mornings().copy()
+        lodging['status'] = "Away"  # Default status for all stays.
+        lodging = lodging[['status', 'purpose']]
+
+        # Create a DataFrame with all mornings in the range.
+        mornings = pd.DataFrame()
+        mornings['morning'] = pd.date_range(
+            start=self.start_date,
+            end=self.thru_date,
+            freq='D',
+        )
+        mornings = mornings.set_index('morning')
+        
+        # Merge the lodging data with the mornings DataFrame.
+        mornings = pd.merge(
+            mornings,
+            lodging,
+            left_index=True,
+            right_index=True,
+            how='left',
+        )
+        mornings['status'] = mornings['status'].fillna("Home")
+
+        # Create a list of StayPeriod objects to group stays.
+        grouped = []
+        prev_m = None
+        for m in mornings.itertuples():
+            if len(grouped) == 0 or m.status != prev_m.status:
+                # Create a new StayPeriod:
+                if m.status == "Away":
+                    grouped.append(
+                        StayPeriod(True, m.Index.date(), m.purpose))
+                else:
+                    grouped.append(
+                        StayPeriod(False, m.Index.date()))
             else:
                 # Merge into previous group:
-                grouped[-1].merge_stay(checkout, nights, city, purpose)
+                if m.status == "Away":
+                    grouped[-1].append_morning(m.purpose)
+                else:
+                    grouped[-1].append_morning()
+            prev_m = m
 
-            previous_checkout = checkout
-        
         return grouped
     
     def rows(self):
@@ -121,74 +83,64 @@ class GroupedStayCollection:
 
         Calculates the length of each home stay between two away groups.
         """
-        away_home_rows = []
-        for i, group in enumerate(self.groups):
-            home_start = group.end            
-            if i == len(self.groups) - 1:
-                home_end = self.END_DATE 
-            else:
-                home_end = self.groups[i + 1].start
-            home_nights = (home_end - home_start).days
-            
-            away = group            
-            home = StayPeriod(False, home_end, home_nights)
-
-            away_home_rows.append({'away': away, 'home': home})
-        return(away_home_rows)
+        if self.groups[0].is_away:
+            groups = self.groups
+        else:
+            # Rows must start with away. If the first group is home, add
+            # a None value for the first row's Away.
+            groups = [None] + self.groups
+        rows = [
+            {
+                'away': groups[i],
+                'home': groups[i + 1] if i + 1 < len(groups) else None
+            }
+            for i in range(0, len(groups), 2)
+        ]
+        return rows
     
-
 class StayPeriod:
-    """Contains details for a single home or away stay period.
-    
+    """
+    Contains details for a single home or away stay period.
+
     An away stay period may have multiple back to back hotel stays.
     """
-
-    def __init__(self, is_away, checkout_date, nights, city=None,
-                    purpose=None):
-        """Initializes a Stay."""
+    def __init__(self, is_away, end_date, purpose=None):
+        """Initializes a StayPeriod with a single night."""
         self.is_away = is_away
-        self.end = checkout_date
-        self.nights = nights
-
-        self.start = checkin_date(self.end, nights)
-
+        self.start_date = end_date - pd.Timedelta(days=1)
+        self.end_date = end_date
+        self.nights = 1
         if is_away:
-            self.cities = [{
-                'City': city,
-                'Purpose': purpose,
-                'Start': self.start,
-                'End': self.end,
-                'Nights': self.nights
-            }]            
+            self.purposes = [purpose]
         else:
-            self.cities = []
+            self.purposes = []
 
     def __str__(self):
         """Returns a StayPeriod as a string."""
-        period_type = "Away" if self.is_away else "Home"
-        date_format = "%a %d %b %Y"
+        period_type = "Away" if self.is_away else "Home"    
+        return (f"{period_type} thru {self.end_date} "
+                f"({self.nights} night{'s' if self.nights > 1 else ''})")
     
-        return (f"{period_type} {self.start.strftime(date_format)} - "
-            f"{self.end.strftime(date_format)} ({self.nights} nights)")
-
-    def away_purposes(self):
-        """Returns a list of the purpose of each night of a StayPeriod.
-
-        Used to color code away night dots by trip purpose.
+    def __repr__(self):
+        """Returns a StayPeriod as a string."""
+        period_type = "Away" if self.is_away else "Home"    
+        return (f"{period_type} thru {self.end_date} "
+                f"({self.nights} night{'s' if self.nights > 1 else ''})")
+    
+    def append_morning(self, purpose=None):
         """
-        if self.is_away == False:
-            return(None)
-        away_purposes = []
-        for loc in self.cities:
-            away_purposes.extend(
-                loc['Purpose'].lower() for i in range(loc['Nights']))
-        return(away_purposes)
+        Appends a morning to the stay period. This is used to extend the stay period by one night."""
+        self.nights += 1
+        self.end_date = self.end_date + pd.Timedelta(days=1)
+        self.start_date = self.end_date - pd.Timedelta(days=self.nights)
+        if self.is_away:
+            self.purposes.append(purpose)
 
     def date_range_string(self):
         """Returns a formatted string for the stay start and end dates.
         """
-        start = self.start
-        end = self.end
+        start = self.start_date
+        end = self.end_date
         if start.year == end.year:
             if start.month == end.month:
                 start_str = str(start.day)
@@ -204,38 +156,4 @@ class StayPeriod:
 
         This is the date after the checkin date.
         """
-        return(first_morning(self.end, self.nights))
-
-    def merge_stay(self, stay_checkout_date, nights, city, purpose):
-        """Merges another location into this away stay."""
-
-        stay_checkin_date = checkin_date(stay_checkout_date, nights)
-        if stay_checkin_date != self.end:
-            raise ValueError("Can't merge two stays that are not adjacent!")
-
-        self.end = stay_checkout_date
-        self.nights = (stay_checkout_date - self.start).days
-
-        if (len(self.cities) == 0
-                or self.cities[-1]['City'] != city
-                or self.cities[-1]['Purpose'] != purpose):
-            # Create a new city:
-            self.cities.append({
-                'City': city,
-                'Purpose': purpose,
-                'Start': stay_checkin_date,
-                'End': stay_checkout_date,
-                'Nights': (stay_checkout_date - stay_checkin_date).days
-            })
-        else:
-            # Merge into previous city:
-            self.cities[-1]['End'] = stay_checkout_date
-            self.cities[-1]['Nights'] = (
-                stay_checkout_date - self.cities[-1]['Start']).days
-
-    def mornings(self):
-        """Return a list containing all morning dates during the stay.
-
-        The checkin date is not included.
-        """
-        return(stay_mornings(self.start, self.end))
+        return(first_morning(self.end_date, self.nights))
