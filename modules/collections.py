@@ -28,6 +28,23 @@ class GroupedStayCollection:
             self.thru_date = date.today()
 
         self.groups = self._group_stays()
+
+    def top(self, type):
+        """Returns the top N stays of a given type."""
+        if type == "away":
+            return sorted(
+                [g for g in self.groups if g is not None and g.is_away],
+                key=lambda g: g.nights,
+                reverse=True,
+            )
+        elif type == "home":
+            return sorted(
+                [g for g in self.groups if g is not None and (not g.is_away)],
+                key=lambda g: g.nights,
+                reverse=True,
+            )
+        else:
+            raise ValueError("Type must be 'away' or 'home'.")
         
     def _group_stays(self):
         """Groups consecutive away-from-home stays."""
