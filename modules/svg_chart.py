@@ -191,20 +191,6 @@ class SVGChart:
             [2, -2],
         )
 
-        # Highlight first (work) trip:
-        if self.stays[0]['away'] is None:
-            first_away = self.stays[1]['away']
-        else:
-            first_away = self.stays[0]['away']
-        self._draw_highlight(first_away, 'away-business')
-        self._draw_note(first_away.first_morning(), 'start',
-            "First work trip 🠚",
-            first_away.date_range_string(),
-            [
-                -14.5 * self._PARAMS['night']['cell_size'],
-                -2 * self._PARAMS['night']['cell_size']
-            ])
-
         # Highlight longest away period:
         away_max = max(
             self.stays,
@@ -217,26 +203,17 @@ class SVGChart:
             f"{away_max.nights} nights away",
             away_max.date_range_string())
 
-        # Highlight current (final) home period:
-        longest_home_index = self.stays.index(max(
+        # Highlight longest home period:
+        home_max = max(
             self.stays,
             key=lambda h: (
                 h['home'].nights if h['home'] is not None else 0
             )
-        ))
-        longest_home = self.stays[longest_home_index]['home']
-        self._draw_highlight(longest_home, 'home')
-        self._draw_note(longest_home.end_date, 'end',
-            f"{longest_home.nights} nights home during pandemic",
-            longest_home.date_range_string())
-
-        # Highlight longest home period prior to absolute longest:
-        prior_home_max = max(self.stays[:longest_home_index],
-            key=lambda h:h['home'].nights)['home']
-        self._draw_highlight(prior_home_max, 'home')
-        self._draw_note(prior_home_max.end_date, 'end',
-            f"Prior record: {prior_home_max.nights} nights home",
-            prior_home_max.date_range_string())
+        )['home']
+        self._draw_highlight(home_max, 'home')
+        self._draw_note(home_max.end_date, 'end',
+            f"{home_max.nights} nights home",
+            home_max.date_range_string())
 
     def _draw_chart_background(self):
         """Draws chart background shading."""
