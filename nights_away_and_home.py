@@ -49,7 +49,7 @@ if __name__ == "__main__":
         default=None,
     )
     parser.add_argument('--start',
-        help="The first morning to include in the chart (YYYY-MM-DD).",
+        help="The first evening to include in the chart (YYYY-MM-DD).",
         type=date.fromisoformat,
     )
     parser.add_argument('--thru',

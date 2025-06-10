@@ -1,5 +1,5 @@
 from lxml import etree as xml
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from datetime import date
 from modules.common import stay_mornings
 
@@ -45,6 +45,8 @@ class SVGChart:
     _STYLES_PATH = "styles/svg_chart.svg.css"
 
     def __init__(self, grouped_stay_collection):
+        self.start_eve = grouped_stay_collection.start_eve
+        self.thru_morn = grouped_stay_collection.thru_morn
         self.stays = grouped_stay_collection.rows()
         
         self.away_max = max(
@@ -299,8 +301,7 @@ class SVGChart:
             'class': "footer date-generated"
         }
         generated = xml.SubElement(self._g['footer'], "text", **generated_attr)
-        generated.text = "Generated on {t.day} {t:%b} {t.year}".format(
-            t=date.today())
+        generated.text = f"Generated on {self._format_date(date.today())}"
 
     def _draw_gridlines(self):
         """Draws vertical gridlines.
@@ -579,6 +580,13 @@ class SVGChart:
         y = night_anchor[1] + (row_index * cell_size)
 
         return([x, y])
+    
+    def _format_date(self, date_obj):
+        """
+        Formats a date object as a string. Necessary because strftime on
+        Windows does not support non-zero-padded day numbers.
+        """
+        return("{d.day} {d:%b} {d.year}".format(d=date_obj))
 
     def export(self, output_path):
         """Generates an SVG chart based on the away/home row values."""
@@ -587,8 +595,9 @@ class SVGChart:
         self._create_groups()
 
         self._draw_page_background()
-        self._draw_title("Consecutive Nights Traveling or Home",
-            "from first work trip to COVID-19 stay-at-home")
+        self._draw_title("Consecutive Nights Traveling or Home ",
+            f"from {self._format_date(self.start_eve)} "
+            f"to {self._format_date(self.thru_morn)}")
         self._draw_header()
         self._draw_chart_background()
         self._draw_gridlines()

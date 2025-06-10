@@ -15,17 +15,22 @@ class GroupedStayCollection:
         """
     END_DATE = date.today()
 
-    def __init__(self, start_date=None, thru_date=None):
+    def __init__(self, start_eve=None, thru_morn=None):
         """Initialize a GroupedStayCollection."""
         self.log = LodgingLog()
-        self.start_date = start_date
-        if self.start_date is None:
+
+        if start_eve is None:
             # Use the first morning in the log as the start date.
-            start_date = self.log.index.min().date()
-        self.thru_date = thru_date
-        if self.thru_date is None:
-            # Use today as the thru date.
-            self.thru_date = date.today()
+            self.start_morn = self.log.mornings().index.min().date()
+            self.start_eve = self.start_morn - pd.Timedelta(days=1)
+        else:
+            self.start_morn = start_eve + pd.Timedelta(days=1)
+            self.start_eve = start_eve
+
+        if thru_morn is None:
+            self.thru_morn = date.today()
+        else:
+            self.thru_morn = thru_morn
 
         self.groups = self._group_stays()
 
@@ -57,8 +62,8 @@ class GroupedStayCollection:
         # Create a DataFrame with all mornings in the range.
         mornings = pd.DataFrame()
         mornings['morning'] = pd.date_range(
-            start=self.start_date,
-            end=self.thru_date,
+            start=self.start_morn,
+            end=self.thru_morn,
             freq='D',
         )
         mornings = mornings.set_index('morning')
