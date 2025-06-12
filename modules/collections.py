@@ -2,8 +2,7 @@
 
 from modules.lodging_log import LodgingLog
 
-from modules.common import first_morning
-from datetime import date
+from datetime import date, timedelta
 import pandas as pd
 
 
@@ -178,4 +177,5 @@ class StayPeriod:
 
         This is the date after the checkin date.
         """
+        return(self.end_date - timedelta(days=(self.nights-1)))
         return(first_morning(self.end_date, self.nights))

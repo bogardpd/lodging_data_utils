@@ -1,7 +1,6 @@
 from lxml import etree as xml
 from datetime import datetime, date
-from datetime import date
-from modules.common import stay_mornings
+from dateutil import rrule
 
 class SVGChart:
     """ Creates an SVG chart from away and home period data. """
@@ -226,7 +225,7 @@ class SVGChart:
                     continue
                 if row[stay_loc].start_date.year < row[stay_loc].end_date.year:
                     # This stay contains a night ending on 1 January
-                    mornings = stay_mornings(
+                    mornings = self._stay_mornings(
                         row[stay_loc].start_date, row[stay_loc].end_date)
                     night_indexes = [i for i, m in enumerate(mornings) if (
                         m.month == 1 and m.day == 1)]
@@ -560,6 +559,18 @@ class SVGChart:
         Windows does not support non-zero-padded day numbers.
         """
         return("{d.day} {d:%b} {d.year}".format(d=date_obj))
+    
+    def _stay_mornings(self, start_date, end_date):
+        """
+        Returns a list of morning dates in a given stay range. The start
+        date is excluded from this list.
+        """
+        inclusive_date_range = [
+            d.date() for d in list(
+                rrule.rrule(rrule.DAILY, dtstart=start_date, until=end_date)
+            )
+        ]
+        return(inclusive_date_range[1:])
 
     def export(self, output_path):
         """Generates an SVG chart based on the away/home row values."""
