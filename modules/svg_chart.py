@@ -218,10 +218,6 @@ class SVGChart:
     def _draw_chart_background(self):
         """Draws chart background shading."""
 
-        COORDS = self._vals['coords']
-        DIMS = self._vals['dims']
-        PARAMS = self._PARAMS
-
         # Determine [x, y] coordinates of each Jan 1 circle:
         year_starts = {}
         for row_index, row in enumerate(self.stays):
