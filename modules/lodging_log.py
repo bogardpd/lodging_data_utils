@@ -16,6 +16,7 @@ class LodgingLog:
     def __init__(self):
         """Initializes the LodgingLog."""
         self.lodging_path = Path(SOURCES['lodging_gpkg']).expanduser()
+        self._validate()
         self.dtypes = {
             'stay_fid': 'int64',
             'nights': 'int64',
@@ -265,5 +266,56 @@ class LodgingLog:
                 )
         return (pd.NA, pd.NA, pd.NA, pd.NA, pd.NA, pd.NA)
     
-    
-       
+    def _validate(self):
+        """Validates the LodgingLog data."""
+        conn = sqlite3.connect(self.lodging_path)
+        DTYPE = {'fid': 'int64'}
+        validations = [
+            # Check that every stay has a valid stay_location_fid.
+            {'table': "stays", 'query': """
+                SELECT fid, stay_location_fid FROM stays
+                WHERE stay_location_fid IS NULL OR stay_location_fid NOT IN (
+                    SELECT fid FROM stay_locations
+                )
+            """},
+            # Check that every home has a valid stay_location_fid.
+            {'table': "homes", 'query': """
+                SELECT fid, stay_location_fid FROM homes
+                WHERE stay_location_fid IS NULL OR stay_location_fid NOT IN (
+                    SELECT fid FROM stay_locations
+                )
+            """},
+            # Check that every stay_location has a valid or null city_fid.
+            {'table': "stay_locations", 'query': """
+                SELECT fid, city_fid FROM stay_locations
+                WHERE city_fid IS NOT NULL AND city_fid NOT IN (
+                    SELECT fid FROM cities
+                )
+            """},
+            ## Check that every city has a valid or null metro_fid.
+            {'table': "cities", 'query': """
+                SELECT fid, metro_fid FROM cities
+                WHERE metro_fid IS NOT NULL AND metro_fid NOT IN (
+                    SELECT fid FROM metros
+                )
+            """},
+            ## Check that every city has a valid or null region_fid.
+            {'table': "cities", 'query': """
+                SELECT fid, region_fid FROM cities
+                WHERE region_fid IS NOT NULL AND region_fid NOT IN (
+                    SELECT fid FROM regions
+                )
+            """},
+        ]
+        for validation in validations:
+            query = validation['query']
+            table = validation['table']
+            invalid_data = pd.read_sql_query(query, conn, dtype=DTYPE)
+            if not invalid_data.empty:
+                raise ValueError(
+                    f"Invalid data found in {table}:\n"
+                    f"{invalid_data.to_string(index=False)}"
+                )
+
+        conn.close()
+        return True
