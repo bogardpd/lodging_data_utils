@@ -1,5 +1,5 @@
 from lxml import etree as xml
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 from datetime import date
 from modules.common import stay_mornings
 

@@ -1,6 +1,5 @@
 import pandas as pd
 import tomllib
-import sqlite3
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
