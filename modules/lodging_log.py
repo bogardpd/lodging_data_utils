@@ -34,6 +34,14 @@ class LodgingLog:
             'regions': self.geodata('regions'),
         }
 
+    def __repr__(self):
+        """Returns a string representation of the LodgingLog."""
+        return f"LodgingLog(lodging_path={self.lodging_path})"
+    
+    def __str__(self):
+        """Returns a string representation of the LodgingLog."""
+        return f"LodgingLog at {self.lodging_path}"
+
     def geodata(self, layer):
         """
         Returns a GeoDataFrame for the specified layer in the GeoPackage.
@@ -256,4 +264,6 @@ class LodgingLog:
                     lon,
                 )
         return (pd.NA, pd.NA, pd.NA, pd.NA, pd.NA, pd.NA)
+    
+    
        
