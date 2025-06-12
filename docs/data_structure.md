@@ -1,6 +1,6 @@
 # Lodging Data Structure
 
-These scripts use a [GeoPackage file](#lodging-geopackage) containing lodging location data for a single traveler. The location of this file is defined in [data_sources.toml](/data_sources.toml), with the key `lodging_gpkg`.
+These scripts use a [GeoPackage file](https://www.geopackage.org/) containing lodging location data for a single traveler. The location of this file is defined in [data_sources.toml](/data_sources.toml), with the key `lodging_gpkg`.
 
 ## GeoPackage Layers
 
