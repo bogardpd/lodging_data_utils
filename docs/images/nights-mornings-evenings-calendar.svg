@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="640"
+   height="180"
+   viewBox="0 0 169.33333 47.625001"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="nights-mornings-evenings-calendar.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="1"
+     inkscape:cx="282.5"
+     inkscape:cy="-100.5"
+     inkscape:window-width="1920"
+     inkscape:window-height="1129"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer4">
+    <inkscape:grid
+       id="grid1"
+       units="px"
+       originx="0"
+       originy="0"
+       spacingx="1.3229168"
+       spacingy="1.3229167"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="10"
+       enabled="true"
+       visible="false" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Calendar"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect1"
+       width="31.749998"
+       height="29.104164"
+       x="5.2916665"
+       y="13.229166" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="7.9375024"
+       y="18.520834"
+       id="text11-7"><tspan
+         sodipodi:role="line"
+         id="tspan25"
+         x="7.9375024"
+         y="18.520834">June 1</tspan></text>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect2"
+       width="31.75"
+       height="29.104164"
+       x="37.041668"
+       y="13.229166" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect3"
+       width="31.749994"
+       height="29.104164"
+       x="68.791672"
+       y="13.229166" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect4"
+       width="31.749985"
+       height="29.104164"
+       x="100.54167"
+       y="13.229166" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect5"
+       width="31.688643"
+       height="29.176712"
+       x="132.35303"
+       y="13.229166" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.579673;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect6"
+       width="31.750002"
+       height="7.9375"
+       x="132.29167"
+       y="5.2916665" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.579673;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect7"
+       width="31.749985"
+       height="7.9375"
+       x="100.54167"
+       y="5.2916665" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect8"
+       width="31.749994"
+       height="7.9375"
+       x="68.791672"
+       y="5.2916665" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect9"
+       width="31.750004"
+       height="7.9375"
+       x="37.041668"
+       y="5.2916665" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect10"
+       width="31.749998"
+       height="7.9375"
+       x="5.2916665"
+       y="5.2916665" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="18.520838"
+       y="10.583334"
+       id="text11"><tspan
+         sodipodi:role="line"
+         id="tspan11"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;fill:#000000;stroke:none;stroke-width:0.529167"
+         x="18.520838"
+         y="10.583334">Monday</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="50.270836"
+       y="10.583334"
+       id="text12"><tspan
+         sodipodi:role="line"
+         id="tspan12"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;stroke-width:0.529167"
+         x="50.270836"
+         y="10.583334">Tuesday</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="82.020836"
+       y="10.583334"
+       id="text13"><tspan
+         sodipodi:role="line"
+         id="tspan13"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;stroke-width:0.529167"
+         x="82.020836"
+         y="10.583334">Wednesday</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="113.77083"
+       y="10.583334"
+       id="text14"><tspan
+         sodipodi:role="line"
+         id="tspan14"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;stroke-width:0.529167"
+         x="113.77083"
+         y="10.583334">Thursday</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="145.52084"
+       y="10.583334"
+       id="text15"><tspan
+         sodipodi:role="line"
+         id="tspan15"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;stroke-width:0.529167"
+         x="145.52084"
+         y="10.583334">Friday</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="39.687504"
+       y="18.52083"
+       id="text26"><tspan
+         sodipodi:role="line"
+         id="tspan26"
+         style="letter-spacing:0px;fill:#000000;stroke-width:0.529167"
+         x="39.687504"
+         y="18.52083">2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="71.4375"
+       y="18.52083"
+       id="text27"><tspan
+         sodipodi:role="line"
+         id="tspan27"
+         style="letter-spacing:0px;stroke-width:0.529167"
+         x="71.4375"
+         y="18.52083">3</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="103.1875"
+       y="18.52083"
+       id="text28"><tspan
+         sodipodi:role="line"
+         id="tspan28"
+         style="letter-spacing:0px;stroke-width:0.529167"
+         x="103.1875"
+         y="18.52083">4</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="134.9375"
+       y="18.52083"
+       id="text29"><tspan
+         sodipodi:role="line"
+         id="tspan29"
+         style="letter-spacing:0px;stroke-width:0.529167"
+         x="134.9375"
+         y="18.52083">5</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Stay Bar">
+    <rect
+       style="fill:#33bbee;fill-opacity:1;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect12"
+       width="129.64584"
+       height="10.583333"
+       x="19.843752"
+       y="25.135416" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:end;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:end;display:inline;fill:#33bbee;fill-opacity:1;stroke-width:0.529167;stroke-linejoin:round"
+       x="18.52083"
+       y="29.633335"
+       id="text1-2"><tspan
+         sodipodi:role="line"
+         id="tspan20"
+         x="18.52083"
+         y="29.633335">check</tspan><tspan
+         sodipodi:role="line"
+         id="tspan21"
+         x="18.52083"
+         y="33.866665">in</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#33bbee;fill-opacity:1;stroke-width:0.529167;stroke-linejoin:round"
+       x="150.81252"
+       y="29.633335"
+       id="text1-2-6"><tspan
+         sodipodi:role="line"
+         id="tspan22"
+         x="150.81252"
+         y="29.633335">check</tspan><tspan
+         sodipodi:role="line"
+         id="tspan23"
+         x="150.81252"
+         y="33.866665">out</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Night Bars"
+     style="display:inline">
+    <rect
+       style="display:inline;fill:#f1915a;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect11"
+       width="31.75"
+       height="7.9374995"
+       x="21.166666"
+       y="26.458332" />
+    <rect
+       style="display:inline;fill:#eb6214;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect11-8"
+       width="31.749998"
+       height="7.9374995"
+       x="52.916664"
+       y="26.458332" />
+    <rect
+       style="display:inline;fill:#f1915a;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect11-5"
+       width="31.749994"
+       height="7.9374995"
+       x="84.666664"
+       y="26.458332" />
+    <rect
+       style="display:inline;fill:#eb6214;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect11-1"
+       width="31.749994"
+       height="7.9374995"
+       x="116.41666"
+       y="26.458332" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Night Labels"
+     style="display:inline">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="37.041668"
+       y="31.75"
+       id="text16"><tspan
+         sodipodi:role="line"
+         id="tspan16"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;fill:#f9f9f9;stroke-width:0.529167"
+         x="37.041668"
+         y="31.75">night[0]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="68.791679"
+       y="31.75"
+       id="text17"><tspan
+         sodipodi:role="line"
+         id="tspan17"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;stroke-width:0.529167"
+         x="68.791679"
+         y="31.75">night[1]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="100.54167"
+       y="31.75"
+       id="text18"><tspan
+         sodipodi:role="line"
+         id="tspan18"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;stroke-width:0.529167"
+         x="100.54167"
+         y="31.75">night[2]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="132.29167"
+       y="31.75"
+       id="text19"><tspan
+         sodipodi:role="line"
+         id="tspan19"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;stroke-width:0.529167"
+         x="132.29167"
+         y="31.75">night[3]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333334px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#f1915a;fill-opacity:1;stroke-width:0.529167;stroke-linejoin:round"
+       x="38.364586"
+       y="39.6875"
+       id="text1"><tspan
+         sodipodi:role="line"
+         x="38.364586"
+         y="39.6875"
+         id="tspan7">morning[0]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333334px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#eb6214;fill-opacity:1;stroke-width:0.529167;stroke-linejoin:round"
+       x="70.114586"
+       y="39.6875"
+       id="text1-8"><tspan
+         sodipodi:role="line"
+         id="tspan1-8"
+         x="70.114586"
+         y="39.6875">morning[1]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333334px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#f1915a;fill-opacity:1;stroke-width:0.529167;stroke-linejoin:round"
+       x="101.86459"
+       y="39.6875"
+       id="text1-5"><tspan
+         sodipodi:role="line"
+         id="tspan1-1"
+         x="101.86459"
+         y="39.6875">morning[2]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333334px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#eb6214;fill-opacity:1;stroke-width:0.529167;stroke-linejoin:round"
+       x="133.61459"
+       y="39.6875"
+       id="text1-52"><tspan
+         sodipodi:role="line"
+         id="tspan1-7"
+         x="133.61459"
+         y="39.6875">morning[3]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333334px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:end;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:end;fill:#f1915a;fill-opacity:1;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="35.718754"
+       y="23.8125"
+       id="text2"><tspan
+         sodipodi:role="line"
+         id="tspan2"
+         style="fill:#f1915a;fill-opacity:1;stroke-width:0.529167;-inkscape-font-specification:'Source Sans 3, Medium';font-family:'Source Sans 3';font-weight:500;font-style:normal;font-stretch:normal;font-variant:normal;font-size:4.23333334px;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
+         x="35.718754"
+         y="23.8125">evening[0]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333334px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:end;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:end;fill:#eb6214;fill-opacity:1;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="67.468758"
+       y="23.8125"
+       id="text3"><tspan
+         sodipodi:role="line"
+         id="tspan3"
+         style="fill:#eb6214;fill-opacity:1;stroke-width:0.529167;-inkscape-font-specification:'Source Sans 3, Medium';font-family:'Source Sans 3';font-weight:500;font-style:normal;font-stretch:normal;font-variant:normal;font-size:4.23333334px;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
+         x="67.468758"
+         y="23.8125">evening[1]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333334px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:end;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:end;fill:#f1915a;fill-opacity:1;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="99.218758"
+       y="23.8125"
+       id="text4"><tspan
+         sodipodi:role="line"
+         id="tspan4"
+         style="fill:#f1915a;fill-opacity:1;stroke-width:0.529167;-inkscape-font-specification:'Source Sans 3, Medium';font-family:'Source Sans 3';font-weight:500;font-style:normal;font-stretch:normal;font-variant:normal;font-size:4.23333334px;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
+         x="99.218758"
+         y="23.8125">evening[2]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:4.23333334px;line-height:100%;font-family:'Source Sans 3';-inkscape-font-specification:'Source Sans 3, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:end;letter-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:end;fill:#eb6214;fill-opacity:1;stroke-width:0.529167;stroke-linejoin:round;stroke-dasharray:none"
+       x="130.96877"
+       y="23.8125"
+       id="text5"><tspan
+         sodipodi:role="line"
+         id="tspan5"
+         style="fill:#eb6214;fill-opacity:1;stroke-width:0.529167;-inkscape-font-specification:'Source Sans 3, Medium';font-family:'Source Sans 3';font-weight:500;font-style:normal;font-stretch:normal;font-variant:normal;font-size:4.23333334px;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
+         x="130.96877"
+         y="23.8125">evening[3]</tspan></text>
+  </g>
+</svg>

@@ -4,7 +4,20 @@ This package contains utilities for working with [a GeoPackage file containing h
 
 For all of the below scripts, the location on any given day is considered to be where the traveler woke up the morning of that day.
 
-## Utilities
+## Nights, Mornings, and Evenings
+
+Hotel stays are measured (and billed) by nights rather than days. A one-night stay generally involves two separate calendar days (check in on one day and check out the next). Likewise, longer stays involve one more day than nights; for example, a four-night stay involves five calendar days.
+
+![Five calendar days, with check in on the first day and check out on the fifth day. Four nights span the four boundaries between the five calendar days, labeled night 0 through night 3. The first day contains check in and evening 0. The second day contains morning 0 and evening 1. The third day contains morning 1 and evening 2. The fourth day contains morning 2 and evening 3. The fifth day contains morning 3 and check out.](docs/images/nights-mornings-evenings-calendar.svg)
+
+Each night at a hotel spans two calendar days. For any given stay, the dates of morning[*n*] and evening[*n+1*] are the same. The check in date is always equal to evening[0], and the check out date is always equal to the last morning.
+
+When scripts in this project need to assign a single specific date to each night, the morning date is used.
+
+> [!NOTE]
+> For some hotel stays, the check-in may occur after midnight (or the check out may occur before midnight). In these instances, a hotel night will only actually involve one single calendar day. However, since the reservation would still cover both calendar days, the night’s evening will still be recorded as the day prior to the night’s morning.
+
+## Scripts
 
 ### Distance from Home by Day
 
