@@ -74,12 +74,12 @@ class LodgingLog:
         # Read an SQLite table into a DataFrame.
         conn = sqlite3.connect(self.lodging_path)
         query = """
-        SELECT stays.fid as stay_fid, checkout_date, purpose, nights,
+        SELECT stays.fid as stay_fid, check_out_date, purpose, nights,
         stay_location_fid, type, city_fid, metro_fid, region_fid
         FROM stays
         JOIN stay_locations on stays.stay_location_fid = stay_locations.fid
         LEFT JOIN cities on stay_locations.city_fid = cities.fid
-        ORDER BY checkout_date
+        ORDER BY check_out_date
         """
         dtypes = {
             'stay_fid': 'int64',
@@ -90,12 +90,12 @@ class LodgingLog:
             'region_fid': 'Int64',
         }
         stays = pd.read_sql_query(query, conn,
-            parse_dates=['checkout_date'], dtype=dtypes,
+            parse_dates=['check_out_date'], dtype=dtypes,
         )
         stay_frames = [
             pd.DataFrame.from_dict({
                 'morning': [
-                    row.checkout_date - timedelta(days=i)
+                    row.check_out_date - timedelta(days=i)
                     for i in reversed(range(row.nights))
                 ],
                 'stay_fid': [row.stay_fid] * row.nights,
