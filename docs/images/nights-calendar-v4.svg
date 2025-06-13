@@ -8,7 +8,7 @@
    version="1.1"
    id="svg1"
    inkscape:version="1.4 (86a8ad7, 2024-10-11)"
-   sodipodi:docname="nights-calendar.svg"
+   sodipodi:docname="nights-calendar-v4.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -23,13 +23,13 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
-     showgrid="true"
+     showgrid="false"
      inkscape:zoom="2.8284271"
-     inkscape:cx="171.11984"
-     inkscape:cy="113.31386"
+     inkscape:cx="400.22244"
+     inkscape:cy="102.70726"
      inkscape:window-width="1920"
      inkscape:window-height="1129"
-     inkscape:window-x="1912"
+     inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1">
@@ -46,7 +46,7 @@
        opacity="0.14901961"
        empspacing="10"
        enabled="true"
-       visible="true" />
+       visible="false" />
   </sodipodi:namedview>
   <defs
      id="defs1" />
@@ -95,9 +95,9 @@
     <rect
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linejoin:round;stroke-dasharray:none"
        id="rect5"
-       width="31.688643"
+       width="31.750013"
        height="29.104172"
-       x="132.35303"
+       x="132.29166"
        y="13.229166" />
     <rect
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linejoin:round;stroke-dasharray:none"
@@ -107,12 +107,12 @@
        x="132.29167"
        y="5.2916665" />
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.579673;stroke-linejoin:round;stroke-dasharray:none"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linejoin:round;stroke-dasharray:none"
        id="rect7"
        width="31.749985"
-       height="7.9375"
+       height="7.9374995"
        x="100.54167"
-       y="5.2916665" />
+       y="5.291667" />
     <rect
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.52916667;stroke-linejoin:round;stroke-dasharray:none"
        id="rect8"
