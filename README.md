@@ -27,9 +27,9 @@ Generates a CSV file with the following columns:
 
 | Column | Description |
 |--------|-------------|
-| Year | Every year from the first morning of the earliest stay to the present |
-| BusinessNightCount | Number of nights away from home for business travel |
-| PersonalNightCount | Number of nights away from home for personal travel |
+| year | Every year from the first morning of the earliest stay to the present |
+| business_night_count | Number of nights away from home for business travel |
+| personal_night_count | Number of nights away from home for personal travel |
 
 #### Script
 

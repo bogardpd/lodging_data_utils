@@ -28,22 +28,21 @@ def create_annual_night_counts(output_csv: Path) -> None:
     # This ensures that all years are represented in the output, even if
     # there are no entries for some years.
     year_range = range(mornings['year'].min(), date.today().year + 1)
-    all_annual_counts = pd.DataFrame(year_range, columns=['Year'])
+    all_annual_counts = pd.DataFrame(year_range, columns=['year'])
 
-    # Merge the date DataFrame with the annual counts
+    # Merge the date DataFrame with the annual counts    
     all_annual_counts = all_annual_counts.merge(
         annual_counts,
-        left_on='Year',
-        right_on='year',
+        on='year',
         how='left'
     ).fillna(0)
-    all_annual_counts = all_annual_counts.astype({
-        'Business': 'int', 'Personal': 'int'
-    })
     all_annual_counts.rename(columns={
-        'Business': 'BusinessNightCount',
-        'Personal': 'PersonalNightCount',
+        'Business': 'business_night_count',
+        'Personal': 'personal_night_count',
     }, inplace=True)
+    all_annual_counts = all_annual_counts.astype({
+        'business_night_count': 'int', 'personal_night_count': 'int'
+    })
     
     # Save the result to a CSV file.
     all_annual_counts.to_csv(output_csv, index=False)
