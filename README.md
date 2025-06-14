@@ -1,8 +1,10 @@
 # Hotel Data Utilities
 
-This package contains utilities for working with [a GeoPackage file containing hotel (and other lodging) stay data](docs/data_structure.md).
+This package contains utilities for working with a traveler’s personal lodging log.
 
-For all of the below scripts, the location on any given day is considered to be where the traveler woke up the morning of that day.
+## Data Structure
+
+These scripts use a GeoPackage (.gpkg) file as their primary data source. The structure of this file is documented in [Data Structure](docs/data_structure.md).
 
 ## Nights, Mornings, and Evenings
 
@@ -18,6 +20,18 @@ When scripts in this project need to assign a single specific date to each night
 > For some hotel stays, the check-in may occur after midnight (or the check out may occur before midnight). In these instances, a hotel night will only actually involve one single calendar day. However, since the reservation would still cover both calendar days, the night’s evening will still be recorded as the day prior to the night’s morning.
 
 ## Scripts
+
+### Annual Night Counts
+
+[annual_night_counts.py](annual_night_counts.py)
+
+This script generates a CSV file with the following columns:
+
+| Column | Description |
+|--------|-------------|
+| Year | Every year from the first morning of the earliest stay to the present |
+| BusinessNightCount | Number of nights away from home for business travel |
+| PersonalNightCount | Number of nights away from home for personal travel |
 
 ### Distance from Home by Day
 
@@ -37,6 +51,3 @@ This script generates a Pandas DataFrame with each row containing a *Location*, 
 
 This script generates an SVG image for a plot of nights spent traveling (divided into work and personal nights) and nights spent at home.
 
-## Data Structure
-
-These scripts depend on lodging data structured in GeoPackage with a particular format, as documented in [Data Structure](docs/data_structure.md).
