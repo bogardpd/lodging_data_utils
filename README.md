@@ -46,6 +46,8 @@ python annual_night_counts.py output/annual_night_counts.csv
 
 Generates a Matplotlib chart showing every calendar day (from 1 Jan to 31 Dec) on the X axis, and distance from home on the Y axis. Can also be used to show multiple years at once, as well as an average distance from home for each calendar day.
 
+![A sample distance from home by day chart for 2023](docs/images/distance-from-home-by-day-2023.svg)
+
 **Script:** `distance_from_home_by_day.py`
 
 **Subcommands:**
