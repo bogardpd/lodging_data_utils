@@ -111,12 +111,12 @@ Generates a Pandas DataFrame of places, which groups all stays by a specified pl
 
 If a stay does not have the specified place type, the next broadest place type that is available will be used. (Metros and regions are broader than cities, which are broader than stay locations.) For example, if the grouping is by metro but a stay is in a city that’s not in a metro area, the city will be used instead for that stay. 
 
-The dataframe has the following structure:
+The DataFrame has the following structure:
 
 | Column | Description |
 |--------|-------------|
 | rank | The rank of this place. Only present when `--rank` is specified. | 
-| title  | Formal name of the place. Only present if any metro areas are in the dataframe. |
+| title  | Formal name of the place. Only present if any metro areas are in the DataFrame. |
 | name | Short name for use in map labels |
 | key | fid (stay locations), key (cities, metros), or ISO 3166-2 (regions)
 | place_type | **StayLocation**, **City**, **Metro**, or **Region**. Typically the grouping type specified by the `--by` argument. If any entry does not have the specified place type, then this column shows the place type actually used.
