@@ -109,9 +109,9 @@ The `metros` table stores point features for metropolitan areas.
 
 #### Metro Key Format
 
-If a country has a defined unique identifier for metro areas, then the metro ID should be the [ISO 3166 Alpha-2](https://www.iso.org/obp/ui/#search) country code, followed by a forward slash, followed by an identifier.
+If a country has a defined unique identifier for metro areas, then the metro key should be the [ISO 3166 Alpha-2](https://www.iso.org/obp/ui/#search) country code, followed by a forward slash, followed by an identifier.
 
-Otherwise, the metro ID should match the format of the city ID of the metro’s primary city.
+Otherwise, the metro key should match the format of the city key of the metro’s primary city.
 
 For example:
 

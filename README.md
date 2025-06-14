@@ -31,13 +31,15 @@ Generates a CSV file with the following columns:
 | BusinessNightCount | Number of nights away from home for business travel |
 | PersonalNightCount | Number of nights away from home for personal travel |
 
-**Script:** `annual_night_counts.py`
+#### Script
 
-**Arguments:**
+`annual_night_counts.py`
+
+#### Arguments
+
 - `output_file` (required): Path to the output CSV file.
-this year.
 
-**Usage Example:**
+#### Usage Example
 ```sh
 python annual_night_counts.py output/annual_night_counts.csv
 ```
@@ -48,24 +50,36 @@ Generates a Matplotlib chart showing every calendar day (from 1 Jan to 31 Dec) o
 
 ![A sample distance from home by day chart for 2023](docs/images/distance-from-home-by-day-2023.svg)
 
-**Script:** `distance_from_home_by_day.py`
+In single year mode, the script can also produce a CSV output of distance data with the following columns:
 
-**Subcommands:**
+| Column | Description |
+|--------|-------------|
+| title  | Year (YYYY) |
+| dates  | Morning date (YYYY-MM-DD) |
+| distances | Distance from home in miles (floating point)
+
+#### Script
+
+`distance_from_home_by_day.py`
+
+#### Subcommands
 - `single`: Plot for a single year.
 - `multi`: Plot for a range of years and/or average.
 
-**Arguments for `single`:**
+#### Arguments for `single`
+
 - `--year YYYY` (required): Year to plot.
 - `--labels FILE` (optional): A CSV file with CheckOutDate and Location Columns, specifying dates to label.
 - `--earliest_prior_year YYYY` (optional): Show prior years starting from this year for comparison.
-- `--output FILE` (optional): Output image file path (SVG or PNG). If included, output CSV data will also be saved to the same path with a .csv extension (e.g. **path/output.png** → **path/output.csv**).
+- `--output FILE` (optional): Output image file path (SVG or PNG). If included, output CSV distance data will also be saved to the same path with a .csv extension (e.g. **path/output.png** → **path/output.csv**).
 
-**Arguments for `multi`:**
+#### Arguments for `multi`
+
 - `--start_year YYYY` (required): First year to include.
 - `--end_year YYYY` (required): Last year to include.
 - `--output FILE` (required): Output image file path(s) (SVG or PNG).
 
-**Usage Examples:**
+#### Usage Examples
 
 - Single year:
     ```sh
@@ -84,11 +98,30 @@ Generates a Matplotlib chart showing every calendar day (from 1 Jan to 31 Dec) o
 
 ### Frequency Table
 
-Generates a Pandas DataFrame with each row containing a *Location*, *Type* (location, city, region, or metro), *Latitude*, *Longitude*, and *Nights* (count of nights). This can be exported to CSV for use in GIS software.
+Generates a Pandas DataFrame of places, which groups all stays by a specified place level (stay location, city, region, or metro) and provides the total nights spent at each.
 
-**Script:** `frequency_table.py`
+If a stay does not have the specified place level, the broadest level place that is available will be used. For example, if grouping by metro but a stay is in a city that’s not in a metro area, the city will be used instead.
 
-**Arguments:**
+The dataframe has the following structure:
+
+| Column | Description |
+|--------|-------------|
+| Rank | The rank of this place. Only present when `--rank` is specified. | 
+| Title  | Formal name of the place. Not used for stay location |
+| Location | Short name for use in map labels |
+| LocId | fid (stay locations), key (cities, metros), or ISO 3166-2 (regions)
+| Type | **StayLocation**, **City**, **Metro**, or **Region**. Typically the location level specified by the `--by` argument. If some data does not have the specified level, then this column shows the level actually used.
+| Latitude | Latitude in decimal degrees |
+| Longitude | Longitude in decimal degrees |
+| Nights | Number of nights spent at this place |
+
+This can be exported to CSV for use in GIS software.
+
+#### Script
+
+`frequency_table.py`
+
+#### Arguments
 - `--by {location,city,region,metro}` (required): Grouping level.
 - `--start YYYY-MM-DD` (optional): The earliest morning to include. If omitted, will use the earliest morning in the log data.
 - `--thru YYYY-MM-DD` (optional): The latest morning to include. If omitted, will use today’s date.
@@ -98,7 +131,7 @@ Generates a Pandas DataFrame with each row containing a *Location*, *Type* (loca
 - `--rank` (optional): Add a ranking column.
 - `--silent` (optional): Do not show output table in the console.
 
-**Usage Examples:**
+#### Usage Examples
 
 - Group by city and print to console:
     ```sh
@@ -119,15 +152,19 @@ Generates a Pandas DataFrame with each row containing a *Location*, *Type* (loca
 
 Generates an SVG image for a plot of nights spent traveling (divided into work and personal nights) and nights spent at home.
 
-**Script:** `nights_away_and_home.py`
+#### Script
 
-**Arguments:**
+`nights_away_and_home.py`
+
+#### Arguments
+
 - `--output FILE` (required): Output SVG image file path.
 - `--stats_output FILE` (optional): Output text file for summary stats.
 - `--start YYYY-MM-DD` (optional): The first evening to include in the chart. If omitted, will use the earliest evening in the log data.
 - `--thru YYYY-MM-DD` (optional): The last morning to include in the chart. If omitted, will use today’s date.
 
-**Usage Examples:**
+#### Usage Examples
+
 - Include a stats output file:
 ```sh
 python nights_away_and_home.py --output output/nights_away_and_home.svg --stats_output output/nights_stats.txt
@@ -137,4 +174,3 @@ python nights_away_and_home.py --output output/nights_away_and_home.svg --stats_
 ```sh
 python nights_away_and_home.py --output output/nights_2022.svg --start 2022-01-01 --thru 2022-12-31
 ```
-
