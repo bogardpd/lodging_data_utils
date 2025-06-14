@@ -102,7 +102,7 @@ In single year mode, the script can produce a CSV output of distance data with t
 
 - Range of years with average:
     ```sh
-    python distance_from_home_by_day.py multi --start_year 2013 --end_year 2024 --output_img output/distance_multi.svg
+    python distance_from_home_by_day.py multi --start_year 2013 --thru_year 2024 --output_img output/distance_multi.svg
     ```
 
 ### Frequency Table
