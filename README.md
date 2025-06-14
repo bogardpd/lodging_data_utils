@@ -176,10 +176,10 @@ Generates an SVG image for a plot of nights spent traveling (divided into work a
 
 - Include a stats output file:
 ```sh
-python nights_away_and_home.py --output output/nights_away_and_home.svg --stats_output output/nights_stats.txt
+python nights_away_and_home.py --output_svg output/nights_away_and_home.svg --output_stats output/nights_stats.txt
 ```
 
 - Filter by a date range:
 ```sh
-python nights_away_and_home.py --output output/nights_2022.svg --start 2022-01-01 --thru 2022-12-31
+python nights_away_and_home.py --output_svg output/nights_2022.svg --start_evening 2022-01-01 --thru_morning 2022-12-31
 ```
