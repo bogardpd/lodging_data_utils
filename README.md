@@ -46,17 +46,21 @@ python annual_night_counts.py output/annual_night_counts.csv
 
 ### Distance from Home by Day
 
-Generates a Matplotlib chart showing every calendar day (from 1 Jan to 31 Dec) on the X axis, and distance from home on the Y axis. Can also be used to show multiple years at once, as well as an average distance from home for each calendar day.
+Generates a Matplotlib chart showing every morning of the year (from 1 Jan to 31 Dec) on the X axis, and distance from home for each morning on the Y axis.
+
 
 ![A sample distance from home by day chart for 2023](docs/images/distance-from-home-by-day-2023.svg)
 
-In single year mode, the script can also produce a CSV output of distance data with the following columns:
+This script can also be used to show multiple years at once, as well as an average distance from home for each calendar day.
+
+![A sample distance from home multi-year chart for 2013 to 2024](docs/images/distance-from-home-multi-2013-2024.svg)
+
+In single year mode, the script can produce a CSV output of distance data with the following columns:
 
 | Column | Description |
 |--------|-------------|
-| title  | Year (YYYY) |
-| dates  | Morning date (YYYY-MM-DD) |
-| distances | Distance from home in miles (floating point)
+| morning | Morning date (YYYY-MM-DD) |
+| distance_mi | Distance from home in miles (floating point) |
 
 #### Script
 
@@ -69,31 +73,36 @@ In single year mode, the script can also produce a CSV output of distance data w
 #### Arguments for `single`
 
 - `--year YYYY` (required): Year to plot.
-- `--labels FILE` (optional): A CSV file with CheckOutDate and Location Columns, specifying dates to label.
+- `--labels FILE` (optional): A CSV file with `morning` (YYYY-MM-DD) and `label` columns, specifying morning dates to label.
 - `--earliest_prior_year YYYY` (optional): Show prior years starting from this year for comparison.
-- `--output FILE` (optional): Output image file path (SVG or PNG). If included, output CSV distance data will also be saved to the same path with a .csv extension (e.g. **path/output.png** → **path/output.csv**).
+
+> [!IMPORTANT]
+> If `year` is not a leap year, the chart will not show data for 29 February on any prior leap year.
+
+- `--output_img FILE` (optional): Output image file path (SVG or PNG).
+- `--output_csv FILE` (optional): Output CSV file path for distance data.
 
 #### Arguments for `multi`
 
 - `--start_year YYYY` (required): First year to include.
-- `--end_year YYYY` (required): Last year to include.
-- `--output FILE` (required): Output image file path(s) (SVG or PNG).
+- `--thru_year YYYY` (required): Last year to include.
+- `--output_img FILE` (optional): Output image file path(s) (SVG or PNG).
 
 #### Usage Examples
 
 - Single year:
     ```sh
-    python distance_from_home_by_day.py single --year 2023 --output output/distance_2023.svg
+    python distance_from_home_by_day.py single --year 2023 --output_img output/distance_2023.svg --output_csv output/distance_2023.csv
     ```
 
 - Single year with prior years for comparison:
     ```sh
-    python distance_from_home_by_day.py single --year 2023 --earliest_prior_year 2019 --output output/distance_2023_with_prior.png
+    python distance_from_home_by_day.py single --year 2023 --earliest_prior_year 2019 --output_img output/distance_2023_with_prior.png
     ```
 
 - Range of years with average:
     ```sh
-    python distance_from_home_by_day.py multi --start_year 2019 --end_year 2023 --output output/distance_multi.svg
+    python distance_from_home_by_day.py multi --start_year 2019 --end_year 2023 --output_img output/distance_multi.svg
     ```
 
 ### Frequency Table

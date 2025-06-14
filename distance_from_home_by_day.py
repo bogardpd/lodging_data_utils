@@ -28,16 +28,20 @@ COLORS = {
     'grid_minor': "#f0f0f0",
 }
 
-def main(type, years, output=None, labels=None, earliest_prior_year=None):
+def main(
+    type, years,
+    output_img=None, output_csv=None, labels=None, earliest_prior_year=None
+):
     if type == 'single':
         SingleYearDistanceChart(
             years[0],
-            output,
+            output_img,
+            output_csv,
             labels,
             earliest_prior_year,
         ).plot()
     elif type == 'multi':
-        YearsAndAverageDistanceChart(*years, output).plot()
+        YearsAndAverageDistanceChart(*years, output_img).plot()
     
 
 class DistanceByDayChart():
@@ -155,12 +159,14 @@ class SingleYearDistanceChart(DistanceByDayChart):
 
     def __init__(
             self, year,
-            output=None, labels=None, earliest_prior_year=None,
+            output_img=None, output_csv=None,
+            labels=None, earliest_prior_year=None,
         ):
         super().__init__()
 
         self.year = int(year)
-        self.output = output
+        self.output_img = output_img
+        self.output_csv = output_csv
 
         if earliest_prior_year is not None:
             # Include prior years.
@@ -242,9 +248,9 @@ class SingleYearDistanceChart(DistanceByDayChart):
             with open(self.labels, newline='', encoding='UTF-8') as lf:
                 reader = csv.DictReader(lf)
                 for row in reader:
-                    dt = datetime.strptime(row['CheckOutDate'], "%Y-%m-%d")
+                    dt = datetime.strptime(row['morning'], "%Y-%m-%d")
                     yday = dt.date().timetuple().tm_yday - 1
-                    ax.annotate(row['Location'],
+                    ax.annotate(row['label'],
                         xy=(data['dates'][yday], data['distances'][yday]),
                         xycoords = 'data',
                         xytext = (15,30),
@@ -255,27 +261,33 @@ class SingleYearDistanceChart(DistanceByDayChart):
                     )
 
         plt.tight_layout()
-        print(self.output)
-        if self.output is None:
+
+        # Export data to CSV if requested.
+        if self.output_csv is not None:
+            output_data = current_year_series.copy()
+            output_data = output_data.reset_index()
+            output_data.columns = ['morning', 'distance_mi']
+            output_data.to_csv(self.output_csv, header=True, index=False)
+            print(f"Saved distance data to {self.output_csv}.")
+        
+        # Show or save the plot.
+        if self.output_img is None:
             plt.show()
         else:
-            pd.DataFrame(data).to_csv(
-                self.output.with_suffix('.csv'), index=False
-            )
-            plt.savefig(self.output)
-            print(f"Saved distance by day chart to {self.output}.")
+            plt.savefig(self.output_img)
+            print(f"Saved distance by day chart to {self.output_img}.")
 
 class YearsAndAverageDistanceChart(DistanceByDayChart):
     """A chart for each year and a chart averaging all years."""
 
-    def __init__(self, start_year, end_year, output=None):
+    def __init__(self, start_year, thru_year, output=None):
         super().__init__()
         self.start_year = int(start_year)
-        self.end_year = int(end_year)
-        self.output = output
+        self.thru_year = int(thru_year)
+        self.output_img = output
 
         self.dist_matrix = self.date_year_distance_matrix(
-            [self.start_year, self.end_year]
+            [self.start_year, self.thru_year]
         )
 
     def plot(self):
@@ -303,7 +315,7 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
 
         # Create plots for each year.
         year_axs = {}
-        for index, year in enumerate(range(self.start_year, self.end_year+1)):
+        for index, year in enumerate(range(self.start_year, self.thru_year+1)):
             # data = self.by_year_data[year]
             year_ds = self.normalize_year(self.dist_matrix[year], year)
             data = {
@@ -313,7 +325,7 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
             }
             year_axs[index] = fig.add_subplot(gs[index, 0])
             year_axs[index].plot(data['dates'], data['distances'])
-            is_bottom = (index == (self.end_year - self.start_year))
+            is_bottom = (index == (self.thru_year - self.start_year))
             self.apply_styles(
                 year_axs[index],
                 data,
@@ -330,7 +342,12 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
             year_axs[index].set_title(data['title'], **year_title_options)
             if is_bottom:
                 month_letters = list("JFMAMJJASOND")
-                year_axs[index].set_xticklabels(month_letters, minor=True)
+                mid_months = [
+                    date(year, m, 15) for m in range(1, 13)
+                ]
+                year_axs[index].set_xticks(
+                    mid_months, month_letters, minor=True
+                )
         
         # Plot mean distance data.
         self.dist_matrix['mean'] = (
@@ -339,7 +356,7 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
         mean_ds = self.normalize_year(self.dist_matrix['mean'], MEAN_DATA_YEAR)
         mean_dist_data = {
             'title': (f"Average Distance From Home by Day of Year "
-                f"({self.start_year}–{self.end_year})"),
+                f"({self.start_year}–{self.thru_year})"),
             'dates': mean_ds.index,
             'distances': mean_ds.values,
         }
@@ -358,11 +375,11 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
         mean_ax_km.set_ylabel("Distance (km)")
         
         fig.tight_layout()
-        if self.output is None:
+        if self.output_img is None:
             plt.show()
         else:
-            plt.savefig(self.output)
-            print(f"Saved distance by day chart to {self.output}.")
+            plt.savefig(self.output_img)
+            print(f"Saved distance by day chart to {self.output_img}.")
 
 
 if __name__ == "__main__":
@@ -384,15 +401,22 @@ if __name__ == "__main__":
         '--labels',
         dest='labels',
         type=Path,
-        help="CSV file of CheckOutDate,Location pairs to label",
+        help="CSV file of morning,label pairs",
         required=False,
         default=None
     )
     parser_single.add_argument(
-        '--output',
-        dest='output',
+        '--output_img',
+        dest='output_img',
         type=Path,
-        help="Output file to save the chart to",
+        help="Output image file",
+        default=None,
+    )
+    parser_single.add_argument(
+        '--output_csv',
+        dest='output_csv',
+        type=Path,
+        help="Output CSV file with distance data",
         default=None,
     )
     parser_single.add_argument(
@@ -414,19 +438,19 @@ if __name__ == "__main__":
         '--start_year',
         dest='start_year',
         type=int,
-        help="Start year (inclusive)",
+        help="First year to include in the chart",
     )
     parser_multi.add_argument(
-        '--end_year',
-        dest='end_year',
+        '--thru_year',
+        dest='thru_year',
         type=int,
-        help="End year (inclusive)",
+        help="Last year to include in the chart",
     )
     parser_multi.add_argument(
-        '--output',
-        dest='output',
+        '--output_img',
+        dest='output_img',
         type=Path,
-        help="Output file to save the chart to",
+        help="Output image file",
         default=None,
     )
 
@@ -435,10 +459,15 @@ if __name__ == "__main__":
         main(
             'single',
             [args.year],
-            args.output,
+            args.output_img,
+            args.output_csv,
             args.labels,
             args.earliest_prior_year,
         )
     else:
-        main('multi', [args.start_year, args.end_year], args.output)
+        main(
+            'multi',
+            [args.start_year, args.thru_year],
+            args.output_img
+        )
     
