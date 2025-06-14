@@ -1,10 +1,14 @@
 """Defines the LodgingLog class for managing lodging information."""
-import tomllib
-import geopandas as gpd
-import pandas as pd
+
+# Standard library imports
 import sqlite3
 from pathlib import Path
 from datetime import timedelta
+
+# Third-party imports
+import tomllib
+import geopandas as gpd
+import pandas as pd
 
 ROOT = Path(__file__).parent.parent
 with open(ROOT / "data_sources.toml", 'rb') as f:
@@ -12,7 +16,7 @@ with open(ROOT / "data_sources.toml", 'rb') as f:
 
 class LodgingLog:
     """A class to manage lodging information for a trip."""
-    
+
     def __init__(self):
         """Initializes the LodgingLog."""
         self.lodging_path = Path(SOURCES['lodging_gpkg']).expanduser()
@@ -25,7 +29,7 @@ class LodgingLog:
             'metro_fid': 'Int64',
             'region_fid': 'Int64',
         }
-        
+
         # Store geodata in a cache for quick access.
         # This avoids reading the GeoPackage multiple times.
         self.geodata_cache = {
@@ -38,7 +42,7 @@ class LodgingLog:
     def __repr__(self):
         """Returns a string representation of the LodgingLog."""
         return f"LodgingLog(lodging_path={self.lodging_path})"
-    
+
     def __str__(self):
         """Returns a string representation of the LodgingLog."""
         return f"LodgingLog at {self.lodging_path}"
@@ -46,10 +50,10 @@ class LodgingLog:
     def geodata(self, layer):
         """
         Returns a GeoDataFrame for the specified layer in the GeoPackage.
-        
+
         Args:
             layer (str): The name of the layer to read from the GeoPackage.
-        
+
         Returns:
             GeoDataFrame: A GeoDataFrame containing the data from the
             specified layer.
@@ -111,7 +115,7 @@ class LodgingLog:
         output = pd.concat(stay_frames, ignore_index=True)
         output = output.set_index('morning')
         return output
-    
+
     def mornings_by(self,
         by='location',
         start_morning=None,
@@ -130,7 +134,7 @@ class LodgingLog:
             mornings = mornings[
                 ~mornings.type.isin(transit)
             ]
-        
+
         # Get the attributes of each location row.
         mornings[
             ['place_type', 'type_fid', 'title', 'name', 'key', 'lat', 'lon']
@@ -140,7 +144,7 @@ class LodgingLog:
             result_type='expand',
         )
 
-        return mornings    
+        return mornings
 
     def home_locations(self):
         """
@@ -157,7 +161,7 @@ class LodgingLog:
                     row.stay_location_fid
                 ].geometry
             return (geom.y, geom.x)
-        
+
         # Read an SQLite table into a DataFrame.
         conn = sqlite3.connect(self.lodging_path)
         query = """
@@ -170,12 +174,12 @@ class LodgingLog:
             parse_dates=['move_in_date'], dtype={'fid': 'int64'},
         )
         home_mornings[['lat', 'lon']] = home_mornings.apply(
-            lambda row: get_home_location(row),
+            get_home_location,
             axis=1,
             result_type='expand',
         )
         return home_mornings
-    
+
     def location_attrs(self, row, by):
         """Get the attributes of each location row."""
         priority = {
@@ -258,11 +262,11 @@ class LodgingLog:
                     lon,
                 )
         return (pd.NA, pd.NA, pd.NA, pd.NA, pd.NA, pd.NA)
-    
+
     def _validate(self):
         """Validates the LodgingLog data."""
         conn = sqlite3.connect(self.lodging_path)
-        DTYPE = {'fid': 'int64'}
+        dtype = {'fid': 'int64'}
         validations = [
             # Check that every stay has a valid stay_location_fid.
             {
@@ -336,7 +340,7 @@ class LodgingLog:
         ]
         for validation in validations:
             query = validation['query']
-            invalid_data = pd.read_sql_query(query, conn, dtype=DTYPE)
+            invalid_data = pd.read_sql_query(query, conn, dtype=dtype)
             if not invalid_data.empty:
                 table = validation['table']
                 error = validation['error']

@@ -3,12 +3,15 @@ Creates a table of lodging locations and the number of nights spent at
 each location, grouped by location, city, metro area, or region.
 """
 
-from modules.lodging_log import LodgingLog
-
-import argparse
+# Standard library imports
 import datetime
 from pathlib import Path
 
+# Third-party imports
+import argparse
+
+# First-party imports
+from modules.lodging_log import LodgingLog
 
 COORD_DECIMALS = 4  # Number of decimal places for coordinates
 
@@ -23,9 +26,9 @@ def frequency_table(
     silent=False,
 ):
     """Create a frequency table of hotel locations and nights."""
-    
+
     log = LodgingLog()
-    
+
     mornings = log.mornings_by(
         by=by,
         start_morning=start_morning,
@@ -51,10 +54,10 @@ def frequency_table(
     # Round coordinates to a fixed number of decimal places.
     grouped['latitude'] = grouped['latitude'].round(COORD_DECIMALS)
     grouped['longitude'] = grouped['longitude'].round(COORD_DECIMALS)
-    
+
     # Remove title if not needed.
     grouped = grouped.dropna(axis=1, how='all')
-   
+
     if rank:
         grouped['rank'] = grouped['night_count'] \
             .rank(method='min', ascending=False) \
@@ -62,7 +65,7 @@ def frequency_table(
         columns = grouped.columns.to_list()
         columns = columns[-1:] + columns[:-1]
         grouped = grouped[columns]
-    
+
     total_nights = grouped['night_count'].sum()
     total_locs = len(grouped)
     if top is not None:
@@ -75,7 +78,7 @@ def frequency_table(
     if output_csv is not None:
         grouped.to_csv(output_csv, index=False)
         print(f"Saved CSV to `{output_csv}`.")
-        
+
 
 def pluralize_total(label, count):
     """Return a string with the total count and label."""
@@ -91,7 +94,7 @@ def pluralize_total(label, count):
     else:
         label_str = total_labels[label][1]
     return f"Total {label_str}: {count}"
-    
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -105,7 +108,7 @@ if __name__ == "__main__":
     parser.add_argument('--start_morning',
         help="the earliest morning to show (inclusive) in YYYY-MM-DD format",
         type=datetime.date.fromisoformat,
-        
+
     )
     parser.add_argument('--thru_morning',
         help="the latest morning to show (inclusive) in YYYY-MM-DD format",

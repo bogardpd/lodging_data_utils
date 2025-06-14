@@ -1,11 +1,15 @@
 """Create a CSV file with night counts for each year in the dataset."""
 
-from modules.lodging_log import LodgingLog
-
+# Standard library imports
 from datetime import date
 from pathlib import Path
+
+# Third-party imports
 import argparse
 import pandas as pd
+
+# First-party imports
+from modules.lodging_log import LodgingLog
 
 def create_annual_night_counts(output_csv: Path) -> None:
     """Create a CSV file with night counts for each year in the dataset."""
@@ -23,14 +27,14 @@ def create_annual_night_counts(output_csv: Path) -> None:
         aggfunc='count',
         fill_value=0
     )
-    
+
     # Create a date range from the minimum year to the current year.
     # This ensures that all years are represented in the output, even if
     # there are no entries for some years.
     year_range = range(mornings['year'].min(), date.today().year + 1)
     all_annual_counts = pd.DataFrame(year_range, columns=['year'])
 
-    # Merge the date DataFrame with the annual counts    
+    # Merge the date DataFrame with the annual counts
     all_annual_counts = all_annual_counts.merge(
         annual_counts,
         on='year',
@@ -43,7 +47,7 @@ def create_annual_night_counts(output_csv: Path) -> None:
     all_annual_counts = all_annual_counts.astype({
         'business_night_count': 'int', 'personal_night_count': 'int'
     })
-    
+
     # Save the result to a CSV file.
     all_annual_counts.to_csv(output_csv, index=False)
     print(f"Annual night counts saved to {output_csv}")
