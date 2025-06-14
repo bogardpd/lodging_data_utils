@@ -1,12 +1,12 @@
 # Hotel Data Utilities
 
-This package contains utilities for working with a traveler’s personal lodging log.
+This package contains utilities for working with a traveler’s personal lodging log. In addition to hotel stays, this log can also document stays at short-term-rentals, stays with friends and family, and even overnight flights.
 
 ## Data Structure
 
 These scripts use a GeoPackage (.gpkg) file as their primary data source. The structure of this file is documented in [Data Structure](docs/data_structure.md).
 
-## Nights, Mornings, and Evenings
+## Definitions: Nights, Mornings, and Evenings
 
 Hotel stays are measured (and billed) by nights rather than days. A one-night stay generally involves two separate calendar days (check in on one day and check out the next). Likewise, longer stays involve one more day than nights; for example, a four-night stay involves five calendar days.
 
