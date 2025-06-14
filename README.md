@@ -161,6 +161,8 @@ This can be exported to CSV for use in GIS software.
 
 Generates an SVG image for a plot of nights spent traveling (divided into work and personal nights) and nights spent at home.
 
+![A sample nights away and home chart](docs/images/nights_away_home.svg)
+
 #### Script
 
 `nights_away_and_home.py`
