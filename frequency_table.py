@@ -14,11 +14,11 @@ COORD_DECIMALS = 4  # Number of decimal places for coordinates
 
 def frequency_table(
     by='City',
-    start_date=None,
-    thru_date=None,
-    output_file=None,
+    start_morning=None,
+    thru_morning=None,
+    output_csv=None,
     top=None,
-    exclude_flights=False,
+    exclude_transit=False,
     rank=False,
     silent=False,
 ):
@@ -28,42 +28,42 @@ def frequency_table(
     
     mornings = log.mornings_by(
         by=by,
-        start_date=start_date,
-        thru_date=thru_date,
-        exclude_flights=exclude_flights,
+        start_morning=start_morning,
+        thru_morning=thru_morning,
+        exclude_transit=exclude_transit,
     )
 
     # Group and count the nights by location.
     grouped = mornings.groupby('type_fid').agg(
-        Location=('name', 'first'),
-        Title=('title', 'first'),
-        LocId=('key', 'first'),
-        Type=('loc_type', 'first'),
-        Latitude=('lat', 'first'),
-        Longitude=('lon', 'first'),
-        Nights=('type_fid', 'count'),
+        title=('title', 'first'),
+        name=('name', 'first'),
+        key=('key', 'first'),
+        place_type=('place_type', 'first'),
+        latitude=('lat', 'first'),
+        longitude=('lon', 'first'),
+        night_count=('type_fid', 'count'),
     )
     grouped = grouped.sort_values(
-        by=['Nights','Location'],
+        by=['night_count','name'],
         ascending=[False, True],
     )
 
     # Round coordinates to a fixed number of decimal places.
-    grouped['Latitude'] = grouped['Latitude'].round(COORD_DECIMALS)
-    grouped['Longitude'] = grouped['Longitude'].round(COORD_DECIMALS)
+    grouped['latitude'] = grouped['latitude'].round(COORD_DECIMALS)
+    grouped['longitude'] = grouped['longitude'].round(COORD_DECIMALS)
     
-    # Remove Title or LocId if not needed.
+    # Remove title if not needed.
     grouped = grouped.dropna(axis=1, how='all')
    
     if rank:
-        grouped['Rank'] = grouped['Nights'] \
+        grouped['rank'] = grouped['night_count'] \
             .rank(method='min', ascending=False) \
             .astype('int')
         columns = grouped.columns.to_list()
         columns = columns[-1:] + columns[:-1]
         grouped = grouped[columns]
     
-    total_nights = grouped['Nights'].sum()
+    total_nights = grouped['night_count'].sum()
     total_locs = len(grouped)
     if top is not None:
         grouped = grouped.head(top)
@@ -72,9 +72,9 @@ def frequency_table(
         print(pluralize_total(by, total_locs))
         print(pluralize_total('night', total_nights))
 
-    if output_file is not None:
-        grouped.to_csv(output_file, index=False)
-        print(f"Saved CSV to `{output_file}`.")
+    if output_csv is not None:
+        grouped.to_csv(output_csv, index=False)
+        print(f"Saved CSV to `{output_csv}`.")
         
 
 def pluralize_total(label, count):
@@ -102,16 +102,16 @@ if __name__ == "__main__":
         choices=['location','city','metro','region'],
         default='city',
     )
-    parser.add_argument('--start',
+    parser.add_argument('--start_morning',
         help="the earliest morning to show (inclusive) in YYYY-MM-DD format",
         type=datetime.date.fromisoformat,
         
     )
-    parser.add_argument('--thru',
+    parser.add_argument('--thru_morning',
         help="the latest morning to show (inclusive) in YYYY-MM-DD format",
         type=datetime.date.fromisoformat,
     )
-    parser.add_argument('--output',
+    parser.add_argument('--output_csv',
         help="CSV file to write the results to",
         type=Path
     )
@@ -119,7 +119,7 @@ if __name__ == "__main__":
         help="how many results to show",
         type=int
     )
-    parser.add_argument('--exclude_flights',
+    parser.add_argument('--exclude_transit',
         help="do not include nights on flights",
         action='store_true',
     )
@@ -133,6 +133,12 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     frequency_table(
-        args.by, args.start, args.thru, args.output, args.top,
-        args.exclude_flights, args.rank, args.silent,
+        args.by,
+        start_morning=args.start_morning,
+        thru_morning=args.thru_morning,
+        output_csv=args.output_csv,
+        top=args.top,
+        exclude_transit=args.exclude_transit,
+        rank=args.rank,
+        silent=args.silent,
     )

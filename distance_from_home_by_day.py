@@ -95,9 +95,9 @@ class DistanceByDayChart():
         # Get all lodging in the specified range of years.
         lodging_mornings = self.log.mornings_by(
             by='city',
-            start_date=date(years_inclusive[0], 1, 1),
-            thru_date=date(years_inclusive[1], 12, 31),
-            exclude_flights=False,
+            start_morning=date(years_inclusive[0], 1, 1),
+            thru_morning=date(years_inclusive[1], 12, 31),
+            exclude_transit=False,
         )
 
         # Create a DataFrame with all mornings in the range.

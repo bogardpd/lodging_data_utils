@@ -114,33 +114,26 @@ class LodgingLog:
     
     def mornings_by(self,
         by='location',
-        start_date=None,
-        thru_date=None,
-        exclude_flights=False,
+        start_morning=None,
+        thru_morning=None,
+        exclude_transit=False,
     ):
         """
         Returns a DataFrame with a row for each morning away from home,
         grouped by the specified location type.
-        
-        Args:
-            by (str): The type of location to group by. Options are:
-                'location', 'city', 'metro', 'region'.
-        
-        Returns:
-            DataFrame: A DataFrame with mornings grouped by the specified
-            location type.
         """
         if by not in ['location', 'city', 'metro', 'region']:
             raise ValueError(f"Invalid grouping type: {by}")
-        mornings = self.mornings().loc[start_date:thru_date]
-        if exclude_flights:
+        mornings = self.mornings().loc[start_morning:thru_morning]
+        if exclude_transit:
+            transit = ['Flight']
             mornings = mornings[
-                ~mornings.type.str.contains('Flight', case=False)
+                ~mornings.type.isin(transit)
             ]
         
         # Get the attributes of each location row.
         mornings[
-            ['loc_type', 'type_fid', 'title', 'name', 'key', 'lat', 'lon']
+            ['place_type', 'type_fid', 'title', 'name', 'key', 'lat', 'lon']
         ] = mornings.apply(
             lambda row: self.location_attrs(row, by),
             axis=1,
@@ -191,7 +184,7 @@ class LodgingLog:
             'metro': ['metro', 'city', 'stay_location'],
             'region': ['region', 'city', 'stay_location'],
         }
-        loc_types = {
+        place_types = {
             'stay_location': {
                 'name': 'StayLocation',
                 'fid': 'stay_location_fid',
@@ -234,13 +227,13 @@ class LodgingLog:
                 },
             },
         }
-        for loc_type in priority[by]:
-            if pd.notnull(row[loc_types[loc_type]['fid']]):
-                type_fid = row[loc_types[loc_type]['fid']]
-                table = loc_types[loc_type]['table']
+        for place_type in priority[by]:
+            if pd.notnull(row[place_types[place_type]['fid']]):
+                type_fid = row[place_types[place_type]['fid']]
+                table = place_types[place_type]['table']
                 record = self.geodata_cache[table].loc[type_fid]
                 col_vals = {}
-                for k, v in loc_types[loc_type]['cols'].items():
+                for k, v in place_types[place_type]['cols'].items():
                     if v is None:
                         col_vals[k] = pd.NA
                     else:
@@ -256,8 +249,8 @@ class LodgingLog:
                     lat = geometry.y
                     lon = geometry.x
                 return (
-                    loc_types[loc_type]['name'],
-                    f"{loc_type}_{type_fid}",
+                    place_types[place_type]['name'],
+                    f"{place_type}_{type_fid}",
                     col_vals['title'],
                     col_vals['name'],
                     col_vals['key'],
@@ -272,48 +265,83 @@ class LodgingLog:
         DTYPE = {'fid': 'int64'}
         validations = [
             # Check that every stay has a valid stay_location_fid.
-            {'table': "stays", 'query': """
-                SELECT fid, stay_location_fid FROM stays
-                WHERE stay_location_fid IS NULL OR stay_location_fid NOT IN (
-                    SELECT fid FROM stay_locations
-                )
-            """},
+            {
+                'table': "stays",
+                'query': """
+                    SELECT fid, stay_location_fid FROM stays
+                    WHERE stay_location_fid IS NULL OR stay_location_fid
+                    NOT IN (
+                        SELECT fid FROM stay_locations
+                    )
+                """,
+                'error': "Invalid or null stay_location_fid",
+            },
             # Check that every home has a valid stay_location_fid.
-            {'table': "homes", 'query': """
-                SELECT fid, stay_location_fid FROM homes
-                WHERE stay_location_fid IS NULL OR stay_location_fid NOT IN (
-                    SELECT fid FROM stay_locations
-                )
-            """},
+            {
+                'table': "homes",
+                'query': """
+                    SELECT fid, stay_location_fid FROM homes
+                    WHERE stay_location_fid IS NULL OR stay_location_fid
+                    NOT IN (
+                        SELECT fid FROM stay_locations
+                    )
+                """,
+                'error': "Invalid or null stay_location_fid",
+            },
             # Check that every stay_location has a valid or null city_fid.
-            {'table': "stay_locations", 'query': """
-                SELECT fid, city_fid FROM stay_locations
-                WHERE city_fid IS NOT NULL AND city_fid NOT IN (
-                    SELECT fid FROM cities
-                )
-            """},
+            {
+                'table': "stay_locations",
+                'query': """
+                    SELECT fid, city_fid FROM stay_locations
+                    WHERE city_fid IS NOT NULL AND city_fid NOT IN (
+                        SELECT fid FROM cities
+                    )
+                """,
+                'error': "Invalid city_fid",
+            },
+            ## Check that every stay_location has a valid type.
+            {
+                'table': "stay_locations",
+                'query': """
+                    SELECT fid, type FROM stay_locations
+                    WHERE type NOT IN ('Hotel', 'STR', 'Residence', 'Flight')
+                    OR type IS NULL
+                """,
+                'error': (
+                    "Type must be one of 'Hotel', 'STR', 'Residence', or "
+                    "'Flight'"
+                ),
+            },
             ## Check that every city has a valid or null metro_fid.
-            {'table': "cities", 'query': """
-                SELECT fid, metro_fid FROM cities
-                WHERE metro_fid IS NOT NULL AND metro_fid NOT IN (
-                    SELECT fid FROM metros
-                )
-            """},
+            {
+                'table': "cities", 'query': """
+                    SELECT fid, metro_fid FROM cities
+                    WHERE metro_fid IS NOT NULL AND metro_fid NOT IN (
+                        SELECT fid FROM metros
+                    )
+                """,
+                'error': "Invalid metro_fid",
+            },
             ## Check that every city has a valid or null region_fid.
-            {'table': "cities", 'query': """
-                SELECT fid, region_fid FROM cities
-                WHERE region_fid IS NOT NULL AND region_fid NOT IN (
-                    SELECT fid FROM regions
-                )
-            """},
+            {
+                'table': "cities",
+                'query': """
+                    SELECT fid, region_fid FROM cities
+                    WHERE region_fid IS NOT NULL AND region_fid NOT IN (
+                        SELECT fid FROM regions
+                    )
+                """,
+                'error': "Invalid region_fid",
+            },
         ]
         for validation in validations:
             query = validation['query']
-            table = validation['table']
             invalid_data = pd.read_sql_query(query, conn, dtype=DTYPE)
             if not invalid_data.empty:
+                table = validation['table']
+                error = validation['error']
                 raise ValueError(
-                    f"Invalid data found in {table}:\n"
+                    f"Invalid data found in {table} ({error}):\n"
                     f"{invalid_data.to_string(index=False)}"
                 )
 

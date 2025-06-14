@@ -109,20 +109,20 @@ In single year mode, the script can produce a CSV output of distance data with t
 
 Generates a Pandas DataFrame of places, which groups all stays by a specified place level (stay location, city, region, or metro) and provides the total nights spent at each.
 
-If a stay does not have the specified place level, the broadest level place that is available will be used. For example, if grouping by metro but a stay is in a city that’s not in a metro area, the city will be used instead.
+If a stay does not have the specified place type, the next broadest place type that is available will be used. (Metros and regions are broader than cities, which are broader than stay locations.) For example, if the grouping is by metro but a stay is in a city that’s not in a metro area, the city will be used instead for that stay. 
 
 The dataframe has the following structure:
 
 | Column | Description |
 |--------|-------------|
-| Rank | The rank of this place. Only present when `--rank` is specified. | 
-| Title  | Formal name of the place. Not used for stay location |
-| Location | Short name for use in map labels |
-| LocId | fid (stay locations), key (cities, metros), or ISO 3166-2 (regions)
-| Type | **StayLocation**, **City**, **Metro**, or **Region**. Typically the location level specified by the `--by` argument. If some data does not have the specified level, then this column shows the level actually used.
-| Latitude | Latitude in decimal degrees |
-| Longitude | Longitude in decimal degrees |
-| Nights | Number of nights spent at this place |
+| rank | The rank of this place. Only present when `--rank` is specified. | 
+| title  | Formal name of the place. Only present if any metro areas are in the dataframe. |
+| name | Short name for use in map labels |
+| key | fid (stay locations), key (cities, metros), or ISO 3166-2 (regions)
+| place_type | **StayLocation**, **City**, **Metro**, or **Region**. Typically the grouping type specified by the `--by` argument. If any entry does not have the specified place type, then this column shows the place type actually used.
+| latitude | Latitude in decimal degrees |
+| longitude | Longitude in decimal degrees |
+| night_count | Number of nights spent at this place |
 
 This can be exported to CSV for use in GIS software.
 
@@ -131,11 +131,11 @@ This can be exported to CSV for use in GIS software.
 `frequency_table.py`
 
 #### Arguments
-- `--by {location,city,region,metro}` (required): Grouping level.
-- `--start YYYY-MM-DD` (optional): The earliest morning to include. If omitted, will use the earliest morning in the log data.
-- `--thru YYYY-MM-DD` (optional): The latest morning to include. If omitted, will use today’s date.
-- `--exclude_flights` (optional): Exclude nights spent in transit (flights).
-- `--output FILE` (optional): Output CSV file path.
+- `--by {location,city,region,metro}` (required): Grouping type.
+- `--start_morning YYYY-MM-DD` (optional): The earliest morning to include. If omitted, will use the earliest morning in the log data.
+- `--thru_morning YYYY-MM-DD` (optional): The latest morning to include. If omitted, will use today’s date.
+- `--exclude_transit` (optional): Exclude nights spent in transit (flights).
+- `--output_csv FILE` (optional): Output CSV file path.
 - `--top N` (optional): Show only the top N results.
 - `--rank` (optional): Add a ranking column.
 - `--silent` (optional): Do not show output table in the console.
@@ -149,7 +149,7 @@ This can be exported to CSV for use in GIS software.
 
 - Group by region, exclude flights, and save to CSV:
     ```sh
-    python frequency_table.py --by region --exclude_flights --output output/frequency_by_region.csv
+    python frequency_table.py --by region --exclude_transit --output output/frequency_by_region.csv
     ```
 
 - Show top 10 locations, ranked:
