@@ -109,13 +109,13 @@ In single year mode, the script can produce a CSV output of distance data with t
 
 Generates a Pandas DataFrame of places, which groups all stays by a specified place level (stay location, city, region, or metro) and provides the total nights spent at each.
 
-If a stay does not have the specified place type, the next broadest place type that is available will be used. (Metros and regions are broader than cities, which are broader than stay locations.) For example, if the grouping is by metro but a stay is in a city that’s not in a metro area, the city will be used instead for that stay. 
+If a stay does not have the specified place type, the next broadest place type that is available will be used. (Metros and regions are broader than cities, which are broader than stay locations.) For example, if the grouping is by metro but a stay is in a city that’s not in a metro area, the city will be used instead for that stay.
 
 The DataFrame has the following structure:
 
 | Column | Description |
 |--------|-------------|
-| rank | The rank of this place. Only present when `--rank` is specified. | 
+| rank | The rank of this place. Only present when `--rank` is specified. |
 | title  | Formal name of the place. Only present if any metro areas are in the DataFrame. |
 | name | Short name for use in map labels |
 | key | fid (stay locations), key (cities, metros), or ISO 3166-2 (regions)
@@ -167,10 +167,10 @@ Generates an SVG image for a plot of nights spent traveling (divided into work a
 
 #### Arguments
 
-- `--output FILE` (required): Output SVG image file path.
-- `--stats_output FILE` (optional): Output text file for summary stats.
-- `--start YYYY-MM-DD` (optional): The first evening to include in the chart. If omitted, will use the earliest evening in the log data.
-- `--thru YYYY-MM-DD` (optional): The last morning to include in the chart. If omitted, will use today’s date.
+- `--output_svg FILE` (required): Output SVG image file path.
+- `--output_stats FILE` (optional): Output text file for summary stats.
+- `--start_evening YYYY-MM-DD` (optional): The first evening to include in the chart. If omitted, will use the earliest evening in the log data.
+- `--thru_morning YYYY-MM-DD` (optional): The last morning to include in the chart. If omitted, will use today’s date.
 
 #### Usage Examples
 
