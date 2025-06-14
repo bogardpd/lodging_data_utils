@@ -58,12 +58,12 @@ Generates a Matplotlib chart showing every calendar day (from 1 Jan to 31 Dec) o
 - `--year YYYY` (required): Year to plot.
 - `--labels FILE` (optional): A CSV file with CheckOutDate and Location Columns, specifying dates to label.
 - `--earliest_prior_year YYYY` (optional): Show prior years starting from this year for comparison.
-- `--output FILE` (optional): Output image file path (SVG or PNG).
+- `--output FILE` (optional): Output image file path (SVG or PNG). If included, output CSV data will also be saved to the same path with a .csv extension (e.g. **path/output.png** → **path/output.csv**).
 
 **Arguments for `multi`:**
 - `--start_year YYYY` (required): First year to include.
 - `--end_year YYYY` (required): Last year to include.
-- `--output FILE` (required): Output image file path (SVG or PNG).
+- `--output FILE` (required): Output image file path(s) (SVG or PNG).
 
 **Usage Examples:**
 

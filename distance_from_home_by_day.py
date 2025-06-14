@@ -392,7 +392,7 @@ if __name__ == "__main__":
         '--output',
         dest='output',
         type=Path,
-        help="Output file(s) to save the graph to",
+        help="Output file to save the chart to",
         default=None,
     )
     parser_single.add_argument(
@@ -426,7 +426,7 @@ if __name__ == "__main__":
         '--output',
         dest='output',
         type=Path,
-        help="Output file(s) to save the graph to",
+        help="Output file to save the chart to",
         default=None,
     )
 
