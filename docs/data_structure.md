@@ -2,6 +2,10 @@
 
 These scripts use a [GeoPackage file](https://www.geopackage.org/) containing lodging location data for a single traveler. The location of this file is defined in [data_sources.toml](/data_sources.toml), with the key `lodging_gpkg`.
 
+## Template
+
+An empty [Lodging.gpkg file](/templates/Lodging.gpkg) is located in the [templates](/templates/) folder.
+
 ## GeoPackage Layers
 
 GeoPackage files are SQLite databases, so each layer is a table.
