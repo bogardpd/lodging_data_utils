@@ -379,7 +379,7 @@ class SVGChart:
         self._draw_note(
             first_home.end_date,
             'end',
-            "Each dot is one night 🠙",
+            "Each dot is one night",
             None,
             [2, -2],
         )
