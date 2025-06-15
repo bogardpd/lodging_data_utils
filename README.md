@@ -110,7 +110,7 @@ In single year mode, the script can produce a CSV output of distance data with t
 
 Generates a Pandas DataFrame of places, which groups all stays by a specified place level (stay location, city, region, or metro) and provides the total nights spent at each.
 
-![Sample frequency table output in a terminal](docs/images/frequency_table_metro_rank.png)
+![Sample frequency table output in a terminal](docs/images/frequency_table_metro_rank_v2.png)
 
 If a stay does not have the specified place type, the next broadest place type that is available will be used. (Metros and regions are broader than cities, which are broader than stay locations.) For example, if the grouping is by metro but a stay is in a city that’s not in a metro area, the city will be used instead for that stay.
 
@@ -164,7 +164,7 @@ This can be exported to CSV for use in GIS software.
 
 Generates an SVG image for a plot of nights spent traveling (divided into work and personal nights) and nights spent at home.
 
-![A sample nights away and home chart](docs/images/nights_away_home.svg)
+![A sample nights away and home chart](docs/images/nights_away_home_v2.svg)
 
 #### Script
 

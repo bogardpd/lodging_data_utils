@@ -161,7 +161,7 @@
   </g>
   <g id="footer">
     <text x="40" y="1850" class="footer credit">github.com/bogardpd/hotel-data-utils</text>
-    <text x="706.0" y="1850" class="footer date-generated">Generated on 14 Jun 2025</text>
+    <text x="706.0" y="1850" class="footer date-generated">Generated on 15 Jun 2025</text>
   </g>
   <g id="highlights">
     <rect x="96.0" y="1587.0" rx="6" width="172.0" height="12" class="highlight-away-personal"/>
@@ -3052,7 +3052,7 @@
     <circle cx="326.0" cy="1769.0" r="3" class="night-home"/>
   </g>
   <g id="notes">
-    <text x="571.0" y="197.0" class="note note-end">Each dot is one night 🠙</text>
+    <text x="571.0" y="197.0" class="note note-end">Each dot is one night</text>
     <text x="99.0" y="1615.0" class="note note-start">21 nights away</text>
     <text x="99.0" y="1633.0" class="note note-sub note-start">18 MAR–8 APR 2016</text>
     <text x="697.0" y="615.0" class="note note-end">53 nights home</text>
