@@ -10,7 +10,7 @@ These scripts use a GeoPackage (.gpkg) file as their primary data source. The st
 
 Hotel stays are measured (and billed) by nights rather than days. A one-night stay generally involves two separate calendar days (check in on one day and check out the next). Likewise, longer stays involve one more day than nights; for example, a four-night stay involves five calendar days.
 
-![Five calendar days, with check in on the first day and check out on the fifth day. Four nights span the four boundaries between the five calendar days, labeled night 0 through night 3. The first day contains check in and evening 0. The second day contains morning 0 and evening 1. The third day contains morning 1 and evening 2. The fourth day contains morning 2 and evening 3. The fifth day contains morning 3 and check out.](docs/images/nights-calendar-v4.svg)
+![Five calendar days, with check in on the first day and check out on the fifth day. Four nights span the four boundaries between the five calendar days, labeled night 0 through night 3. The first day contains check in and evening 0. The second day contains morning 0 and evening 1. The third day contains morning 1 and evening 2. The fourth day contains morning 2 and evening 3. The fifth day contains morning 3 and check out.](docs/images/nights_calendar_v4.svg)
 
 Each night at a hotel spans two calendar days. For any given stay, the dates of morning[*n*] and evening[*n+1*] are the same. The check in date is always equal to evening[0], and the check out date is always equal to the last morning.
 
@@ -31,6 +31,8 @@ Generates a CSV file with the following columns:
 | business_night_count | Number of nights away from home for business travel |
 | personal_night_count | Number of nights away from home for personal travel |
 
+The CSV will include all years from the first year with data through the present year. Years with no business nights or no personal nights will show `0` in the appropriate night count column.
+
 #### Script
 
 `annual_night_counts.py`
@@ -48,12 +50,11 @@ python annual_night_counts.py output/annual_night_counts.csv
 
 Generates a Matplotlib chart showing every morning of the year (from 1 Jan to 31 Dec) on the X axis, and distance from home for each morning on the Y axis.
 
-
-![A sample distance from home by day chart for 2023](docs/images/distance-from-home-by-day-2023.svg)
+![A sample distance from home by day chart for 2023](docs/images/distance_from_home_single_2023.svg)
 
 This script can also be used to show multiple years at once, as well as an average distance from home for each calendar day.
 
-![A sample distance from home multi-year chart for 2013 to 2024](docs/images/distance-from-home-multi-2013-2024.svg)
+![A sample distance from home multi-year chart for 2013 to 2024](docs/images/distance_from_home_multi_2013_2024.svg)
 
 In single year mode, the script can produce a CSV output of distance data with the following columns:
 
@@ -108,6 +109,8 @@ In single year mode, the script can produce a CSV output of distance data with t
 ### Frequency Table
 
 Generates a Pandas DataFrame of places, which groups all stays by a specified place level (stay location, city, region, or metro) and provides the total nights spent at each.
+
+![Sample frequency table output in a terminal](docs/images/frequency_table_metro_rank.png)
 
 If a stay does not have the specified place type, the next broadest place type that is available will be used. (Metros and regions are broader than cities, which are broader than stay locations.) For example, if the grouping is by metro but a stay is in a city that’s not in a metro area, the city will be used instead for that stay.
 
