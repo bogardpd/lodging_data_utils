@@ -14,6 +14,7 @@ import argparse
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
+import numpy as np
 import pandas as pd
 from matplotlib.gridspec import GridSpec
 from pyproj import Geod
@@ -49,7 +50,7 @@ def distance_from_home_by_day(
             earliest_prior_year,
         ).plot()
     elif single_multi == 'multi':
-        YearsAndAverageDistanceChart(*years, output_img).plot()
+        YearsAndAverageDistanceChart(years[0], years[1], output_img).plot()
 
 
 class DistanceByDayChart():
@@ -135,7 +136,7 @@ class DistanceByDayChart():
             index=['month', 'day'],
             columns='year',
             values='distance_mi',
-            fill_value=pd.NA,
+            fill_value=np.nan,
         )
         return df
 
@@ -245,7 +246,7 @@ class SingleYearDistanceChart(DistanceByDayChart):
         y_max_miles = max(max_miles_prior, *list(data['distances'])) * 1.1
         y_max_km = y_max_miles * KM_PER_MILE
 
-        ax.set_ylim([0,y_max_miles])
+        ax.set_ylim(0, y_max_miles)
         ax.set_ylabel("Miles from Home")
 
         ax.yaxis.grid(True, which='major', color=COLORS['grid_major'])
@@ -253,7 +254,7 @@ class SingleYearDistanceChart(DistanceByDayChart):
         ax.yaxis.set_minor_locator(ticker.AutoMinorLocator())
 
         ax_km = ax.twinx()
-        ax_km.set_ylim([0,y_max_km])
+        ax_km.set_ylim(0, y_max_km)
         ax_km.set_ylabel("Kilometers from Home")
 
         if self.labels is not None:
@@ -384,10 +385,10 @@ class YearsAndAverageDistanceChart(DistanceByDayChart):
         # Configure y-axes for mean distance plot.
         y_max_miles = 3000
         y_max_km = y_max_miles * KM_PER_MILE
-        mean_ax.set_ylim([0,y_max_miles])
+        mean_ax.set_ylim(0, y_max_miles)
         mean_ax.set_ylabel("Distance (miles)")
         mean_ax_km = mean_ax.twinx()
-        mean_ax_km.set_ylim([0,y_max_km])
+        mean_ax_km.set_ylim(0, y_max_km)
         mean_ax_km.set_ylabel("Distance (km)")
 
         fig.tight_layout()

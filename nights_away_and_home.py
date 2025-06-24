@@ -92,22 +92,28 @@ class GroupedStayCollection:
         # Create a list of StayPeriod objects to group stays.
         grouped = []
         prev_m = None
-        for m in mornings.itertuples():
-            if len(grouped) == 0 or m.status != prev_m.status:
-                # Create a new StayPeriod:
-                if m.status == "Away":
-                    grouped.append(
-                        StayPeriod(True, m.Index.date(), m.purpose))
-                else:
-                    grouped.append(
-                        StayPeriod(False, m.Index.date()))
+        def new_stay(morning):
+            """Creates a new StayPeriod from a morning row."""
+            if morning.status == "Away":
+                return StayPeriod(True, morning.Index.date(), morning.purpose)
             else:
-                # Merge into previous group:
-                if m.status == "Away":
-                    grouped[-1].append_morning(m.purpose)
+                return StayPeriod(False, morning.Index.date())
+        morning_list = list(mornings.itertuples())
+        for i, m in enumerate(morning_list):
+            if i == 0:
+                # First morning, create initial StayPeriod:
+                grouped.append(new_stay(m))
+            else:
+                prev_m = morning_list[i - 1]
+                if len(grouped) == 0 or m.status != prev_m.status:
+                    # Create a new StayPeriod:
+                    grouped.append(new_stay(m))
                 else:
-                    grouped[-1].append_morning()
-            prev_m = m
+                    # Merge into previous group:
+                    if m.status == "Away":
+                        grouped[-1].append_morning(m.purpose)
+                    else:
+                        grouped[-1].append_morning()
 
         return grouped
 
@@ -250,8 +256,12 @@ class SVGChart:
         self.height = self._vals['dims']['page_height']
 
         self._root = xml.Element(
-            "svg", xmlns=self._NSMAP[None],
-            width=str(self.width), height=str(self.height)
+            "svg",
+            {
+                'width': str(self.width),
+                'height': str(self.height),
+            },
+            self._NSMAP
         )
 
         self._g = {} # Holds SVG groups for chart elements.
@@ -329,7 +339,14 @@ class SVGChart:
             'notes']
 
         for group in groups:
-            self._g[group] = xml.SubElement(self._root, "g", id=group)
+            self._g[group] = xml.SubElement(
+                self._root,
+                "g",
+                {
+                    'id': group,
+                },
+                self._NSMAP
+            )
 
     def _date_coords(self, find_morning):
         """
@@ -518,26 +535,44 @@ class SVGChart:
         }
         xml.SubElement(self._g['header'], "line", **line_attr)
 
-        header_away = xml.SubElement(self._g['header'], "text",
-            x=str(axis_x - offset[0]),
-            y=str(bounds['t'] + offset[1]))
+        header_away = xml.SubElement(
+            self._g['header'],
+            "text",
+            {
+                'x': str(axis_x - offset[0]),
+                'y': str(bounds['t'] + offset[1]),
+            },
+            self._NSMAP,
+        )
         header_away.set('class', "header header-away")
         header_away.text = "Nights on "
-        header_away_business = xml.SubElement(header_away, "tspan")
+        header_away_business = xml.SubElement(
+            header_away, "tspan", {}, self._NSMAP
+        )
         header_away_business.set('class', "header-sub night-away-business")
         header_away_business.text = "work"
         header_away_business.tail = "/"
-        header_away_personal = xml.SubElement(header_away, "tspan")
+        header_away_personal = xml.SubElement(
+            header_away, "tspan", {}, self._NSMAP
+        )
         header_away_personal.set('class', "header-sub night-away-personal")
         header_away_personal.text = "personal"
         header_away_personal.tail = " trips"
 
-        header_home = xml.SubElement(self._g['header'], "text",
-            x=str(axis_x + offset[0]),
-            y=str(bounds['t'] + offset[1]))
+        header_home = xml.SubElement(
+            self._g['header'],
+            "text",
+            {
+                'x': str(axis_x + offset[0]),
+                'y': str(bounds['t'] + offset[1])
+            },
+            self._NSMAP,
+        )
         header_home.set('class', "header header-home")
         header_home.text = "Nights at "
-        header_home_home = xml.SubElement(header_home, "tspan")
+        header_home_home = xml.SubElement(
+            header_home, "tspan", {}, self._NSMAP
+        )
         header_home_home.set('class', "header-sub night-home")
         header_home_home.text = "home"
 
@@ -597,9 +632,11 @@ class SVGChart:
     def _draw_note(self, night, align, note_text, subnote_text=None,
                    custom_offset=None):
         """Draws a text note."""
+        coords = self._date_coords(night)
+        if coords is None:
+            return
         if custom_offset is None:
             custom_offset = [0, 0]
-        coords = self._date_coords(night)
         radius = self._PARAMS['night']['radius']
 
         if align == 'start':
@@ -728,7 +765,9 @@ class SVGChart:
 
     def _import_styles(self):
         """Imports styles from an external file."""
-        style_tag = xml.SubElement(self._root, "style")
+        style_tag = xml.SubElement(
+            self._root, "style", {}, self._NSMAP
+        )
         with open(self._STYLES_PATH, encoding='utf-8') as f:
             lines = f.readlines()
             style_text = "\n"

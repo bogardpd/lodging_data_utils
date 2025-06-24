@@ -3,7 +3,8 @@
 # Standard library imports
 import sqlite3
 from pathlib import Path
-from datetime import timedelta
+from datetime import datetime, timedelta
+from typing import cast
 
 # Third-party imports
 import tomllib
@@ -71,7 +72,7 @@ class LodgingLog:
 
         return gdf
 
-    def mornings(self):
+    def mornings(self) -> pd.DataFrame:
         """
         Returns a DataFrame with a row for each morning away from home.
         """
@@ -85,35 +86,40 @@ class LodgingLog:
         LEFT JOIN cities on stay_locations.city_fid = cities.fid
         ORDER BY check_out_date
         """
-        dtypes = {
-            'stay_fid': 'int64',
-            'nights': 'int64',
-            'stay_location_fid': 'int64',
-            'city_fid': 'Int64',
-            'metro_fid': 'Int64',
-            'region_fid': 'Int64',
-        }
+
         stays = pd.read_sql_query(query, conn,
-            parse_dates=['check_out_date'], dtype=dtypes,
+            parse_dates=['check_out_date'],
+            dtype={
+                'stay_fid': pd.Int64Dtype(),
+                'nights': pd.Int64Dtype(),
+                'stay_location_fid': pd.Int64Dtype(),
+                'city_fid': pd.Int64Dtype(),
+                'metro_fid': pd.Int64Dtype(),
+                'region_fid': pd.Int64Dtype(),
+                'check_out_date': 'datetime64[ns]',
+            },
         )
         stay_frames = [
             pd.DataFrame.from_dict({
                 'morning': [
-                    row.check_out_date - timedelta(days=i)
-                    for i in reversed(range(row.nights))
+                    cast(datetime, row.check_out_date) - timedelta(days=i)
+                    for i in reversed(range(cast(int, row.nights)))
                 ],
-                'stay_fid': [row.stay_fid] * row.nights,
-                'purpose': [row.purpose] * row.nights,
-                'type': [row.type] * row.nights,
-                'stay_location_fid': [row.stay_location_fid] * row.nights,
-                'city_fid': [row.city_fid] * row.nights,
-                'metro_fid': [row.metro_fid] * row.nights,
-                'region_fid': [row.region_fid] * row.nights,
+                'stay_fid': [row.stay_fid] * cast(int, row.nights),
+                'purpose': [row.purpose] * cast(int, row.nights),
+                'type': [row.type] * cast(int, row.nights),
+                'stay_location_fid': (
+                    [row.stay_location_fid] * cast(int, row.nights)
+                ),
+                'city_fid': [row.city_fid] * cast(int, row.nights),
+                'metro_fid': [row.metro_fid] * cast(int, row.nights),
+                'region_fid': [row.region_fid] * cast(int, row.nights),
             })
             for row in stays.itertuples()
         ]
         output = pd.concat(stay_frames, ignore_index=True)
         output = output.set_index('morning')
+        output.index = pd.to_datetime(output.index)
         return output
 
     def mornings_by(self,
@@ -266,7 +272,6 @@ class LodgingLog:
     def _validate(self):
         """Validates the LodgingLog data."""
         conn = sqlite3.connect(self.lodging_path)
-        dtype = {'fid': 'int64'}
         validations = [
             # Check that every stay has a valid stay_location_fid.
             {
@@ -340,7 +345,9 @@ class LodgingLog:
         ]
         for validation in validations:
             query = validation['query']
-            invalid_data = pd.read_sql_query(query, conn, dtype=dtype)
+            invalid_data = pd.read_sql_query(query, conn,
+                dtype={'fid': 'int64'},
+            )
             if not invalid_data.empty:
                 table = validation['table']
                 error = validation['error']

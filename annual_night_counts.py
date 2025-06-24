@@ -16,7 +16,7 @@ def create_annual_night_counts(output_csv: Path) -> None:
     # Get lodging log data.
     log = LodgingLog()
     mornings = log.mornings()
-    mornings['year'] = mornings.index.year
+    mornings['year'] = pd.to_datetime(mornings['date']).dt.year
     mornings = mornings[['year', 'purpose']].reset_index()
 
     # Create a pivot table for year and purpose counts.
