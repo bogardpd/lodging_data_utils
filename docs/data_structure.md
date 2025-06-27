@@ -11,7 +11,7 @@ An empty [Lodging.gpkg file](/templates/Lodging.gpkg) is located in the [templat
 GeoPackage files are SQLite databases, so each layer is a table.
 
 > [!NOTE]
-> Columns use the data types specified in the GeoPackage Encoding Standards [Table 1. GeoPackage Data Types](https://www.geopackage.org/spec/#table_column_data_types), and geometry types specified in [Annex G: Geometry Types (Normative)](https://www.geopackage.org/spec/#geometry_types). Optional fields should be null when unused.
+> Columns use the data types specified in the GeoPackage Encoding Standards [Table 1. GeoPackage Data Types](https://www.geopackage.org/spec/#table_column_data_types), and geometry types specified in [Annex G: Geometry Types (Normative)](https://www.geopackage.org/spec/#geometry_types). Optional fields must be null when unused.
 
 The layer tables have the following relationships:
 
@@ -78,8 +78,7 @@ The `cities` table stores point features for cities relevant to lodging stays.
 | *geom* | POINT | Geographic coordinates (latitude/longitude) for the point best representing the city (usually the center of the densest part of the city). |
 | *key* | TEXT | Unique city identifier (see [City Key Format](#city-key-format)). |
 | *name* | TEXT | Common name of the city, intended for map labels. |
-| *region_fid* | INT (64 bit) | Optional. Foreign key referencing the `regions` table, if the city belongs to a country subdivision (state, province, etc.) defined in ISO 3166-2. |
-| *country* | TEXT | The city’s country name. |
+| *region_fid* | INT (64 bit) | Foreign key referencing the `regions` table. Use the most specific region available (e.g. use a subdivision if it is available, and a country only if a subdivision is not available).  |
 | *metro_fid* | INT (64 bit) | Optional. Foreign key referencing the `metros` table and representing the city’s present-day metropolitan area, if the city belongs to one. |
 | *comments* | TEXT | Optional. Comment or note about the city. |
 
@@ -125,14 +124,16 @@ For example:
 
 ### regions (Point)
 
-The `regions` table stores point features for first-level administrative divisions (states, provinces, etc.) defined in [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2).
+The `regions` table stores point features for countries defined in [ISO 3166-1](https://en.wikipedia.org/wiki/ISO_3166-1) and first-level administrative divisions (states, provinces, etc.) defined in [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2).
 
 | Column | Format | Description |
 |--------|--------|-------------|
 | *fid* | INT (64 bit) | Primary key for the region. |
 | *geom* | POINT | Geographic coordinates (latitude/longitude) best representing the region (usually the point furthest from any edge of the region). |
-| *iso_3166_2* | TEXT | ISO 3166-2 subdivision code. |
+| *iso_3166* | TEXT | ISO 3166-1 alpha-2 country code or ISO 3166-2 subdivision code. |
 | *name* | TEXT | Name of the region, intended for map labels. |
+| *admin_level* | INT (32 bit) | **0** (country) or **1** (subdivision) |
+| *parent_region_fid | INT (64 bit) | For subdivisions, the unique identifier for the country region it belongs to. Countries must leave this null. |
 | *comments* | TEXT | Optional. Comment or note about the region. |
 
 ## Overnight Flights

@@ -231,7 +231,7 @@ class LodgingLog:
                 'fid': 'region_fid',
                 'table': 'regions',
                 'cols': {
-                    'key': 'iso_3166_2',
+                    'key': 'iso_3166',
                     'name': 'name',
                     'title': None,
                 },
@@ -290,8 +290,8 @@ class LodgingLog:
                 'table': "homes",
                 'query': """
                     SELECT fid, stay_location_fid FROM homes
-                    WHERE stay_location_fid IS NULL OR stay_location_fid
-                    NOT IN (
+                    WHERE stay_location_fid IS NULL
+                    OR stay_location_fid NOT IN (
                         SELECT fid FROM stay_locations
                     )
                 """,
@@ -308,7 +308,7 @@ class LodgingLog:
                 """,
                 'error': "Invalid city_fid",
             },
-            ## Check that every stay_location has a valid type.
+            # Check that every stay_location has a valid type.
             {
                 'table': "stay_locations",
                 'query': """
@@ -321,7 +321,7 @@ class LodgingLog:
                     "'Flight'"
                 ),
             },
-            ## Check that every city has a valid or null metro_fid.
+            # Check that every city has a valid or null metro_fid.
             {
                 'table': "cities", 'query': """
                     SELECT fid, metro_fid FROM cities
@@ -331,16 +331,71 @@ class LodgingLog:
                 """,
                 'error': "Invalid metro_fid",
             },
-            ## Check that every city has a valid or null region_fid.
+            # Check that every city has a valid region_fid.
             {
                 'table': "cities",
                 'query': """
                     SELECT fid, region_fid FROM cities
-                    WHERE region_fid IS NOT NULL AND region_fid NOT IN (
+                    WHERE region_fid IS NULL
+                    OR region_fid NOT IN (
                         SELECT fid FROM regions
                     )
                 """,
                 'error': "Invalid region_fid",
+            },
+            # Check that every city's region_fid is assigned to a region that
+            # does not have child regions.
+            # This ensures that the city is assigned to the most specific
+            # admin_level available.
+            {
+                'table': "cities",
+                'query': """
+                    SELECT fid, region_fid FROM cities
+                    WHERE region_fid IN (
+                        SELECT parent.fid
+                        FROM regions AS parent
+                        WHERE EXISTS (
+                            SELECT 1
+                            FROM regions AS child
+                            WHERE child.parent_region_fid = parent.fid
+                        )
+                    )
+                """,
+                'error': (
+                    "Invalid region_id: must be assigned to the most specific "
+                    "admin_level available"
+                ),
+            },
+            # Check that every country has a null parent_region_fid.
+            {
+                'table': "regions",
+                'query': """
+                    SELECT fid, parent_region_fid FROM regions
+                    WHERE admin_level = 0 AND parent_region_fid IS NOT NULL
+                """,
+                'error': (
+                    "Invalid parent_region_fid: must be NULL for countries"
+                ),
+            },
+            # Check that every country subdivision has a valid
+            # parent_region_fid.
+            {
+                'table': "regions",
+                'query': """
+                    SELECT fid, parent_region_fid FROM regions
+                    WHERE admin_level > 0
+                    AND (
+                        parent_region_fid IS NULL
+                        OR parent_region_fid NOT IN (
+                            SELECT fid FROM regions
+                            WHERE admin_level = 0
+                        )
+                    )
+                """,
+                'error': (
+                    "Invalid parent_region_fid: must be the fid of a country "
+                    "for subdivisions"
+                ),
             },
         ]
         for validation in validations:
@@ -352,7 +407,7 @@ class LodgingLog:
                 table = validation['table']
                 error = validation['error']
                 raise ValueError(
-                    f"Invalid data found in {table} ({error}):\n"
+                    f"Invalid data found in table {table} ({error}):\n"
                     f"{invalid_data.to_string(index=False)}"
                 )
 
