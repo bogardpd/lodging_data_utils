@@ -1,0 +1,117 @@
+# Validation rules for the lodging GeoPackage.
+#
+# Each rule is defined with a table name, error message, and a SQL query which
+# returns rows that violate the rule. The query should return two columns in
+# order: the row identifier (fid) and the invalid value.
+#
+# If the query returns no rows, the validation passes.
+
+[[validations]]
+# Check that every stay has a valid stay_location_fid.
+table = "stays"
+error = "Invalid or null stay_location_fid"
+query = """
+SELECT fid, stay_location_fid FROM stays
+WHERE stay_location_fid IS NULL OR stay_location_fid NOT IN (
+    SELECT fid FROM stay_locations
+)
+"""
+
+[[validations]]
+# Check that every home has a valid home_location_fid.
+table = "homes"
+error = "Invalid or null stay_location_fid"
+query = """
+SELECT fid, stay_location_fid FROM homes
+WHERE stay_location_fid IS NULL OR stay_location_fid NOT IN (
+    SELECT fid FROM stay_locations
+)
+"""
+
+[[validations]]
+# Check that every stay_location has a valid or null city_fid.
+table = "stay_locations"
+error = "Invalid city_fid"
+query = """
+SELECT fid, city_fid FROM stay_locations
+WHERE city_fid IS NOT NULL AND city_fid NOT IN (
+    SELECT fid FROM cities
+)
+"""
+
+[[validations]]
+# Check that every stay_location has a valid type.
+table = "stay_locations"
+error = "Type must be one of 'Hotel', 'STR', 'Residence', or 'Flight'"
+query = """
+SELECT fid, type FROM stay_locations
+WHERE type NOT IN ('Hotel', 'STR', 'Residence', 'Flight')
+OR type IS NULL
+"""
+
+[[validations]]
+# Check that every city has a valid or null metro_fid.
+table = "cities"
+error = "Invalid metro_fid"
+query = """
+SELECT fid, metro_fid FROM cities
+WHERE metro_fid IS NOT NULL AND metro_fid NOT IN (
+    SELECT fid FROM metros
+)
+"""
+
+[[validations]]
+# Check that every city has a valid region_fid.
+table = "cities"
+error = "Invalid region_fid"
+query = """
+SELECT fid, region_fid FROM cities
+WHERE region_fid IS NULL OR region_fid NOT IN (
+    SELECT fid FROM regions
+)
+"""
+
+[[validations]]
+# Check that every city's region_fid is assigned to a region that does not have
+# child regions.
+# This ensures that the city is assigned to the most specific admin_level
+# available.
+table = "cities"
+error = "Invalid region_id: must be assigned to the most specific admin_level available"
+query = """
+SELECT fid, region_fid FROM cities
+WHERE region_fid IN (
+    SELECT parent.fid
+    FROM regions AS parent
+    WHERE EXISTS (
+        SELECT 1
+        FROM regions AS child
+        WHERE child.parent_region_fid = parent.fid
+    )
+)
+"""
+
+[[validations]]
+# Check that every country has a null parent_region_fid.
+table = "regions"
+error = "Invalid parent_region_fid: must be NULL for countries"
+query = """
+SELECT fid, parent_region_fid FROM regions
+WHERE admin_level = 0 AND parent_region_fid IS NOT NULL
+"""
+
+[[validations]]
+# Check that every country subdivision has a valid parent_region_fid.
+table = "regions"
+error = "Invalid parent_region_fid: must be the fid of a country for subdivisions"
+query = """
+SELECT fid, parent_region_fid FROM regions
+WHERE admin_level > 0
+AND (
+    parent_region_fid IS NULL
+    OR parent_region_fid NOT IN (
+        SELECT fid FROM regions
+        WHERE admin_level = 0
+    )
+)
+"""

@@ -271,133 +271,10 @@ class LodgingLog:
 
     def _validate(self):
         """Validates the LodgingLog data."""
+        with open(ROOT / "config" / "validations.toml", 'rb') as vf:
+            validations = tomllib.load(vf)['validations']
         conn = sqlite3.connect(self.lodging_path)
-        validations = [
-            # Check that every stay has a valid stay_location_fid.
-            {
-                'table': "stays",
-                'query': """
-                    SELECT fid, stay_location_fid FROM stays
-                    WHERE stay_location_fid IS NULL OR stay_location_fid
-                    NOT IN (
-                        SELECT fid FROM stay_locations
-                    )
-                """,
-                'error': "Invalid or null stay_location_fid",
-            },
-            # Check that every home has a valid stay_location_fid.
-            {
-                'table': "homes",
-                'query': """
-                    SELECT fid, stay_location_fid FROM homes
-                    WHERE stay_location_fid IS NULL
-                    OR stay_location_fid NOT IN (
-                        SELECT fid FROM stay_locations
-                    )
-                """,
-                'error': "Invalid or null stay_location_fid",
-            },
-            # Check that every stay_location has a valid or null city_fid.
-            {
-                'table': "stay_locations",
-                'query': """
-                    SELECT fid, city_fid FROM stay_locations
-                    WHERE city_fid IS NOT NULL AND city_fid NOT IN (
-                        SELECT fid FROM cities
-                    )
-                """,
-                'error': "Invalid city_fid",
-            },
-            # Check that every stay_location has a valid type.
-            {
-                'table': "stay_locations",
-                'query': """
-                    SELECT fid, type FROM stay_locations
-                    WHERE type NOT IN ('Hotel', 'STR', 'Residence', 'Flight')
-                    OR type IS NULL
-                """,
-                'error': (
-                    "Type must be one of 'Hotel', 'STR', 'Residence', or "
-                    "'Flight'"
-                ),
-            },
-            # Check that every city has a valid or null metro_fid.
-            {
-                'table': "cities", 'query': """
-                    SELECT fid, metro_fid FROM cities
-                    WHERE metro_fid IS NOT NULL AND metro_fid NOT IN (
-                        SELECT fid FROM metros
-                    )
-                """,
-                'error': "Invalid metro_fid",
-            },
-            # Check that every city has a valid region_fid.
-            {
-                'table': "cities",
-                'query': """
-                    SELECT fid, region_fid FROM cities
-                    WHERE region_fid IS NULL
-                    OR region_fid NOT IN (
-                        SELECT fid FROM regions
-                    )
-                """,
-                'error': "Invalid region_fid",
-            },
-            # Check that every city's region_fid is assigned to a region that
-            # does not have child regions.
-            # This ensures that the city is assigned to the most specific
-            # admin_level available.
-            {
-                'table': "cities",
-                'query': """
-                    SELECT fid, region_fid FROM cities
-                    WHERE region_fid IN (
-                        SELECT parent.fid
-                        FROM regions AS parent
-                        WHERE EXISTS (
-                            SELECT 1
-                            FROM regions AS child
-                            WHERE child.parent_region_fid = parent.fid
-                        )
-                    )
-                """,
-                'error': (
-                    "Invalid region_id: must be assigned to the most specific "
-                    "admin_level available"
-                ),
-            },
-            # Check that every country has a null parent_region_fid.
-            {
-                'table': "regions",
-                'query': """
-                    SELECT fid, parent_region_fid FROM regions
-                    WHERE admin_level = 0 AND parent_region_fid IS NOT NULL
-                """,
-                'error': (
-                    "Invalid parent_region_fid: must be NULL for countries"
-                ),
-            },
-            # Check that every country subdivision has a valid
-            # parent_region_fid.
-            {
-                'table': "regions",
-                'query': """
-                    SELECT fid, parent_region_fid FROM regions
-                    WHERE admin_level > 0
-                    AND (
-                        parent_region_fid IS NULL
-                        OR parent_region_fid NOT IN (
-                            SELECT fid FROM regions
-                            WHERE admin_level = 0
-                        )
-                    )
-                """,
-                'error': (
-                    "Invalid parent_region_fid: must be the fid of a country "
-                    "for subdivisions"
-                ),
-            },
-        ]
+
         for validation in validations:
             query = validation['query']
             invalid_data = pd.read_sql_query(query, conn,
@@ -407,7 +284,7 @@ class LodgingLog:
                 table = validation['table']
                 error = validation['error']
                 raise ValueError(
-                    f"Invalid data found in table {table} ({error}):\n"
+                    f"Invalid data found in table '{table}' ({error}):\n"
                     f"{invalid_data.to_string(index=False)}"
                 )
 
