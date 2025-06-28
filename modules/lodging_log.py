@@ -12,7 +12,7 @@ import geopandas as gpd
 import pandas as pd
 
 ROOT = Path(__file__).parent.parent
-with open(ROOT / "data_sources.toml", 'rb') as f:
+with open(ROOT / "config" / "data_sources.toml", 'rb') as f:
     SOURCES = tomllib.load(f)
 
 class LodgingLog:
