@@ -92,6 +92,15 @@ WHERE region_fid IN (
 """
 
 [[validations]]
+# Check that every region has a 0 or 1 admin_level.
+table = "regions"
+error = "Invalid admin_level: must be 0 or 1"
+query = """
+SELECT fid, admin_level FROM regions
+WHERE admin_level IS NULL OR admin_level NOT IN (0, 1)
+"""
+
+[[validations]]
 # Check that every country has a null parent_region_fid.
 table = "regions"
 error = "Invalid parent_region_fid: must be NULL for countries"
