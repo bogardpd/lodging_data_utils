@@ -31,7 +31,7 @@ The `stays` table contains records of each of the traveler’s stays at a hotel 
 | *stay_location_fid* | INT (64 bit) | Foreign key referencing the `stay_locations` table. |
 | *purpose* | TEXT | **Business** or **Personal**. |
 | *room* | TEXT | Optional. Room number(s) for the stay, if available. Separate multiple room numbers with newlines. |
-| *absence_flags* | TEXT | Optional. A string of `P` and `A` characters indicating presence or absence at the stay location for that night of the stay. For example, `PPAP` on a four night stay indicates that the traveler was present for the first two nights, absent for the third, and present for the fourth. If not null, the string length must be equal to the value of the *nights* column. If null, then it is assumed that all nights were spent at the stay. |
+| *absence_flags* | TEXT | Optional. A string of `P` and `A` characters indicating presence or absence at the stay’s location for that night of the stay. For example, `PPAP` on a four night stay indicates that the traveler was present for the first two nights, absent for the third, and present for the fourth. If not null, the string length must be equal to the value of the *nights* column. If null, then it is assumed that all nights were spent at the stay’s location. |
 | *comments* | TEXT | Optional. Comment or note about the stay. |
 
 > [!NOTE]
