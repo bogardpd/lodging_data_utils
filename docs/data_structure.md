@@ -15,7 +15,7 @@ GeoPackage files are SQLite databases, so each layer is a table.
 
 The layer tables have the following relationships:
 
-![Entity relationship diagram. Stays have exactly one stay_location. Homes have exactly one stay location. Stay_locations have zero or one cities. Cities have zero or one metros, and zero or one regions.](images/geopackage_entity_relationship.svg)
+![Entity relationship diagram. Stays have exactly one stay_location. Homes have exactly one stay location. Stay_locations have zero or one cities. Cities have zero or one metros, and zero or one regions.](images/geopackage_entity_relationship_v2.svg)
 
 ### stays (No Geometry)
 
