@@ -118,8 +118,20 @@ class LodgingLog:
             for row in stays.itertuples()
         ]
         output = pd.concat(stay_frames, ignore_index=True)
+        output = output.sort_values(by='morning')
+
+        # Check for duplicate mornings.
+        duplicates = output[output['morning'].duplicated(keep=False)]
+        if not duplicates.empty:
+            raise ValueError(
+                "Duplicate mornings found in stays:\n"
+                f"{duplicates[['morning', 'stay_fid']].to_string(index=False)}"
+            )
+
+        # Convert the 'morning' column to datetime and set it as the index.
         output = output.set_index('morning')
         output.index = pd.to_datetime(output.index)
+
         return output
 
     def mornings_by(self,
