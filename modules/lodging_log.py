@@ -80,7 +80,7 @@ class LodgingLog:
         conn = sqlite3.connect(self.lodging_path)
         query = """
         SELECT stays.fid as stay_fid, check_out_date, purpose, nights,
-        stay_location_fid, type, city_fid, metro_fid, region_fid
+        stay_location_fid, type, city_fid, metro_fid, region_fid, absence_flags
         FROM stays
         JOIN stay_locations on stays.stay_location_fid = stay_locations.fid
         LEFT JOIN cities on stay_locations.city_fid = cities.fid
@@ -97,26 +97,34 @@ class LodgingLog:
                 'metro_fid': pd.Int64Dtype(),
                 'region_fid': pd.Int64Dtype(),
                 'check_out_date': 'datetime64[ns]',
+                'absence_flags': pd.StringDtype(),
             },
         )
-        stay_frames = [
-            pd.DataFrame.from_dict({
-                'morning': [
-                    cast(datetime, row.check_out_date) - timedelta(days=i)
-                    for i in reversed(range(cast(int, row.nights)))
-                ],
-                'stay_fid': [row.stay_fid] * cast(int, row.nights),
-                'purpose': [row.purpose] * cast(int, row.nights),
-                'type': [row.type] * cast(int, row.nights),
-                'stay_location_fid': (
-                    [row.stay_location_fid] * cast(int, row.nights)
-                ),
-                'city_fid': [row.city_fid] * cast(int, row.nights),
-                'metro_fid': [row.metro_fid] * cast(int, row.nights),
-                'region_fid': [row.region_fid] * cast(int, row.nights),
-            })
-            for row in stays.itertuples()
-        ]
+        conn.close()
+
+        # Create a DataFrame for each stay, expanding the mornings.
+        stay_frames = []
+        for row in stays.itertuples():
+            mornings = self._stay_mornings(row)
+            present_nights = len(mornings)
+            if present_nights == 0:
+                continue
+            stay_frames.append(
+                pd.DataFrame.from_dict({
+                    'morning': mornings,
+                    'stay_fid': [row.stay_fid] * present_nights,
+                    'purpose': [row.purpose] * present_nights,
+                    'type': [row.type] * present_nights,
+                    'stay_location_fid': (
+                        [row.stay_location_fid] * present_nights
+                    ),
+                    'city_fid': [row.city_fid] * present_nights,
+                    'metro_fid': [row.metro_fid] * present_nights,
+                    'region_fid': [row.region_fid] * present_nights,
+                })
+            )
+
+        # Concatenate all stay DataFrames into a single DataFrame.
         output = pd.concat(stay_frames, ignore_index=True)
         output = output.sort_values(by='morning')
 
@@ -280,6 +288,33 @@ class LodgingLog:
                     lon,
                 )
         return (pd.NA, pd.NA, pd.NA, pd.NA, pd.NA, pd.NA)
+
+    def _stay_mornings(self, row) -> list[datetime]:
+        """Returns a list of mornings for a given stay row.
+        Takes into account any absence flags.
+
+        Args:
+            row: A row from the stays DataFrame.
+
+        Returns:
+            A list of datetime objects representing the mornings for the stay.
+        """
+        # Generate a list of mornings based on the check_out_date and nights.
+        morning_list = [
+            cast(datetime, row.check_out_date) - timedelta(days=i)
+            for i in reversed(range(cast(int, row.nights)))
+        ]
+        # If absence_flags is not null, filter the mornings based on presence.
+        # 'P' indicates presence, 'A' indicates absence.
+        if pd.notnull(row.absence_flags):
+            absence_flags = list(row.absence_flags)
+            morning_list = [
+                morning_list[i]
+                for i in range(len(morning_list))
+                if absence_flags[i] == 'P'
+            ]
+
+        return morning_list
 
     def _validate(self):
         """Validates the LodgingLog data."""
