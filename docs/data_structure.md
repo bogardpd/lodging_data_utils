@@ -133,7 +133,7 @@ The `regions` table stores point features for countries defined in [ISO 3166-1](
 | *iso_3166* | TEXT | ISO 3166-1 alpha-2 country code or ISO 3166-2 subdivision code. |
 | *name* | TEXT | Name of the region, intended for map labels. |
 | *admin_level* | INT (32 bit) | **0** (country) or **1** (subdivision) |
-| *parent_region_fid | INT (64 bit) | For subdivisions, the unique identifier for the country region it belongs to. Countries must leave this null. |
+| *parent_region_fid* | INT (64 bit) | For subdivisions, the unique identifier for the country region it belongs to. Countries must leave this null. |
 | *comments* | TEXT | Optional. Comment or note about the region. |
 
 ## Overnight Flights
