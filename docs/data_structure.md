@@ -121,22 +121,9 @@ If a country has a defined unique identifier for metro areas, then the metro key
 - **FR/FR001F** (OECD identifier for Paris)
 - **JP/JPN01F** (OECD identifier for Tokyo)
 
-Otherwise, the metro key should match the [format of the city](#city-key-format) key of the metro’s primary city.
+Recommended sources for metro areas can be found under [Geometry Sources](./geometry_sources.md#metro-areas).
 
-#### Recommended Metro Identifiers
-
-For locations in the United States, U.S. Census Bureau Core Based Statistical Areas (CBSA) (Metropolitan and Micropolitan Statistical Areas) titles and identifiers are recommended.
-
-- [2020 CBSA Map](https://www.census.gov/geographies/reference-maps/2020/geo/cbsa.html)
-- [2024 CBSA Shapefile](https://www2.census.gov/geo/tiger/TIGER2024/CBSA/) containing geometry, titles, identifiers, and other metadata
-- [Excel listing of CBSAs](https://www.census.gov/geographies/reference-files/time-series/demo/metro-micro/delineation-files.html)
-
-For [OECD](https://en.wikipedia.org/wiki/OECD) countries other than the United States, using OECD Functional Urban Areas (FUA) titles and identifiers are recommended.
-
-- [OECD FUA Definition](https://www.oecd.org/en/data/datasets/oecd-definition-of-cities-and-functional-urban-areas.html)
-- [OECD FUA Shapefile](https://www.oecd.org/content/dam/oecd/en/data/datasets/oecd-definition-of-cities-and-functional-urban-areas/fuas%20(1).zip) containing geometry, titles, identifiers, and other metadata
-
-For other countries, use any authoritative definition of metropolitan areas available, or create your own using the city key format.
+If metro areas are not defined for a particular country, create your own metro areas. In this case, the metro key should be the same as the [city key](#city-key-format) of the metro’s primary city.
 
 ### regions (Point)
 
