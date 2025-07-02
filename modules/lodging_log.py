@@ -15,6 +15,8 @@ ROOT = Path(__file__).parent.parent
 with open(ROOT / "config" / "data_sources.toml", 'rb') as f:
     SOURCES = tomllib.load(f)
 
+TRANSIT_TYPES = ['Flight']
+
 class LodgingLog:
     """A class to manage lodging information for a trip."""
 
@@ -156,9 +158,8 @@ class LodgingLog:
             raise ValueError(f"Invalid grouping type: {by}")
         mornings = self.mornings().loc[start_morning:thru_morning]
         if exclude_transit:
-            transit = ['Flight']
             mornings = mornings[
-                ~mornings.type.isin(transit)
+                ~mornings.type.isin(TRANSIT_TYPES)
             ]
 
         # Get the attributes of each location row.
