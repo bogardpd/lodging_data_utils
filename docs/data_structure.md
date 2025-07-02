@@ -26,10 +26,10 @@ The `stays` table contains records of each of the traveler’s stays at a hotel 
 | `fid` | INT (64 bit) | Primary key for the stay record. |
 | `check_out_date` | DATE | Date of departure from the stay (in the lodging location’s time zone), in **YYYY-MM-DD** format. If departure occurs prior to midnight but the stay is booked/billed through the following morning, then the following morning should be used as the check out date. |
 | `nights` | MEDIUMINT (32 bit) | Number of nights spent on the stay. Should be equal to the difference in days between the check-in date and the check-out date. |
-| `portfolio` | TEXT | Optional. The collection of hotel brands or short-term rentals, usually with its own loyalty program (e.g. *`Hilton`* or *`VRBO`*), that this lodging belongs to. Leave null if this stay does not have a portfolio. |
+| `portfolio` | TEXT | Optional. The collection of hotel brands or short-term rentals, usually with its own loyalty program (e.g. `Hilton` or `VRBO`), that this lodging belongs to. Leave null if this stay does not have a portfolio. |
 | `brand` | TEXT | Optional. Hotel brand (e.g. **Hampton Inn**). Short-term rentals will generally leave this null. Hotels which are not part of a chain, residences, and overnight flights should leave this null. |
 | `stay_location_fid` | INT (64 bit) | Foreign key referencing the `stay_locations` table. |
-| `purpose` | TEXT | *`Business`* or *`Personal`*. |
+| `purpose` | TEXT | `Business` or `Personal`. |
 | `room` | TEXT | Optional. Room number(s) for the stay, if available. Separate multiple room numbers with newlines. |
 | `absence_flags` | TEXT | Optional. A string of `P` and `A` characters indicating presence or absence at the stay’s location for that night of the stay. For example, `PPAP` on a four night stay indicates that the traveler was present for the first two nights, absent for the third, and present for the fourth. If not null, the string length must be equal to the value of the `nights` column. If null, then it is assumed that all nights were spent at the stay’s location. |
 | `comments` | TEXT | Optional. Comment or note about the stay. |
@@ -59,10 +59,10 @@ The `stay_locations` table contains point features representing distinct locatio
 | `fid` | INT (64 bit) | Primary key for the lodging location. |
 | `geom` | POINT | Geographic coordinates (latitude/longitude) of the location. |
 | `name` | TEXT | The name of the lodging. If the lodging is a chain hotel and the chain is part of the name, include the chain in the name (e.g. **Embassy Suites by Hilton Chicago Downtown Magnificent Mile**). Residences should be named after the person(s) occupying the residence. |
-| `type` | TEXT | *`Hotel`* (a hotel room), *`STR`* (Short Term Rental, such as Airbnb or VRBO), *`Residence`* (someone’s home), or *`Flight`* (as described in [Overnight Flights](#overnight-flights)). |
+| `type` | TEXT | `Hotel` (a hotel room), `STR` (Short Term Rental, such as Airbnb or VRBO), `Residence` (someone’s home), or `Flight` (as described in [Overnight Flights](#overnight-flights)). |
 | `city_fid` | INT (64 bit) | Optional. Foreign key referencing the `cities` table. Flight midpoints may be left null, but flight endpoints should reference the airport itself as a city (as described in [Overnight Flights](#overnight-flights)). |
 | `address` | TEXT | Optional. Full address of the location. Separate lines with newlines. |
-| `is_approximate` | BOOLEAN | *`1`* if coordinates are approximate; otherwise *`0`*. |
+| `is_approximate` | BOOLEAN | `1` if coordinates are approximate; otherwise `0`. |
 | `brand` | TEXT | Optional. Hotel brand, if applicable. |
 | `portfolio` | TEXT | Optional. Loyalty program or hotel portfolio. |
 | `portfolio_code` | TEXT | Optional. Internal portfolio-specific identifier (e.g. loyalty code). |
@@ -110,7 +110,7 @@ The `metros` table stores point features for metropolitan areas.
 | `geom` | POINT | Geographic coordinates (latitude/longitude) for the point best representing the metro area (usually the center of the densest part of the metro area’s principal city). |
 | `key` | TEXT | Unique identifier for the metro (see [Metro Key Format](#metro-key-format)). |
 | `title` | TEXT | Official or descriptive title of the metro area, or the city name of the principal city if an official name is not available. |
-| `name` | TEXT | Principal city name of the metro, intended for map labels. In some cases where the metro has a name more well-known than any of the cities (e.g. **Inland Empire** instead of **San Bernardino** or *`Riverside`*, California), this name may be used instead. |
+| `name` | TEXT | Principal city name of the metro, intended for map labels. In some cases where the metro has a name more well-known than any of the cities (e.g. **Inland Empire** instead of **San Bernardino** or `Riverside`, California), this name may be used instead. |
 | `comments` | TEXT | Optional. Comment or note about the metro area. |
 
 #### Metro Key Format
@@ -135,7 +135,7 @@ The `regions` table stores point features for countries defined in [ISO 3166-1](
 | `geom` | POINT | Geographic coordinates (latitude/longitude) best representing the region (usually the point furthest from any edge of the region). |
 | `iso_3166` | TEXT | ISO 3166-1 alpha-2 country code or ISO 3166-2 subdivision code. |
 | `name` | TEXT | Name of the region, intended for map labels. |
-| `admin_level` | INT (32 bit) | *`0`* (country) or *`1`* (subdivision) |
+| `admin_level` | INT (32 bit) | `0` (country) or `1` (subdivision) |
 | `parent_region_fid` | INT (64 bit) | For subdivisions, the unique identifier for the country region it belongs to. Countries must leave this null. |
 | `comments` | TEXT | Optional. Comment or note about the region. |
 
