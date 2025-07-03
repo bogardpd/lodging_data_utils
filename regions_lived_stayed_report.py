@@ -2,7 +2,6 @@
 
 # Standard library imports
 import argparse
-import sqlite3
 
 # Third party imports
 import pandas as pd
@@ -10,30 +9,20 @@ import pandas as pd
 # First party imports
 from modules.lodging_log import LodgingLog
 
-def create_regions_report(output_csv):
+def create_regions_report(output_csv) -> None:
     """Creates a CSV report of regions lived or stayed in."""
 
     log = LodgingLog()
 
     # Load all regions from the lodging GeoPackage.
-    lodging_path = log.lodging_path
-    conn = sqlite3.connect(lodging_path)
-    query = """
-        SELECT fid, iso_3166, name, admin_level, parent_region_fid
-        FROM regions
-    """
-    regions_df = pd.read_sql(query, conn, index_col="fid",
-        dtype={'admin_level': "Int32", 'parent_region_fid': "Int64"}
-    )
-    print(regions_df)
-    conn.close()
+    regions_df = log.geodata("regions").drop(columns=['geometry'])
 
-    # Load homes by region.
+    # Get home region feature IDs.
     homes_df = log.home_locations()
     home_regions = homes_df['region_fid'].dropna().unique().tolist()
     home_regions = roll_up_regions(home_regions, regions_df)
 
-    # Load stays by region.
+    # Get stay region feature IDs.
     stays_df = log.mornings_by("region", exclude_transit=True)
     stays_df = stays_df[stays_df['place_type'] == "Region"]
     stays_df = stays_df[stays_df['region_fid'].notna()]
@@ -53,7 +42,7 @@ def create_regions_report(output_csv):
     # Save the DataFrame to a CSV file.
     regions_df.to_csv(output_csv, index=False)
 
-def roll_up_regions(fid_list, regions_df):
+def roll_up_regions(fid_list, regions_df) -> list[int]:
     """Takes a list of region FIDs and returns the list with parent
     regions included.
     """

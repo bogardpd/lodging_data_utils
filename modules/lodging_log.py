@@ -50,7 +50,7 @@ class LodgingLog:
         """Returns a string representation of the LodgingLog."""
         return f"LodgingLog at {self.lodging_path}"
 
-    def geodata(self, layer):
+    def geodata(self, layer) -> gpd.GeoDataFrame:
         """Returns a GeoDataFrame for the specified layer in the
         GeoPackage.
 
@@ -69,13 +69,16 @@ class LodgingLog:
             fid_as_index=True
         )
         # Convert id columns to Int64.
-        for col in ['city_fid', 'metro_fid', 'region_fid']:
+        id_cols = [
+            'fid', 'city_fid', 'metro_fid', 'region_fid', 'parent_region_fid'
+        ]
+        for col in id_cols:
             if col in gdf.columns:
                 gdf[col] = gdf[col].astype('Int64')
 
         return gdf
 
-    def home_locations(self):
+    def home_locations(self) -> pd.DataFrame:
         """Returns a DataFrame with the location of all homes.
         Latitude and longitude are derived from the city if available,
         otherwise from the stay_location.
@@ -116,7 +119,6 @@ class LodgingLog:
             axis=1,
             result_type='expand',
         )
-        print(home_locations)
         return home_locations
 
     def mornings(self) -> pd.DataFrame:
@@ -194,7 +196,7 @@ class LodgingLog:
         start_morning=None,
         thru_morning=None,
         exclude_transit=False,
-    ):
+    ) -> pd.DataFrame:
         """Returns a DataFrame with a row for each morning away from
         home, grouped by the specified location type.
         """
@@ -217,7 +219,7 @@ class LodgingLog:
 
         return mornings
 
-    def _location_attrs(self, row, by):
+    def _location_attrs(self, row, by) -> tuple:
         """Get the attributes of each location row."""
         priority = {
             'location': ['stay_location'],
@@ -327,7 +329,7 @@ class LodgingLog:
 
         return morning_list
 
-    def _validate(self):
+    def _validate(self) -> bool:
         """Validates the LodgingLog data."""
         with open(ROOT / "config" / "validations.toml", 'rb') as vf:
             validations = tomllib.load(vf)['validations']
