@@ -14,10 +14,10 @@ def create_regions_report(output_csv):
     """Creates a CSV report of regions lived or stayed in."""
 
     log = LodgingLog()
-    lodging_path = log.lodging_path
-    conn = sqlite3.connect(lodging_path)
 
     # Load all regions from the lodging GeoPackage.
+    lodging_path = log.lodging_path
+    conn = sqlite3.connect(lodging_path)
     query = """
         SELECT fid, iso_3166, name, admin_level, parent_region_fid
         FROM regions
@@ -26,21 +26,12 @@ def create_regions_report(output_csv):
         dtype={"admin_level": "Int32", "parent_region_fid": "Int64"}
     )
     print(regions_df)
+    conn.close()
 
     # Load homes by region.
-    homes_query = """
-        SELECT regions.fid as region_fid
-        FROM homes
-        JOIN stay_locations on homes.stay_location_fid = stay_locations.fid
-        JOIN cities on stay_locations.city_fid = cities.fid
-        JOIN regions on cities.region_fid = regions.fid
-    """
-    homes_df = pd.read_sql(homes_query, conn)
-    home_regions = homes_df['region_fid'].unique().tolist()
+    homes_df = log.home_locations()
+    home_regions = homes_df['region_fid'].dropna().unique().tolist()
     home_regions = roll_up_regions(home_regions, regions_df)
-    print(f"Regions lived in: {home_regions}")
-
-    conn.close()
 
     # Load stays by region.
     stays_df = log.mornings_by("region", exclude_transit=True)
@@ -48,7 +39,6 @@ def create_regions_report(output_csv):
     stays_df = stays_df[stays_df['region_fid'].notna()]
     stayed_regions = stays_df['region_fid'].unique().tolist()
     stayed_regions = roll_up_regions(stayed_regions, regions_df)
-    print(f"Regions stayed in: {stayed_regions}")
 
     # Create lived_in and stayed_in columns.
     regions_df['lived_in'] = regions_df.index.isin(home_regions)
@@ -70,7 +60,7 @@ def roll_up_regions(fid_list, regions_df):
     for fid in fid_list:
         parent_fid = regions_df.loc[fid, 'parent_region_fid']
         if pd.notna(parent_fid) and parent_fid not in fid_list:
-            fid_list.append(parent_fid)
+            fid_list.append(int(parent_fid))
     return fid_list
 
 if __name__ == "__main__":
