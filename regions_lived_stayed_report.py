@@ -23,7 +23,7 @@ def create_regions_report(output_csv):
         FROM regions
     """
     regions_df = pd.read_sql(query, conn, index_col="fid",
-        dtype={"admin_level": "Int32", "parent_region_fid": "Int64"}
+        dtype={'admin_level': "Int32", 'parent_region_fid': "Int64"}
     )
     print(regions_df)
     conn.close()
@@ -35,7 +35,7 @@ def create_regions_report(output_csv):
 
     # Load stays by region.
     stays_df = log.mornings_by("region", exclude_transit=True)
-    stays_df = stays_df[stays_df['place_type'] == 'Region']
+    stays_df = stays_df[stays_df['place_type'] == "Region"]
     stays_df = stays_df[stays_df['region_fid'].notna()]
     stayed_regions = stays_df['region_fid'].unique().tolist()
     stayed_regions = roll_up_regions(stayed_regions, regions_df)
