@@ -39,9 +39,10 @@ The CSV will include all years from the first year with data through the present
 
 #### Arguments
 
-- `output_file` (required): Path to the output CSV file.
+- `output_csv` (required): Path to the output CSV file.
 
 #### Usage Example
+
 ```sh
 python annual_night_counts.py output/annual_night_counts.csv
 ```
@@ -187,4 +188,37 @@ python nights_away_and_home.py --output_svg output/nights_away_and_home.svg --ou
 - Filter by a date range:
 ```sh
 python nights_away_and_home.py --output_svg output/nights_2022.svg --start_evening 2022-01-01 --thru_morning 2022-12-31
+```
+
+### Regions Lived/Stayed Report
+
+Generates a CSV file of regions with True/False values for `lived_in` and `stayed_in` for each. Stays in transit are excluded. For admin level 0 regions (countries) which have admin level 1 subdivisions (states, provinces, etc.) in the `regions` table, each country’s `lived_in` and `stayed_in` values will be True if any of its subdivisions were lived in or stayed in, respectively.
+
+#### Sample CSV Output
+
+| iso_3166 | name          | admin_level | lived_in | stayed_in |
+|----------|---------------|-------------|----------|-----------|
+| …        | …             | …           | …        | …         |
+| SE       | Sweden        | 0           | False    | True      |
+| US       | United States | 0           | True     | True      |
+| US-AK    | Alaska        | 1           | False    | True      |
+| US-AL    | Alabama       | 1           | False    | True      |
+| US-AR    | Arkansas      | 1           | False    | True      |
+| US-AZ    | Arizona       | 1           | False    | True      |
+| US-CA    | California    | 1           | False    | True      |
+| US-CO    | Colorado      | 1           | True     | True      |
+| …        | …             | …           | …        | …         |
+
+#### Script
+
+`regions_lived_stayed_report.py`
+
+#### Arguments
+
+- `output_csv` (required): Path to the output CSV file.
+
+#### Usage Example
+
+```sh
+python regions_lived_stay_report.py output/report.csv
 ```
