@@ -75,6 +75,50 @@ class LodgingLog:
 
         return gdf
 
+    def home_locations(self):
+        """Returns a DataFrame with the location of all homes.
+        Latitude and longitude are derived from the city if available,
+        otherwise from the stay_location.
+        """
+        def get_home_location(row):
+            """Returns the home location based on city or stay_location."""
+            if pd.notna(row.city_fid):
+                geom = self.geodata_cache['cities'].loc[row.city_fid].geometry
+            else:
+                geom = self.geodata_cache['stay_locations'].loc[
+                    row.stay_location_fid
+                ].geometry
+            return (geom.y, geom.x)
+
+        # Read an SQLite table into a DataFrame.
+        conn = sqlite3.connect(self.lodging_path)
+        query = """
+        SELECT homes.fid as home_fid, move_in_date, stay_location_fid,
+        city_fid, metro_fid, region_fid
+        FROM homes
+        JOIN stay_locations on homes.stay_location_fid = stay_locations.fid
+        LEFT JOIN cities on stay_locations.city_fid = cities.fid
+        ORDER BY move_in_date
+        """
+        home_locations = pd.read_sql_query(query, conn,
+            parse_dates=['move_in_date'],
+            dtype={
+                'home_fid': pd.Int64Dtype(),
+                'move_in_date': 'datetime64[ns]',
+                'stay_location_fid': pd.Int64Dtype(),
+                'city_fid': pd.Int64Dtype(),
+                'metro_fid': pd.Int64Dtype(),
+                'region_fid': pd.Int64Dtype(),
+            },
+        )
+        home_locations[['lat', 'lon']] = home_locations.apply(
+            get_home_location,
+            axis=1,
+            result_type='expand',
+        )
+        print(home_locations)
+        return home_locations
+
     def mornings(self) -> pd.DataFrame:
         """Returns a DataFrame with a row for each morning away from
         home.
@@ -166,58 +210,14 @@ class LodgingLog:
         mornings[
             ['place_type', 'type_fid', 'title', 'name', 'key', 'lat', 'lon']
         ] = mornings.apply(
-            lambda row: self.location_attrs(row, by),
+            lambda row: self._location_attrs(row, by),
             axis=1,
             result_type='expand',
         )
 
         return mornings
 
-    def home_locations(self):
-        """Returns a DataFrame with the location of all homes.
-        Latitude and longitude are derived from the city if available,
-        otherwise from the stay_location.
-        """
-        def get_home_location(row):
-            """Returns the home location based on city or stay_location."""
-            if pd.notna(row.city_fid):
-                geom = self.geodata_cache['cities'].loc[row.city_fid].geometry
-            else:
-                geom = self.geodata_cache['stay_locations'].loc[
-                    row.stay_location_fid
-                ].geometry
-            return (geom.y, geom.x)
-
-        # Read an SQLite table into a DataFrame.
-        conn = sqlite3.connect(self.lodging_path)
-        query = """
-        SELECT homes.fid as home_fid, move_in_date, stay_location_fid,
-        city_fid, metro_fid, region_fid
-        FROM homes
-        JOIN stay_locations on homes.stay_location_fid = stay_locations.fid
-        LEFT JOIN cities on stay_locations.city_fid = cities.fid
-        ORDER BY move_in_date
-        """
-        home_locations = pd.read_sql_query(query, conn,
-            parse_dates=['move_in_date'],
-            dtype={
-                'home_fid': pd.Int64Dtype(),
-                'move_in_date': 'datetime64[ns]',
-                'stay_location_fid': pd.Int64Dtype(),
-                'city_fid': pd.Int64Dtype(),
-                'metro_fid': pd.Int64Dtype(),
-                'region_fid': pd.Int64Dtype(),
-            },
-        )
-        home_locations[['lat', 'lon']] = home_locations.apply(
-            get_home_location,
-            axis=1,
-            result_type='expand',
-        )
-        print(home_locations)
-        return home_locations
-
-    def location_attrs(self, row, by):
+    def _location_attrs(self, row, by):
         """Get the attributes of each location row."""
         priority = {
             'location': ['stay_location'],
