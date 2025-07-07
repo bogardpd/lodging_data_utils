@@ -27,9 +27,6 @@ This document contains recommended settings within QGIS for each layer’s prope
   	- Value column: `id_str`
   	- Order By: `Value`
   	- Allow NULL value: `False`
-- `room`
-  - Widget Type: `Text Edit`
-    - Multiline: `True`
 - `absence_flags`
   - Defaults
     - Default value: `NULL`
