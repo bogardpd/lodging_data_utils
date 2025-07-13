@@ -6,7 +6,8 @@ This document contains recommended settings within QGIS for each layer’s prope
 
 ### Attributes Form
 
-- `check_out_date`
+- `check_in_date`
+  - Widget Type: `Date/Time`
   - Defaults
     - Default value: `now()`
 - `nights`

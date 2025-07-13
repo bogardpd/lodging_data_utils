@@ -128,16 +128,16 @@ class LodgingLog:
         # Read an SQLite table into a DataFrame.
         conn = sqlite3.connect(self.lodging_path)
         query = """
-        SELECT stays.fid as stay_fid, check_out_date, purpose, nights,
+        SELECT stays.fid as stay_fid, check_in_date, purpose, nights,
         stay_location_fid, type, city_fid, metro_fid, region_fid, absence_flags
         FROM stays
         JOIN stay_locations on stays.stay_location_fid = stay_locations.fid
         LEFT JOIN cities on stay_locations.city_fid = cities.fid
-        ORDER BY check_out_date
+        ORDER BY check_in_date
         """
 
         stays = pd.read_sql_query(query, conn,
-            parse_dates=['check_out_date'],
+            parse_dates=['check_in_date'],
             dtype={
                 'stay_fid': pd.Int64Dtype(),
                 'nights': pd.Int64Dtype(),
@@ -145,7 +145,7 @@ class LodgingLog:
                 'city_fid': pd.Int64Dtype(),
                 'metro_fid': pd.Int64Dtype(),
                 'region_fid': pd.Int64Dtype(),
-                'check_out_date': 'datetime64[ns]',
+                'check_in_date': 'datetime64[ns]',
                 'absence_flags': pd.StringDtype(),
             },
         )
@@ -312,10 +312,10 @@ class LodgingLog:
         Returns:
             A list of datetime objects representing the mornings for the stay.
         """
-        # Generate a list of mornings based on the check_out_date and nights.
+        # Generate a list of mornings based on the check_in_date and nights.
         morning_list = [
-            cast(datetime, row.check_out_date) - timedelta(days=i)
-            for i in reversed(range(cast(int, row.nights)))
+            cast(datetime, row.check_in_date) + timedelta(days=i+1)
+            for i in range(cast(int, row.nights))
         ]
         # If absence_flags is not null, filter the mornings based on presence.
         # 'P' indicates presence, 'A' indicates absence.
