@@ -64,10 +64,10 @@ WHERE city_fid IS NOT NULL AND city_fid NOT IN (
 [[validations]]
 # Check that every stay_location has a valid type.
 table = "stay_locations"
-error = "Type must be one of 'Hotel', 'STR', 'Residence', or 'Flight'"
+error = "Type must be one of 'Hotel', 'STR', 'Campsite', 'Residence', or 'Flight'"
 query = """
 SELECT fid, type FROM stay_locations
-WHERE type NOT IN ('Hotel', 'STR', 'Residence', 'Flight')
+WHERE type NOT IN ('Hotel', 'STR', 'Campsite', 'Residence', 'Flight')
 OR type IS NULL
 """
 

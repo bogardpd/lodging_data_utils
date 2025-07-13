@@ -26,7 +26,7 @@ def create_annual_night_counts(output_csv: Path) -> None:
         columns='purpose',
         values='morning',
         aggfunc='count',
-        fill_value=0
+        fill_value=0,
     )
 
     # Create a date range from the minimum year to the current year.

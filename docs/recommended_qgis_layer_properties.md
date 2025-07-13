@@ -71,6 +71,7 @@ This document contains recommended settings within QGIS for each layer’s prope
 | NULL        | NULL        |
 | `Hotel`     | `Hotel`     |
 | `STR`       | `STR`       |
+| `Campsite`  | `Campsite`  |
 | `Residence` | `Residence` |
 | `Flight`    | `Flight`    |
 
