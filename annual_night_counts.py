@@ -3,6 +3,7 @@
 # Standard library imports
 from datetime import date
 from pathlib import Path
+from typing import cast
 
 # Third-party imports
 import argparse
@@ -16,7 +17,7 @@ def create_annual_night_counts(output_csv: Path) -> None:
     # Get lodging log data.
     log = LodgingLog()
     mornings = log.mornings()
-    mornings['year'] = pd.to_datetime(mornings['date']).dt.year
+    mornings['year'] = cast(pd.DatetimeIndex, mornings.index).year
     mornings = mornings[['year', 'purpose']].reset_index()
 
     # Create a pivot table for year and purpose counts.
