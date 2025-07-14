@@ -60,6 +60,7 @@ This document contains recommended settings within QGIS for each layer’s prope
 | `stays` | MEDIUMINT (32 bit) | ` aggregate('STAYS_LAYER', 'count', "nights", "stay_location_fid"=attribute(@parent, 'fid'))` |
 | `nights` | MEDIUMINT (32 bit) | ` aggregate('STAYS_LAYER', 'sum', "nights", "stay_location_fid"=attribute(@parent, 'fid'))` |
 | `is_home` | BOOLEAN | ` aggregate('HOMES_LAYER', 'count', "fid", "stay_location_fid"=attribute(@parent, 'fid')) > 0` |
+| `stay_list` | TEXT | `aggregate(layer := 'STAYS_LAYER', aggregate := 'concatenate', expression := concat(format_date("check_in_date", 'yyyy-MM-dd'),	' (',	"nights",	if("nights" = 1, ' night)', ' nights)')), filter := "stay_location_fid"=attribute(@parent, 'fid'), concatenator := '\n', order_by := "check_in_date")` |
 
 ### Attributes Form
 
