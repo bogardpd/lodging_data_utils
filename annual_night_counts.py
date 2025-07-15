@@ -10,7 +10,7 @@ import argparse
 import pandas as pd
 
 # First-party imports
-from modules.lodging_log import LodgingLog
+from lodging_data_utils import LodgingLog
 
 def create_annual_night_counts(output_csv: Path) -> None:
     """Create a CSV file with night counts for each year in the dataset."""

@@ -20,7 +20,7 @@ from matplotlib.gridspec import GridSpec
 from pyproj import Geod
 
 # First-party imports
-from modules.lodging_log import LodgingLog
+from lodging_data_utils import LodgingLog
 
 KM_PER_MILE = 1.6093
 DECIMAL_PLACES = 2 # Number of decimal places to round distances to.

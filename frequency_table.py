@@ -11,7 +11,7 @@ from pathlib import Path
 import argparse
 
 # First-party imports
-from modules.lodging_log import LodgingLog
+from lodging_data_utils import LodgingLog
 
 COORD_DECIMALS = 4  # Number of decimal places for coordinates
 

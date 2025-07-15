@@ -7,7 +7,7 @@ import argparse
 import pandas as pd
 
 # First party imports
-from modules.lodging_log import LodgingLog
+from lodging_data_utils import LodgingLog
 
 def create_regions_report(output_csv) -> None:
     """Creates a CSV report of regions lived or stayed in."""

@@ -14,7 +14,7 @@ from dateutil import rrule
 from lxml import etree as xml
 
 # First-party imports
-from modules.lodging_log import LodgingLog
+from lodging_data_utils import LodgingLog
 
 # Define classes.
 
