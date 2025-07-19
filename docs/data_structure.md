@@ -61,7 +61,7 @@ The `stay_locations` table contains point features representing distinct locatio
 | `name` | TEXT | The name of the lodging. If the lodging is a chain hotel and the chain is part of the name, include the chain in the name (e.g. **Embassy Suites by Hilton Chicago Downtown Magnificent Mile**). Residences should be named after the person(s) occupying the residence. |
 | `type` | TEXT | `Hotel`, `STR` (Short Term Rental, such as Airbnb or VRBO), `Campsite`, `Residence` (someone’s home), or `Flight` (as described in [Overnight Flights](#overnight-flights)). |
 | `city_fid` | INT (64 bit) | Optional. Foreign key referencing the `cities` table. Flight midpoints may be left null, but flight endpoints should reference the airport itself as a city (as described in [Overnight Flights](#overnight-flights)). |
-| `address` | TEXT | Optional. Full address of the location. Separate lines with newlines. |
+| `address` | TEXT | Optional. Full address of the location. |
 | `is_approximate` | BOOLEAN | `1` if coordinates are approximate; otherwise `0`. |
 | `brand` | TEXT | Optional. Hotel brand, if applicable. |
 | `portfolio` | TEXT | Optional. Loyalty program or hotel portfolio. |

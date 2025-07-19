@@ -83,9 +83,6 @@ This document contains recommended settings within QGIS for each layer’s prope
   	- Value column: `key`
   	- Order By: `Value`
   	- Allow NULL value: `True`
-- `address`
-  - Widget Type: `Text Edit`
-    - Multiline: `True`
 - `brand`
   - Widget Type: `Unique Values`
     - Editable: `True`
