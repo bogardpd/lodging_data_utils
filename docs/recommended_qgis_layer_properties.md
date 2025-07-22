@@ -57,8 +57,8 @@ This document contains recommended settings within QGIS for each layer’s prope
 | Name | Type | Expression |
 |------|------|------------|
 | `id_str` | TEXT | `if("city_fid", concat(attribute(get_feature_by_id('CITIES_LAYER', "city_fid"), 'key'), ':\n', "name"), "name")` |
-| `stays` | MEDIUMINT (32 bit) | `coalesce(aggregate( 'stays_7f9f70ee_aba7_45e3_83d5_3f7febabf8cc', 'sum', if("absence_flags" IS NULL, 1, if(length(replace("absence_flags", 'A', '')) > 0, 1, 0)), "stay_location_fid"=attribute(@parent, 'fid')), 0)` |
-| `nights` | MEDIUMINT (32 bit) | `coalesce(aggregate( 'stays_7f9f70ee_aba7_45e3_83d5_3f7febabf8cc', 'sum', "nights" - if("absence_flags" IS NULL, 0, length(replace("absence_flags", 'P', ''))), "stay_location_fid"=attribute(@parent, 'fid')), 0)` |
+| `stays` | MEDIUMINT (32 bit) | `coalesce(aggregate('STAYS_LAYER', 'sum', if("absence_flags" IS NULL, 1, if(length(replace("absence_flags", 'A', '')) > 0, 1, 0)), "stay_location_fid"=attribute(@parent, 'fid')), 0)` |
+| `nights` | MEDIUMINT (32 bit) | `coalesce(aggregate('STAYS_LAYER', 'sum', "nights" - if("absence_flags" IS NULL, 0, length(replace("absence_flags", 'P', ''))), "stay_location_fid"=attribute(@parent, 'fid')), 0)` |
 | `is_home` | BOOLEAN | ` aggregate('HOMES_LAYER', 'count', "fid", "stay_location_fid"=attribute(@parent, 'fid')) > 0` |
 | `stay_list` | TEXT | `aggregate(layer := 'STAYS_LAYER', aggregate := 'concatenate', expression := concat(format_date("check_in_date", 'yyyy-MM-dd'),	' (',	"nights",	if("nights" = 1, ' night)', ' nights)')), filter := "stay_location_fid"=attribute(@parent, 'fid'), concatenator := '\n', order_by := "check_in_date")` |
 
