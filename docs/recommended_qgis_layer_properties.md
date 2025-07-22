@@ -58,7 +58,7 @@ This document contains recommended settings within QGIS for each layer’s prope
 |------|------|------------|
 | `id_str` | TEXT | `if("city_fid", concat(attribute(get_feature_by_id('CITIES_LAYER', "city_fid"), 'key'), ':\n', "name"), "name")` |
 | `stays` | MEDIUMINT (32 bit) | ` aggregate('STAYS_LAYER', 'count', "nights", "stay_location_fid"=attribute(@parent, 'fid'))` |
-| `nights` | MEDIUMINT (32 bit) | ` aggregate('STAYS_LAYER', 'sum', "nights", "stay_location_fid"=attribute(@parent, 'fid'))` |
+| `nights` | MEDIUMINT (32 bit) | ` aggregate('STAYS_LAYER', 'sum', "nights", "stay_location_fid"=attribute(@parent, 'fid')) /* Subtract absences */ - aggregate(layer := 'stays_7f9f70ee_aba7_45e3_83d5_3f7febabf8cc', aggregate := 'sum', expression := length(replace("absence_flags", 'P', '')), filter := "stay_location_fid"=attribute(@parent, 'fid'), concatenator := '', order_by := "check_in_date")` |
 | `is_home` | BOOLEAN | ` aggregate('HOMES_LAYER', 'count', "fid", "stay_location_fid"=attribute(@parent, 'fid')) > 0` |
 | `stay_list` | TEXT | `aggregate(layer := 'STAYS_LAYER', aggregate := 'concatenate', expression := concat(format_date("check_in_date", 'yyyy-MM-dd'),	' (',	"nights",	if("nights" = 1, ' night)', ' nights)')), filter := "stay_location_fid"=attribute(@parent, 'fid'), concatenator := '\n', order_by := "check_in_date")` |
 
