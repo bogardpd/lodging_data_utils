@@ -75,6 +75,7 @@ This document contains recommended settings within QGIS for each layer’s prope
 | `Campsite`  | `Campsite`  |
 | `Residence` | `Residence` |
 | `Flight`    | `Flight`    |
+| `Other`     | `Other`     |
 
 - `city_fid`
   - Widget Type: `Value Relation`
