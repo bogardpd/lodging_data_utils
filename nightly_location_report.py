@@ -102,26 +102,30 @@ def nightly_location_report(output_html_path):
             second_rowspan = 2
         if pd.isna(loc_df.loc[day, 'stay_fid']):
             stay_data = []
+            stay_class = "empty"
         else:
             stay_data = [
-                loc_df.loc[day, 'stay_city_key'],
+                h('span', class_="city")(str(loc_df.loc[day, 'stay_city_key'])),
                 h('br'),
                 loc_df.loc[day, 'stay_name'],
             ]
+            stay_class = None
         h_rows.append(
             h('tr')(
                 h('td', rowspan=second_rowspan)(
-                    str(loc_df.loc[day, 'home_city_key']),
+                    h('span', class_="city")(
+                        str(loc_df.loc[day, 'home_city_key'])
+                    ),
                     h('br'),
                     str(loc_df.loc[day, 'home_name']),
                 ),
-                h('td', rowspan=second_rowspan)(
+                h('td', rowspan=second_rowspan, class_=stay_class)(
                     *stay_data,
                 )
             )
         )
 
-    h_table = h('table', border=1)(
+    h_table = h('table')(
         h('thead')(
             h('th')("Day"),
             h('th')("Home"),
@@ -134,6 +138,22 @@ def nightly_location_report(output_html_path):
         h("head")(
             h("meta", charset="utf-8"),
             h("title")("Location Report"),
+            h("style")("""
+body {
+    font-family: system-ui;
+}
+td {
+    background-color: #cccccc;
+    border: 1px solid #ffffff;
+    padding: 0 0.25em;
+}
+td.empty {
+    background-color: #eeeeee;
+}
+span.city {
+    font-weight: 600;
+}
+            """)
         ),
         h("body")(
             h("h1")("Location Report"),
