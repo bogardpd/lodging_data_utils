@@ -161,6 +161,25 @@ This can be exported to CSV for use in GIS software.
     python frequency_table.py --by location --top 10 --rank
     ```
 
+### Nightly Location Report
+
+Generates an HTML document with a table showing the home and stay location for every night in the lodging log.
+
+#### Script
+
+`nightly_location_report.py`
+
+#### Arguments
+
+- `FILE` (required): Output HTML file path.
+
+#### Usage Example
+
+- Generate report.html:
+```sh
+python nightly_location_report.py report.html
+```
+
 ### Nights Away and Home
 
 Generates an SVG image for a plot of nights spent traveling (divided into work and personal nights) and nights spent at home.
