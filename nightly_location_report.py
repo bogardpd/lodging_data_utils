@@ -7,7 +7,7 @@ from typing import cast
 
 # Third-party imports
 import argparse
-import htmlgenerator as hg
+from tinyhtml import html, h
 import pandas as pd
 
 # First-party imports
@@ -20,13 +20,21 @@ def nightly_location_report(output_html_path):
     homes = log.home_locations()
     stay_mornings = log.mornings()
 
+    # Build locations table.
+    locations = log.geodata_cache['stay_locations']
+    cities = log.geodata_cache['cities'][['key']]
+    cities = cities.rename(columns={'key': "city_key"})
+    loc_data = locations.join(cities, on='city_fid', how='left')
+    loc_data = loc_data[['name', 'type', 'city_key']]
+
+    # Calculate date range.
     min_home = homes['move_in_date'].min().date()
     max_home = homes['move_in_date'].max().date() + timedelta(days=1)
-
-    min_day = min([min_home])
-    max_day = max([max_home, datetime.now().date()])
+    min_stay = stay_mornings.index.min().date() - timedelta(days=1)
+    max_stay = stay_mornings.index.max().date()
+    min_day = min([min_home, min_stay])
+    max_day = max([max_home, max_stay, datetime.now().date()])
     day_range = pd.date_range(min_day, max_day, freq='D')
-
     loc_df = pd.DataFrame(index=day_range)
 
     # Populate home fids.
@@ -55,21 +63,35 @@ def nightly_location_report(output_html_path):
         suffixes=(None, '_stays')
     )
 
-
+    # Join location info.
     for col in ['home_location_fid', 'stay_fid', 'stay_location_fid']:
         loc_df[col] = loc_df[col].astype('Int64')
+    loc_df = loc_df.join(loc_data, on='home_location_fid', how='left')
+    loc_df = loc_df.rename(columns={
+        'name':     'home_name',
+        'type':     'home_type',
+        'city_key': 'home_city_key',
+    })
+    loc_df = loc_df.join(loc_data, on='stay_location_fid', how='left')
+    loc_df = loc_df.rename(columns={
+        'name':     'stay_name',
+        'type':     'stay_type',
+        'city_key': 'stay_city_key',
+    })
 
+    # Build HTML.
     h_rows = []
     for i, day in enumerate(day_range):
         if i == 0:
-            first_locs = [hg.TD("-"), hg.TD("-")]
+            first_locs = [h('td')("-"), h('td')("-")]
         else:
             first_locs = [None]
         h_rows.append(
-            hg.TR(
-                hg.TD(
-                    datetime.strftime(day, "%a %d %b %Y"),
-                    rowspan=2,
+            h('tr')(
+                h('td', rowspan=2)(
+                    datetime.strftime(day, "%A"),
+                    h('br'),
+                    datetime.strftime(day, "%Y-%m-%d"),
                 ),
                 *first_locs,
             )
@@ -79,46 +101,48 @@ def nightly_location_report(output_html_path):
         else:
             second_rowspan = 2
         if pd.isna(loc_df.loc[day, 'stay_fid']):
-            stay_str = None
+            stay_data = []
         else:
-            stay_str = (
-                f"{loc_df.loc[day, 'stay_fid']} "
-                f"{loc_df.loc[day, 'stay_location_fid']}"
-            )
+            stay_data = [
+                loc_df.loc[day, 'stay_city_key'],
+                h('br'),
+                loc_df.loc[day, 'stay_name'],
+            ]
         h_rows.append(
-            hg.TR(
-                hg.TD(
-                    loc_df.loc[day, 'home_location_fid'],
-                    rowspan=second_rowspan,
+            h('tr')(
+                h('td', rowspan=second_rowspan)(
+                    str(loc_df.loc[day, 'home_city_key']),
+                    h('br'),
+                    str(loc_df.loc[day, 'home_name']),
                 ),
-                hg.TD(
-                    stay_str,
-                    rowspan=second_rowspan,
+                h('td', rowspan=second_rowspan)(
+                    *stay_data,
                 )
             )
         )
-    h_table = hg.TABLE(
-        hg.THEAD(
-            hg.TH("Day"),
-            hg.TH("Home"),
-            hg.TH("Stay")
+
+    h_table = h('table', border=1)(
+        h('thead')(
+            h('th')("Day"),
+            h('th')("Home"),
+            h('th')("Stay")
         ),
         *h_rows,
-        border=1,
     )
 
-    output = hg.HTML(
-        hg.HEAD(
-            hg.TITLE("Location Report")
+    output = html(lang="en")(
+        h("head")(
+            h("meta", charset="utf-8"),
+            h("title")("Location Report"),
         ),
-        hg.BODY(
-            hg.H1("Location Report"),
+        h("body")(
+            h("h1")("Location Report"),
             h_table,
         ),
-        doctype=True
     )
+
     with open(output_html_path, 'w', encoding='utf-8') as file:
-        file.write(hg.render(output, {}))
+        file.write(output.render())
     print(f"Saved HTML to {output_html_path}")
 
 
