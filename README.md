@@ -161,6 +161,22 @@ This can be exported to CSV for use in GIS software.
     python frequency_table.py --by location --top 10 --rank
     ```
 
+### Milestones
+
+Generates a table of mornings for milestone counts of mornings: 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, and 50000.
+
+Only paid lodging (hotels, short term rentals, and campsites) are included.
+
+#### Script
+
+`milestones.py`
+
+#### Usage Example
+
+```sh
+python milestones.py
+```
+
 ### Nightly Location Report
 
 Generates an HTML document with a table showing the home and stay location for every night in the lodging log.
