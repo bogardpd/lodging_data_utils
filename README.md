@@ -163,9 +163,11 @@ This can be exported to CSV for use in GIS software.
 
 ### Milestones
 
-Generates a table of mornings for milestone counts of mornings: 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, and 50000.
+Generates tables for milestone counts of nights away from home and unique stay locations.
 
-Only paid lodging (hotels, short term rentals, and campsites) are included.
+Milestones used are 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, and 50000.
+
+Transit (nights on overnight flights) is excluded from both counts.
 
 #### Script
 
