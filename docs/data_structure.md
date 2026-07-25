@@ -69,7 +69,7 @@ Most features will only have a single point. However, if a stay location has mul
 | `portfolio` | TEXT | Optional. Loyalty program or hotel portfolio. |
 | `portfolio_code` | TEXT | Optional. Internal portfolio-specific identifier (e.g. loyalty code). |
 | `comments` | TEXT | Optional. Comment or note about the lodging location. |
-| `checkin_point_index` | INT (64 bit) | Default 0. Which point in the geometry represents the check-in desk. If a feature only has one point, this should be 0. If there are multiple points, set this to the zero-indexed number of the correct point. (`0` if the first point is the check-in desk , `1` if the second point is the check-in desk, and so on.) |
+| `checkin_point_index` | INT (64 bit) | Default `0`. Which point in the geometry represents the check-in desk. If a feature only has one point, this should be `0`. If there are multiple points, set this to the zero-indexed number of the correct point. (`0` if the first point is the check-in desk , `1` if the second point is the check-in desk, and so on.) |
 
 > [!NOTE]
 > The data for each stay location should be accurate for the present time (or the most recent time the stay location was operational, if it is no longer operational). For example, if a hotel has changed portfolios since the traveler’s last stay, the stay location record should still reflect that hotel’s new portfolio.
