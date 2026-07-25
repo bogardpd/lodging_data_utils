@@ -10,6 +10,7 @@ from typing import cast
 import tomllib
 import geopandas as gpd
 import pandas as pd
+import shapely
 
 ROOT = Path(__file__).parent.parent
 with open(ROOT / "config" / "data_sources.toml", 'rb') as f:
@@ -289,8 +290,25 @@ class LodgingLog:
                     lat = pd.NA
                     lon = pd.NA
                 else:
-                    lat = geometry.y
-                    lon = geometry.x
+                    if geometry.geom_type == "Point":
+                        lat = geometry.y
+                        lon = geometry.x
+                    elif geometry.geom_type == "MultiPoint":
+                        if ('checkin_point_index' in record
+                            and record.checkin_point_index is not None
+                        ):
+                            primary_point = shapely.get_geometry(
+                                record.geometry, record.checkin_point_index
+                            )
+                        else:
+                            primary_point = shapely.get_geometry(
+                                record.geometry, 0
+                            )
+                        lat = primary_point.y
+                        lon = primary_point.x
+                    else:
+                        lat = pd.NA
+                        lon = pd.NA
                 return (
                     place_types[place_type]['name'],
                     f"{place_type}_{type_fid}",

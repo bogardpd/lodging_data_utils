@@ -50,9 +50,11 @@ The `homes` table contains places the traveler has lived, for use in generating 
 | `stay_location_fid` | INT (64 bit) | Foreign key referencing the `stay_locations` table. |
 | `comments` | TEXT | Optional. Comment or note about the home. |
 
-### stay_locations (Point)
+### stay_locations (Multipoint)
 
 The `stay_locations` table contains point features representing distinct locations where the traveler has had `stays` (including overnight flights), and `homes` the traveler has lived at. This usually means that each record is a specific property, but different lodging instances could occupy the same property at different times as described in [Lodging Database Criteria for New vs. Updated Records](lodging_new_vs_updated_records.md).
+
+Most features will only have a single point. However, if a stay location has multiple facilities on non-contiguous properties that still share a check-in desk, then the feature should have multiple points.
 
 | Column | Format | Description |
 |--------|--------|-------------|
@@ -67,6 +69,7 @@ The `stay_locations` table contains point features representing distinct locatio
 | `portfolio` | TEXT | Optional. Loyalty program or hotel portfolio. |
 | `portfolio_code` | TEXT | Optional. Internal portfolio-specific identifier (e.g. loyalty code). |
 | `comments` | TEXT | Optional. Comment or note about the lodging location. |
+| `checkin_point_index` | INT (64 bit) | Default 0. Which point in the geometry represents the check-in desk. If a feature only has one point, this should be 0. If there are multiple points, set this to the zero-indexed number of the correct point. (`0` if the first point is the check-in desk , `1` if the second point is the check-in desk, and so on.) |
 
 > [!NOTE]
 > The data for each stay location should be accurate for the present time (or the most recent time the stay location was operational, if it is no longer operational). For example, if a hotel has changed portfolios since the traveler’s last stay, the stay location record should still reflect that hotel’s new portfolio.
