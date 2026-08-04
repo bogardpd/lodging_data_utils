@@ -294,16 +294,9 @@ class LodgingLog:
                         lat = geometry.y
                         lon = geometry.x
                     elif geometry.geom_type == "MultiPoint":
-                        if ('checkin_point_index' in record
-                            and record.checkin_point_index is not None
-                        ):
-                            primary_point = shapely.get_geometry(
-                                record.geometry, record.checkin_point_index
-                            )
-                        else:
-                            primary_point = shapely.get_geometry(
-                                record.geometry, 0
-                            )
+                        primary_point = shapely.get_geometry(
+                            record.geometry, 0
+                        )
                         lat = primary_point.y
                         lon = primary_point.x
                     else:
